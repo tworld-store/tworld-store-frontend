@@ -3,102 +3,103 @@
  */
 
 /**
- * 가격 포맷팅 (예: 1000000 → "1,000,000원")
+ * 가격 포맷팅
  */
 function formatPrice(price) {
-  if (price === null || price === undefined || isNaN(price)) {
-    return '0원';
-  }
-  return price.toLocaleString('ko-KR') + '원';
+  if (!price && price !== 0) return '0원';
+  return Math.round(price).toLocaleString('ko-KR') + '원';
 }
 
 /**
- * 숫자만 추출 (예: "1,000,000원" → 1000000)
+ * 숫자만 추출
  */
-function parsePrice(priceStr) {
-  if (typeof priceStr === 'number') return priceStr;
-  return parseInt(priceStr.replace(/[^0-9]/g, '')) || 0;
+function extractNumbers(str) {
+  return str.replace(/[^0-9]/g, '');
 }
 
 /**
- * 할부 계산
+ * 전화번호 포맷팅
  */
-function calculateInstallment(totalPrice, months, interestRate = 0.059) {
-  if (months === 0) {
-    return totalPrice; // 일시불
-  }
+function formatPhoneNumber(phone) {
+  const numbers = extractNumbers(phone);
   
-  // 월 이자율
-  const monthlyRate = interestRate / 12;
-  
-  // 원리금균등상환 공식
-  const monthlyPayment = totalPrice * (monthlyRate * Math.pow(1 + monthlyRate, months)) / 
-                        (Math.pow(1 + monthlyRate, months) - 1);
-  
-  return Math.round(monthlyPayment);
-}
-
-/**
- * 로딩 표시
- */
-function showLoading(elementId) {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.innerHTML = `
-      <div class="flex items-center justify-center p-8">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <span class="ml-3 text-gray-600">로딩 중...</span>
-      </div>
-    `;
-  }
-}
-
-/**
- * 에러 메시지 표시
- */
-function showError(elementId, message) {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.innerHTML = `
-      <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-        <p class="font-semibold">오류 발생</p>
-        <p class="text-sm mt-1">${message}</p>
-      </div>
-    `;
-  }
-}
-
-/**
- * 기기 이미지 URL 생성
- */
-function getDeviceImageUrl(device, settings) {
-  if (device.image) {
-    return device.image;
+  if (numbers.length === 11) {
+    return numbers.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+  } else if (numbers.length === 10) {
+    return numbers.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
   }
   
-  // 기본 이미지 URL 생성
-  const baseUrl = settings?.이미지CDN || 'https://images.tworld-store.com';
-  const brand = device.brand || '기타';
-  const model = device.model || 'default';
-  const color = device.color?.name || 'default';
-  
-  return `${baseUrl}/devices/${brand}/${model}/${color}.webp`;
+  return numbers;
 }
 
 /**
- * 색상 HEX → RGB 변환
+ * 날짜 포맷팅
  */
-function hexToRgb(hex) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : null;
+function formatDate(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /**
- * 디바운스 (연속 입력 방지)
+ * 시간 포맷팅
+ */
+function formatTime(date) {
+  const d = new Date(date);
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+/**
+ * 날짜+시간 포맷팅
+ */
+function formatDateTime(date) {
+  return `${formatDate(date)} ${formatTime(date)}`;
+}
+
+/**
+ * 할부 계산 (원리금균등상환)
+ */
+function calculateInstallment(principal, months, annualRate = 5.9) {
+  if (months === 0) return principal;
+  
+  const monthlyRate = annualRate / 100 / 12;
+  const monthly = principal * 
+    (monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+    (Math.pow(1 + monthlyRate, months) - 1);
+  
+  // 100원 단위 반올림
+  return Math.round(monthly / 100) * 100;
+}
+
+/**
+ * 색상 HEX 유효성 검사
+ */
+function isValidHex(hex) {
+  return /^#[0-9A-F]{6}$/i.test(hex);
+}
+
+/**
+ * 색상 밝기 계산 (어두운 배경에는 흰 글씨)
+ */
+function getTextColorForBackground(hexColor) {
+  // HEX를 RGB로 변환
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  
+  // 밝기 계산 (YIQ)
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  
+  return brightness > 128 ? '#000000' : '#FFFFFF';
+}
+
+/**
+ * 디바운스 (검색 등에 사용)
  */
 function debounce(func, wait) {
   let timeout;
@@ -113,27 +114,130 @@ function debounce(func, wait) {
 }
 
 /**
- * 날짜 포맷팅
+ * 스로틀 (스크롤 이벤트 등에 사용)
  */
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+function throttle(func, limit) {
+  let inThrottle;
+  return function(...args) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
 }
 
 /**
- * 전화번호 포맷팅 (예: 01012345678 → 010-1234-5678)
+ * 로컬 스토리지 헬퍼
  */
-function formatPhoneNumber(phone) {
-  const cleaned = phone.replace(/\D/g, '');
-  const match = cleaned.match(/^(\d{3})(\d{4})(\d{4})$/);
-  if (match) {
-    return `${match[1]}-${match[2]}-${match[3]}`;
+const Storage = {
+  set(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (e) {
+      console.error('Storage set error:', e);
+      return false;
+    }
+  },
+  
+  get(key) {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : null;
+    } catch (e) {
+      console.error('Storage get error:', e);
+      return null;
+    }
+  },
+  
+  remove(key) {
+    try {
+      localStorage.removeItem(key);
+      return true;
+    } catch (e) {
+      console.error('Storage remove error:', e);
+      return false;
+    }
+  },
+  
+  clear() {
+    try {
+      localStorage.clear();
+      return true;
+    } catch (e) {
+      console.error('Storage clear error:', e);
+      return false;
+    }
   }
-  return phone;
+};
+
+/**
+ * 세션 스토리지 헬퍼
+ */
+const SessionStorage = {
+  set(key, value) {
+    try {
+      sessionStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (e) {
+      console.error('SessionStorage set error:', e);
+      return false;
+    }
+  },
+  
+  get(key) {
+    try {
+      const item = sessionStorage.getItem(key);
+      return item ? JSON.parse(item) : null;
+    } catch (e) {
+      console.error('SessionStorage get error:', e);
+      return null;
+    }
+  },
+  
+  remove(key) {
+    try {
+      sessionStorage.removeItem(key);
+      return true;
+    } catch (e) {
+      console.error('SessionStorage remove error:', e);
+      return false;
+    }
+  },
+  
+  clear() {
+    try {
+      sessionStorage.clear();
+      return true;
+    } catch (e) {
+      console.error('SessionStorage clear error:', e);
+      return false;
+    }
+  }
+};
+
+/**
+ * 쿼리 파라미터 파싱
+ */
+function getQueryParams() {
+  const params = {};
+  const searchParams = new URLSearchParams(window.location.search);
+  
+  for (const [key, value] of searchParams) {
+    params[key] = value;
+  }
+  
+  return params;
+}
+
+/**
+ * 쿼리 파라미터 설정
+ */
+function setQueryParam(key, value) {
+  const url = new URL(window.location);
+  url.searchParams.set(key, value);
+  window.history.pushState({}, '', url);
 }
 
 /**
@@ -147,41 +251,50 @@ function scrollToTop(smooth = true) {
 }
 
 /**
- * 요소로 스크롤
+ * 특정 요소로 스크롤
  */
-function scrollToElement(elementId, offset = 0) {
-  const element = document.getElementById(elementId);
+function scrollToElement(selector, offset = 0) {
+  const element = document.querySelector(selector);
   if (element) {
     const top = element.offsetTop - offset;
     window.scrollTo({
-      top: top,
+      top,
       behavior: 'smooth'
     });
   }
 }
 
 /**
- * 로컬 스토리지 안전하게 저장
+ * 모바일 여부 확인
  */
-function saveToStorage(key, value) {
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+/**
+ * 복사하기
+ */
+async function copyToClipboard(text) {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    await navigator.clipboard.writeText(text);
     return true;
-  } catch (error) {
-    console.error('저장 실패:', error);
+  } catch (err) {
+    console.error('복사 실패:', err);
     return false;
   }
 }
 
-/**
- * 로컬 스토리지에서 가져오기
- */
-function loadFromStorage(key, defaultValue = null) {
-  try {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    console.error('불러오기 실패:', error);
-    return defaultValue;
-  }
-}
+// 전역으로 노출
+window.formatPrice = formatPrice;
+window.formatPhoneNumber = formatPhoneNumber;
+window.formatDate = formatDate;
+window.formatTime = formatTime;
+window.formatDateTime = formatDateTime;
+window.calculateInstallment = calculateInstallment;
+window.Storage = Storage;
+window.SessionStorage = SessionStorage;
+window.getQueryParams = getQueryParams;
+window.scrollToTop = scrollToTop;
+window.scrollToElement = scrollToElement;
+window.isMobile = isMobile;
+window.copyToClipboard = copyToClipboard;

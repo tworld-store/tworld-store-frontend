@@ -1,0 +1,68 @@
+/* 가격 계산기 전용 스타일 */
+
+.device-card {
+  transition: all 0.3s ease;
+}
+
+.device-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.device-card.selected {
+  border-color: #007bff !important;
+  background-color: #f0f8ff;
+}
+
+.color-option {
+  transition: all 0.2s ease;
+}
+
+.color-option:hover {
+  transform: scale(1.05);
+}
+
+.plan-card {
+  transition: all 0.3s ease;
+  min-height: 280px;
+}
+
+.plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.jointype-btn {
+  transition: all 0.2s ease;
+}
+
+.jointype-btn:hover {
+  transform: scale(1.02);
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#price-result {
+  animation: fadeIn 0.5s ease;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .plan-card {
+    min-height: auto;
+  }
+  
+  #installment-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -10,7 +10,7 @@ const DataAPI = {
   _loaded: false,
   
   // GitHub Pages URL (실제 배포 시 변경 필요)
-  DATA_URL: 'https://YOUR-USERNAME.github.io/tworld-store-data/data/products.json',
+  DATA_URL: 'https://tworld-store.github.io/tworld-store-data/data/products.json',
   
   // 테스트용 더미 데이터 사용 여부
   USE_DUMMY_DATA: true, // false로 변경하면 실제 API 사용

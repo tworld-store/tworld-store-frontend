@@ -13,7 +13,7 @@ const DataAPI = {
   DATA_URL: 'https://tworld-store.github.io/tworld-store-data/data/products.json',
   
   // 테스트용 더미 데이터 사용 여부
-  USE_DUMMY_DATA: true, // false로 변경하면 실제 API 사용
+  USE_DUMMY_DATA: false, // false로 변경하면 실제 API 사용
   
   /**
    * 데이터 로드

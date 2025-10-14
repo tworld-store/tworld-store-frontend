@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가격 계산기 - SKT 휴대폰 쇼핑몰</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/calculator.css">
+</head>
+<body class="bg-gray-50">
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <nav class="flex items-center justify-between h-16">
+                <a href="index.html" class="text-2xl font-bold text-blue-600">
+                    T World Store
+                </a>
+                <ul class="flex gap-8">
+                    <li><a href="index.html" class="text-gray-700 hover:text-blue-600">홈</a></li>
+                    <li><a href="devices.html" class="text-gray-700 hover:text-blue-600">기기</a></li>
+                    <li><a href="plans.html" class="text-gray-700 hover:text-blue-600">요금제</a></li>
+                    <li><a href="calculator.html" class="text-blue-600 font-semibold">계산기</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 제목 -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">가격 계산기</h1>
+            <p class="text-gray-600 text-lg">원하는 기기와 요금제를 선택하면 실시간으로 가격을 계산해드립니다</p>
+        </div>
+
+        <!-- 계산기 컨테이너 -->
+        <div class="max-w-4xl mx-auto">
+            <!-- STEP 1: 기기 선택 -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <div class="flex items-center mb-4">
+                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3">1</span>
+                    <h2 class="text-2xl font-bold text-gray-900">기기 선택</h2>
+                </div>
+
+                <!-- 로딩 표시 -->
+                <div id="devices-loading" class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <p class="text-gray-600 mt-2">기기 목록 불러오는 중...</p>
+                </div>
+
+                <!-- 기기 그리드 -->
+                <div id="devices-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 hidden"></div>
+
+                <!-- 선택된 기기 정보 -->
+                <div id="selected-device" class="mt-6 hidden">
+                    <div class="border-t pt-4">
+                        <h3 class="font-semibold text-lg mb-3">선택된 기기</h3>
+                        <div id="selected-device-info" class="bg-blue-50 rounded-lg p-4"></div>
+                        
+                        <!-- 색상 선택 -->
+                        <div id="color-options" class="mt-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: 요금제 선택 -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <div class="flex items-center mb-4">
+                    <span class="bg-gray-300 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3" id="step2-badge">2</span>
+                    <h2 class="text-2xl font-bold text-gray-900">요금제 선택</h2>
+                </div>
+
+                <div id="plans-disabled" class="text-gray-400 text-center py-8">
+                    먼저 기기를 선택해주세요
+                </div>
+
+                <!-- 요금제 그리드 -->
+                <div id="plans-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden"></div>
+            </div>
+
+            <!-- STEP 3: 가입유형 선택 -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <div class="flex items-center mb-4">
+                    <span class="bg-gray-300 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3" id="step3-badge">3</span>
+                    <h2 class="text-2xl font-bold text-gray-900">가입유형 선택</h2>
+                </div>
+
+                <div id="jointypes-disabled" class="text-gray-400 text-center py-8">
+                    먼저 기기와 요금제를 선택해주세요
+                </div>
+
+                <!-- 가입유형 버튼 -->
+                <div id="jointypes-grid" class="grid grid-cols-3 gap-4 hidden">
+                    <button class="jointype-btn p-4 border-2 rounded-lg hover:border-blue-600 transition" data-type="기기변경">
+                        <div class="text-2xl mb-2">🔄</div>
+                        <div class="font-semibold">기기변경</div>
+                    </button>
+                    <button class="jointype-btn p-4 border-2 rounded-lg hover:border-blue-600 transition" data-type="번호이동">
+                        <div class="text-2xl mb-2">📱</div>
+                        <div class="font-semibold">번호이동</div>
+                    </button>
+                    <button class="jointype-btn p-4 border-2 rounded-lg hover:border-blue-600 transition" data-type="신규가입">
+                        <div class="text-2xl mb-2">✨</div>
+                        <div class="font-semibold">신규가입</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 가격 계산 결과 -->
+            <div id="price-result" class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-8 text-white hidden">
+                <h2 class="text-2xl font-bold mb-6">💰 최종 가격</h2>
+                
+                <div class="space-y-4">
+                    <!-- 출고가 -->
+                    <div class="flex justify-between items-center">
+                        <span class="text-lg">기기 출고가</span>
+                        <span class="text-2xl font-bold" id="device-price">0원</span>
+                    </div>
+                    
+                    <!-- 지원금 -->
+                    <div class="flex justify-between items-center text-yellow-300">
+                        <span class="text-lg">지원금 할인</span>
+                        <span class="text-2xl font-bold" id="subsidy-amount">-0원</span>
+                    </div>
+                    
+                    <div class="border-t border-white/20 my-4"></div>
+                    
+                    <!-- 최종 가격 -->
+                    <div class="flex justify-between items-center">
+                        <span class="text-xl">실제 구매가</span>
+                        <span class="text-3xl font-bold" id="final-price">0원</span>
+                    </div>
+                    
+                    <!-- 요금제 월납부액 -->
+                    <div class="flex justify-between items-center">
+                        <span class="text-lg">월 요금제</span>
+                        <span class="text-xl font-semibold" id="plan-price">0원</span>
+                    </div>
+                </div>
+
+                <!-- 할부 옵션 -->
+                <div class="mt-8 bg-white/10 rounded-lg p-6">
+                    <h3 class="text-xl font-bold mb-4">할부 옵션</h3>
+                    <div class="grid grid-cols-2 gap-4" id="installment-options"></div>
+                </div>
+
+                <!-- 상담 신청 버튼 -->
+                <button onclick="goToConsult()" class="w-full mt-6 bg-white text-blue-600 font-bold py-4 rounded-lg hover:bg-gray-100 transition">
+                    📞 상담 신청하기
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="bg-gray-900 text-white mt-16 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 T World Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 스크립트 -->
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/calculator.js"></script>
+</body>
+</html>

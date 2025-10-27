@@ -46,10 +46,7 @@ class DeviceDetailPage {
             }
             
             console.log('📋 모델명:', modelName);
-            
-            // 2. 로딩 표시
-            this._showLoading();
-            
+                        
             // 3. 기기 데이터 로드
             await this._loadDeviceData(modelName);
             
@@ -64,9 +61,7 @@ class DeviceDetailPage {
             // 6. 초기 가격 계산 (요금제 선택 후에만)
             // await this._updatePrice();
             
-            // 7. 로딩 숨김
-            this._hideLoading();
-            
+    
             console.log('✅ 페이지 초기화 완료');
             
         } catch (error) {
@@ -585,8 +580,18 @@ class DeviceDetailPage {
      * ───────────────────────────────────────────────
      */
     _hideLoading() {
-        // 실제 컨텐츠가 이미 HTML에 있으므로 별도 처리 불필요
+    // 로딩 오버레이 제거
+    const loadingEl = document.querySelector('.loading-overlay');
+    if (loadingEl) {
+        loadingEl.remove();
     }
+    
+    // 메인 컨텐츠 표시
+    const main = document.querySelector('main');
+    if (main) {
+        main.style.display = 'block';
+    }
+}
     
     /**
      * ───────────────────────────────────────────────

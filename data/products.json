@@ -1,0 +1,1515 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "updatedAt": "2025-10-27T04:49:27.004Z",
+    "generator": "SKT Shop Data Generator v2.0",
+    "description": "SKT 휴대폰 쇼핑몰 상품 데이터 (선약지원금 포함)",
+    "timezone": "Asia/Seoul"
+  },
+  "devices": [
+    {
+      "id": "갤럭시 S24_128GB",
+      "colorOptionId": "갤럭시 S24_팬텀블랙_128GB",
+      "brand": "삼성",
+      "model": "갤럭시 S24",
+      "color": {
+        "name": "팬텀블랙",
+        "hex": "#1C1C1C"
+      },
+      "storage": 128,
+      "price": 950000,
+      "image": "",
+      "searchText": "삼성 갤럭시 s24 팬텀블랙 128gb"
+    },
+    {
+      "id": "갤럭시 S24_128GB",
+      "colorOptionId": "갤럭시 S24_앰버옐로우_128GB",
+      "brand": "삼성",
+      "model": "갤럭시 S24",
+      "color": {
+        "name": "앰버옐로우",
+        "hex": "#F5A623"
+      },
+      "storage": 128,
+      "price": 950000,
+      "image": "",
+      "searchText": "삼성 갤럭시 s24 앰버옐로우 128gb"
+    },
+    {
+      "id": "갤럭시 S24_256GB",
+      "colorOptionId": "갤럭시 S24_팬텀블랙_256GB",
+      "brand": "삼성",
+      "model": "갤럭시 S24",
+      "color": {
+        "name": "팬텀블랙",
+        "hex": "#1C1C1C"
+      },
+      "storage": 256,
+      "price": 1050000,
+      "image": "",
+      "searchText": "삼성 갤럭시 s24 팬텀블랙 256gb"
+    },
+    {
+      "id": "아이폰 15_128GB",
+      "colorOptionId": "아이폰 15_블루_128GB",
+      "brand": "애플",
+      "model": "아이폰 15",
+      "color": {
+        "name": "블루",
+        "hex": "#1E3A8A"
+      },
+      "storage": 128,
+      "price": 1250000,
+      "image": "",
+      "searchText": "애플 아이폰 15 블루 128gb"
+    },
+    {
+      "id": "아이폰 15_128GB",
+      "colorOptionId": "아이폰 15_그린_128GB",
+      "brand": "애플",
+      "model": "아이폰 15",
+      "color": {
+        "name": "그린",
+        "hex": "#16A34A"
+      },
+      "storage": 128,
+      "price": 1250000,
+      "image": "",
+      "searchText": "애플 아이폰 15 그린 128gb"
+    },
+    {
+      "id": "아이폰 15 프로_256GB",
+      "colorOptionId": "아이폰 15 프로_내추럴 티타늄_256GB",
+      "brand": "애플",
+      "model": "아이폰 15 프로",
+      "color": {
+        "name": "내추럴 티타늄",
+        "hex": "#8B7355"
+      },
+      "storage": 256,
+      "price": 1550000,
+      "image": "",
+      "searchText": "애플 아이폰 15 프로 내추럴 티타늄 256gb"
+    }
+  ],
+  "plans": [
+    {
+      "id": "0청년109",
+      "category": {
+        "id": "YOUTH",
+        "name": "청년",
+        "icon": "👨"
+      },
+      "name": "0청년109",
+      "description": "SNS 무제한 + 게임",
+      "price": 109000,
+      "data": "무제한",
+      "voice": "무제한",
+      "sms": "무제한",
+      "additionalBenefits": "2nd device 지정 2회선 요금무료",
+      "restrictions": "만 34세까지 가입가능",
+      "icon": "😊",
+      "benefits": [
+        "YouTube 프리미엄 6개월",
+        "네이버웹툰 1년",
+        "게임 아이템"
+      ],
+      "color": "#FF6B6B",
+      "searchText": "0청년109 청년 sns 무제한 + 게임"
+    },
+    {
+      "id": "0청년69",
+      "category": {
+        "id": "YOUTH",
+        "name": "청년",
+        "icon": "👨"
+      },
+      "name": "0청년69",
+      "description": "SNS 무제한",
+      "price": 69000,
+      "data": "200GB",
+      "voice": "무제한",
+      "sms": "무제한",
+      "additionalBenefits": "000 50%할인",
+      "restrictions": "만 34세까지 가입가능",
+      "icon": "❤️",
+      "benefits": [
+        "SNS 데이터 무제한",
+        "Spotify 3개월",
+        "배달앱 할인쿠폰"
+      ],
+      "color": "#4ECDC4",
+      "searchText": "0청년69 청년 sns 무제한"
+    },
+    {
+      "id": "프리미엄",
+      "category": {
+        "id": "5GX",
+        "name": "5GX 플랜",
+        "icon": "🚀"
+      },
+      "name": "프리미엄",
+      "description": "데이터 무제한",
+      "price": 95000,
+      "data": "무제한",
+      "voice": "무제한",
+      "sms": "무제한",
+      "additionalBenefits": "2nd device 지정 2회선 요금무료",
+      "restrictions": "-",
+      "icon": "👍",
+      "benefits": [
+        "테더링 50GB",
+        "영상통화 200분",
+        "T멤버십"
+      ],
+      "color": "#1976D2",
+      "searchText": "프리미엄 5gx 플랜 데이터 무제한"
+    }
+  ],
+  "subsidies": {
+    "change": [
+      {
+        "id": "갤럭시 S24_128GB_0청년109_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년69_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 280000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_프리미엄_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 320000,
+          "additional": 90000,
+          "select": 0,
+          "phoneTotal": 410000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_T플랜 컴팩트_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 400000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 520000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년109_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 380000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 480000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년69_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_시니어 A형_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 280000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_프리미엄_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 350000,
+          "additional": 80000,
+          "select": 0,
+          "phoneTotal": 430000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_T플랜 컴팩트_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 320000,
+          "additional": 90000,
+          "select": 0,
+          "phoneTotal": 410000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년109_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 400000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 520000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년69_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 380000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 480000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_시니어 A형_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_프리미엄_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 280000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_T플랜 컴팩트_기변",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 350000,
+          "additional": 80000,
+          "select": 0,
+          "phoneTotal": 430000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_0청년109_기변",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 320000,
+          "additional": 90000,
+          "select": 0,
+          "phoneTotal": 410000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_0청년69_기변",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 400000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 520000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_시니어 A형_기변",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 380000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 480000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_프리미엄_기변",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_T플랜 컴팩트_기변",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 280000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년109_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 350000,
+          "additional": 80000,
+          "select": 0,
+          "phoneTotal": 430000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년69_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 320000,
+          "additional": 90000,
+          "select": 0,
+          "phoneTotal": 410000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_시니어 A형_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 400000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 520000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_프리미엄_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 380000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 480000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_T플랜 컴팩트_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년109_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 280000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년69_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 350000,
+          "additional": 80000,
+          "select": 0,
+          "phoneTotal": 430000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_시니어 A형_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 320000,
+          "additional": 90000,
+          "select": 0,
+          "phoneTotal": 410000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_프리미엄_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 400000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 520000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_T플랜 컴팩트_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 380000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 480000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년109_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년69_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 280000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_시니어 A형_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 350000,
+          "additional": 80000,
+          "select": 0,
+          "phoneTotal": 430000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_프리미엄_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 320000,
+          "additional": 90000,
+          "select": 0,
+          "phoneTotal": 410000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_T플랜 컴팩트_기변",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 400000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 520000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_0청년109_기변",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 380000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 480000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_0청년69_기변",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_시니어 A형_기변",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 280000,
+          "additional": 120000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_프리미엄_기변",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 350000,
+          "additional": 80000,
+          "select": 0,
+          "phoneTotal": 430000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_T플랜 컴팩트_기변",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 320000,
+          "additional": 90000,
+          "select": 0,
+          "phoneTotal": 410000
+        }
+      }
+    ],
+    "port": [
+      {
+        "id": "갤럭시 S24_128GB_0청년109_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 400000,
+          "additional": 150000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_프리미엄_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 420000,
+          "additional": 140000,
+          "select": 0,
+          "phoneTotal": 560000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_T플랜 컴팩트_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 500000,
+          "additional": 180000,
+          "select": 0,
+          "phoneTotal": 680000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년109_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 480000,
+          "additional": 160000,
+          "select": 0,
+          "phoneTotal": 640000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년69_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_시니어 A형_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 400000,
+          "additional": 150000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_프리미엄_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 380000,
+          "additional": 170000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_T플랜 컴팩트_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 450000,
+          "additional": 130000,
+          "select": 0,
+          "phoneTotal": 580000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년109_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 420000,
+          "additional": 140000,
+          "select": 0,
+          "phoneTotal": 560000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년69_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 500000,
+          "additional": 180000,
+          "select": 0,
+          "phoneTotal": 680000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_시니어 A형_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 480000,
+          "additional": 160000,
+          "select": 0,
+          "phoneTotal": 640000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_프리미엄_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_T플랜 컴팩트_번이",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 400000,
+          "additional": 150000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_0청년109_번이",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 380000,
+          "additional": 170000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_0청년69_번이",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 450000,
+          "additional": 130000,
+          "select": 0,
+          "phoneTotal": 580000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_시니어 A형_번이",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 420000,
+          "additional": 140000,
+          "select": 0,
+          "phoneTotal": 560000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_프리미엄_번이",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 500000,
+          "additional": 180000,
+          "select": 0,
+          "phoneTotal": 680000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_T플랜 컴팩트_번이",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 480000,
+          "additional": 160000,
+          "select": 0,
+          "phoneTotal": 640000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년109_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년69_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 400000,
+          "additional": 150000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_시니어 A형_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 380000,
+          "additional": 170000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_프리미엄_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 450000,
+          "additional": 130000,
+          "select": 0,
+          "phoneTotal": 580000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_T플랜 컴팩트_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 420000,
+          "additional": 140000,
+          "select": 0,
+          "phoneTotal": 560000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년109_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 500000,
+          "additional": 180000,
+          "select": 0,
+          "phoneTotal": 680000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년69_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 480000,
+          "additional": 160000,
+          "select": 0,
+          "phoneTotal": 640000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_시니어 A형_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_프리미엄_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 400000,
+          "additional": 150000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_T플랜 컴팩트_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 380000,
+          "additional": 170000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년109_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 450000,
+          "additional": 130000,
+          "select": 0,
+          "phoneTotal": 580000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년69_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 420000,
+          "additional": 140000,
+          "select": 0,
+          "phoneTotal": 560000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_시니어 A형_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 500000,
+          "additional": 180000,
+          "select": 0,
+          "phoneTotal": 680000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_프리미엄_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 480000,
+          "additional": 160000,
+          "select": 0,
+          "phoneTotal": 640000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_T플랜 컴팩트_번이",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 300000,
+          "additional": 100000,
+          "select": 0,
+          "phoneTotal": 400000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_0청년109_번이",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 400000,
+          "additional": 150000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_0청년69_번이",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 380000,
+          "additional": 170000,
+          "select": 0,
+          "phoneTotal": 550000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_시니어 A형_번이",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 450000,
+          "additional": 130000,
+          "select": 0,
+          "phoneTotal": 580000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_프리미엄_번이",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 420000,
+          "additional": 140000,
+          "select": 0,
+          "phoneTotal": 560000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_T플랜 컴팩트_번이",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 500000,
+          "additional": 180000,
+          "select": 0,
+          "phoneTotal": 680000
+        }
+      }
+    ],
+    "new": [
+      {
+        "id": "갤럭시 S24_128GB_0청년109_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 500000,
+          "additional": 200000,
+          "select": 100,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년69_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 480000,
+          "additional": 220000,
+          "select": 200,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_프리미엄_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 520000,
+          "additional": 190000,
+          "select": 400,
+          "phoneTotal": 710000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년109_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 580000,
+          "additional": 230000,
+          "select": 600,
+          "phoneTotal": 810000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년69_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 500000,
+          "additional": 200000,
+          "select": 700,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_시니어 A형_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 480000,
+          "additional": 220000,
+          "select": 800,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_프리미엄_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 550000,
+          "additional": 180000,
+          "select": 900,
+          "phoneTotal": 730000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_T플랜 컴팩트_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 520000,
+          "additional": 190000,
+          "select": 1000,
+          "phoneTotal": 710000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년109_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 600000,
+          "additional": 250000,
+          "select": 1100,
+          "phoneTotal": 850000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_0청년69_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 580000,
+          "additional": 230000,
+          "select": 1200,
+          "phoneTotal": 810000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_시니어 A형_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 500000,
+          "additional": 200000,
+          "select": 1300,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_프리미엄_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 480000,
+          "additional": 220000,
+          "select": 1400,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "갤럭시 S24_128GB_T플랜 컴팩트_신규",
+        "deviceId": "갤럭시 S24_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 550000,
+          "additional": 180000,
+          "select": 1500,
+          "phoneTotal": 730000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_0청년109_신규",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 520000,
+          "additional": 190000,
+          "select": 1600,
+          "phoneTotal": 710000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_0청년69_신규",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 600000,
+          "additional": 250000,
+          "select": 1700,
+          "phoneTotal": 850000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_시니어 A형_신규",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 580000,
+          "additional": 230000,
+          "select": 1800,
+          "phoneTotal": 810000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_프리미엄_신규",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 500000,
+          "additional": 200000,
+          "select": 1900,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "갤럭시 S24_256GB_T플랜 컴팩트_신규",
+        "deviceId": "갤럭시 S24_256GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 480000,
+          "additional": 220000,
+          "select": 2000,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년109_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 550000,
+          "additional": 180000,
+          "select": 2100,
+          "phoneTotal": 730000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년69_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 520000,
+          "additional": 190000,
+          "select": 2200,
+          "phoneTotal": 710000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_시니어 A형_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 600000,
+          "additional": 250000,
+          "select": 2300,
+          "phoneTotal": 850000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_프리미엄_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 580000,
+          "additional": 230000,
+          "select": 2400,
+          "phoneTotal": 810000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_T플랜 컴팩트_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 500000,
+          "additional": 200000,
+          "select": 2500,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년109_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 480000,
+          "additional": 220000,
+          "select": 2600,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년69_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 550000,
+          "additional": 180000,
+          "select": 2700,
+          "phoneTotal": 730000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_시니어 A형_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 520000,
+          "additional": 190000,
+          "select": 2800,
+          "phoneTotal": 710000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_프리미엄_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 600000,
+          "additional": 250000,
+          "select": 2900,
+          "phoneTotal": 850000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_T플랜 컴팩트_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 580000,
+          "additional": 230000,
+          "select": 3000,
+          "phoneTotal": 810000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년109_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 500000,
+          "additional": 200000,
+          "select": 3100,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_0청년69_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 480000,
+          "additional": 220000,
+          "select": 3200,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_시니어 A형_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 550000,
+          "additional": 180000,
+          "select": 3300,
+          "phoneTotal": 730000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_프리미엄_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 520000,
+          "additional": 190000,
+          "select": 3400,
+          "phoneTotal": 710000
+        }
+      },
+      {
+        "id": "아이폰 15_128GB_T플랜 컴팩트_신규",
+        "deviceId": "아이폰 15_128GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 600000,
+          "additional": 250000,
+          "select": 3500,
+          "phoneTotal": 850000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_0청년109_신규",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "0청년109",
+        "subsidies": {
+          "common": 580000,
+          "additional": 230000,
+          "select": 3600,
+          "phoneTotal": 810000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_0청년69_신규",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "0청년69",
+        "subsidies": {
+          "common": 500000,
+          "additional": 200000,
+          "select": 3700,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_시니어 A형_신규",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "시니어 A형",
+        "subsidies": {
+          "common": 480000,
+          "additional": 220000,
+          "select": 3800,
+          "phoneTotal": 700000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_프리미엄_신규",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "프리미엄",
+        "subsidies": {
+          "common": 550000,
+          "additional": 180000,
+          "select": 3900,
+          "phoneTotal": 730000
+        }
+      },
+      {
+        "id": "아이폰 15 프로_256GB_T플랜 컴팩트_신규",
+        "deviceId": "아이폰 15 프로_256GB",
+        "planId": "T플랜 컴팩트",
+        "subsidies": {
+          "common": 520000,
+          "additional": 190000,
+          "select": 4000,
+          "phoneTotal": 710000
+        }
+      }
+    ]
+  },
+  "settings": {
+    "raw": {
+      "사이트명": "티월드스토어",
+      "상담전화": "1588-0011",
+      "회사명": "(주)제이와이정보통신",
+      "CDN기본경로": "https://cdn.tworld-store.com",
+      "할부개월옵션": "6,12,24,36",
+      "할부이자율": "0.059",
+      "반올림단위": "10",
+      "최소할부금액": "1000",
+      "선약할인율": "0.25",
+      "기본가입유형": "번호이동",
+      "기본약정유형": "기기값할인",
+      "메인색상": "#007bff",
+      "서브색상": "#6c757d",
+      "성공색상": "#28a745",
+      "오류색상": "#dc3545",
+      "기본폰트": "Pretendard, -apple-system, sans-serif",
+      "캐시유지기간_페이지": "3600",
+      "캐시유지기간_카탈로그": "600",
+      "캐시유지기간_가격": "120",
+      "이미지베이스경로": "https://images.tworld-store.com/devices/",
+      "이미지CDN": "https://images.tworld-store.com",
+      "API타임아웃": "10",
+      "페이지상품수": "10",
+      "프로모션배너": "🎉 신규가입 법인폰 프로모션 진행!",
+      "이벤트종료일": "Wed Dec 31 2025 00:00:00 GMT+0900 (Korean Standard Time)",
+      "팝업활성화": "N",
+      "구글애널리틱스": "G-XXXXXXXXX",
+      "개인정보처리방침": "https://cdn.tworld-store.com/privacy-policy",
+      "이용약관": "https://cdn.tworld-store.com/terms",
+      "환불정책": "7일 이내 무료 취소",
+      "사업자등록번호": "123-45-67890"
+    },
+    "parsed": {
+      "사이트명": "티월드스토어",
+      "상담전화": "1588-0011",
+      "회사명": "(주)제이와이정보통신",
+      "CDN기본경로": "https://cdn.tworld-store.com",
+      "이미지베이스경로": "https://images.tworld-store.com/devices/",
+      "이미지CDN": "https://images.tworld-store.com",
+      "할부개월옵션": [
+        6,
+        12,
+        24,
+        36
+      ],
+      "할부이자율": 0.059,
+      "반올림단위": 10,
+      "최소할부금액": 1000,
+      "선약할인율": 0.25,
+      "기본가입유형": "번호이동",
+      "기본약정유형": "기기값할인",
+      "메인색상": "#007bff",
+      "서브색상": "#6c757d",
+      "성공색상": "#28a745",
+      "오류색상": "#dc3545",
+      "기본폰트": "Pretendard, -apple-system, sans-serif",
+      "캐시유지기간_페이지": 3600,
+      "캐시유지기간_카탈로그": 600,
+      "캐시유지기간_가격": 120,
+      "API타입아웃": 10,
+      "페이지상품수": 10,
+      "프로모션배너": "🎉 신규가입 법인폰 프로모션 진행!",
+      "이벤트종료일": "Wed Dec 31 2025 00:00:00 GMT+0900 (Korean Standard Time)",
+      "팝업활성화": false,
+      "구글애널리틱스": "G-XXXXXXXXX",
+      "개인정보처리방침": "https://cdn.tworld-store.com/privacy-policy",
+      "이용약관": "https://cdn.tworld-store.com/terms",
+      "환불정책": "7일 이내 무료 취소",
+      "사업자등록번호": "123-45-67890"
+    }
+  }
+}

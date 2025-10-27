@@ -1,10 +1,12 @@
 /**
  * ═══════════════════════════════════════════════════
- * SKT 쇼핑몰 - 기기 상세 페이지 로직
+ * SKT 쇼핑몰 - 기기 상세 페이지 v2.0
  * ═══════════════════════════════════════════════════
  * 
- * 용도: device-detail.html 페이지 동작 제어
- * 핵심: 옵션 선택 → 실시간 가격 계산 → 화면 업데이트
+ * 변경사항:
+ * - URL에서 모델명 받기
+ * - 색상은 이미지만 변경 (가격 무관)
+ * - 기기옵션ID = 모델명_용량
  */
 
 class DeviceDetailPage {
@@ -13,7 +15,7 @@ class DeviceDetailPage {
      */
     constructor() {
         // 현재 선택된 값들
-        this.currentDevice = null;
+        this.currentDevice = null;  // 기본 기기 정보
         this.currentPlan = null;
         this.currentColor = null;
         this.currentCapacity = null;
@@ -36,17 +38,19 @@ class DeviceDetailPage {
         try {
             console.log('📱 기기 상세 페이지 초기화 시작...');
             
-            // 1. URL에서 기기ID 가져오기
-            const deviceId = this._getDeviceIdFromUrl();
-            if (!deviceId) {
-                throw new Error('기기 ID가 없습니다');
+            // 1. URL에서 모델명 가져오기
+            const modelName = this._getModelNameFromUrl();
+            if (!modelName) {
+                throw new Error('모델명이 없습니다');
             }
+            
+            console.log('📋 모델명:', modelName);
             
             // 2. 로딩 표시
             this._showLoading();
             
             // 3. 기기 데이터 로드
-            await this._loadDeviceData(deviceId);
+            await this._loadDeviceData(modelName);
             
             // 4. UI 생성
             this._buildColorOptions();
@@ -56,8 +60,8 @@ class DeviceDetailPage {
             // 5. 이벤트 리스너 등록
             this._registerEventListeners();
             
-            // 6. 초기 가격 계산
-            await this._updatePrice();
+            // 6. 초기 가격 계산 (요금제 선택 후에만)
+            // await this._updatePrice();
             
             // 7. 로딩 숨김
             this._hideLoading();
@@ -72,12 +76,13 @@ class DeviceDetailPage {
     
     /**
      * ───────────────────────────────────────────────
-     * URL에서 기기 ID 가져오기
+     * URL에서 모델명 가져오기
      * ───────────────────────────────────────────────
+     * 예: device-detail.html?device=갤럭시 S24
      */
-    _getDeviceIdFromUrl() {
+    _getModelNameFromUrl() {
         const params = new URLSearchParams(window.location.search);
-        return params.get('device') || params.get('id');
+        return params.get('device');
     }
     
     /**
@@ -85,27 +90,26 @@ class DeviceDetailPage {
      * 기기 데이터 로드
      * ───────────────────────────────────────────────
      */
-    async _loadDeviceData(deviceId) {
+    async _loadDeviceData(modelName) {
         // API에서 전체 데이터 로드
         const data = await api.load();
         
-        // 기기 찾기 (기본 기기 정보)
-        const baseDevice = data.devices.find(d => 
-            d.기기옵션ID.startsWith(deviceId) || d.기기옵션ID === deviceId
-        );
+        // 해당 모델의 모든 옵션 찾기
+        const allOptions = data.devices.filter(d => d.모델명 === modelName);
         
-        if (!baseDevice) {
-            throw new Error('기기를 찾을 수 없습니다');
+        if (allOptions.length === 0) {
+            throw new Error(`기기를 찾을 수 없습니다: ${modelName}`);
         }
         
-        // 같은 모델의 모든 색상/용량 옵션 찾기
-        const modelName = baseDevice.모델명;
-        const allOptions = data.devices.filter(d => d.모델명 === modelName);
+        // 첫 번째 옵션을 기본으로
+        const baseDevice = allOptions[0];
         
         this.currentDevice = {
             ...baseDevice,
-            allOptions: allOptions
+            allOptions: allOptions  // 모든 색상/용량 옵션
         };
+        
+        console.log(`✅ 기기 로드 완료: ${allOptions.length}개 옵션`);
         
         // 기본 정보 표시
         this._displayBasicInfo();
@@ -242,19 +246,19 @@ class DeviceDetailPage {
      * ───────────────────────────────────────────────
      */
     _registerEventListeners() {
-        // 색상 변경
+        // 색상 변경 (이미지만 변경, 가격 무관)
         document.querySelectorAll('input[name="product_color"]').forEach(input => {
             input.addEventListener('change', (e) => {
                 this.currentColor = e.target.value;
-                this._updatePrice();
+                this._updateImage();  // 이미지만 변경
             });
         });
         
-        // 용량 변경
+        // 용량 변경 (가격 변경)
         document.querySelectorAll('input[name="type_capacity"]').forEach(input => {
             input.addEventListener('change', (e) => {
                 this.currentCapacity = parseInt(e.target.value);
-                this._updatePrice();
+                this._updatePrice();  // 가격 재계산
             });
         });
         
@@ -306,12 +310,31 @@ class DeviceDetailPage {
     
     /**
      * ───────────────────────────────────────────────
+     * 이미지 업데이트 (색상 변경 시)
+     * ───────────────────────────────────────────────
+     */
+    _updateImage() {
+        // 현재 선택된 색상+용량에 해당하는 옵션 찾기
+        const option = this.currentDevice.allOptions.find(opt => 
+            opt.색상명 === this.currentColor && opt.용량 === this.currentCapacity
+        );
+        
+        if (option && option.이미지URL) {
+            const mainImageEl = document.getElementById('main-image');
+            if (mainImageEl) {
+                mainImageEl.src = option.이미지URL;
+            }
+        }
+    }
+    
+    /**
+     * ───────────────────────────────────────────────
      * ★ 가격 업데이트 (핵심 함수) ★
      * ───────────────────────────────────────────────
      */
     async _updatePrice() {
         try {
-            // 1. 현재 선택된 기기옵션ID 생성
+            // 1. 현재 선택된 기기옵션ID 생성 (모델명_용량)
             const deviceOptionId = this._getCurrentDeviceOptionId();
             if (!deviceOptionId) {
                 console.warn('기기 옵션이 선택되지 않았습니다');
@@ -329,6 +352,14 @@ class DeviceDetailPage {
             const discountType = this._getSelectedValue('type_discount');
             const installmentMonths = parseInt(this._getSelectedValue('type_period'));
             
+            console.log('💰 가격 계산 시작:', {
+                deviceOptionId,
+                planId: this.currentPlan.요금제ID,
+                joinType,
+                discountType,
+                installmentMonths
+            });
+            
             // 4. 가격 계산
             const result = await calculator.calculate(
                 deviceOptionId,
@@ -338,12 +369,14 @@ class DeviceDetailPage {
                 installmentMonths
             );
             
+            console.log('✅ 가격 계산 완료:', result);
+            
             // 5. 화면 업데이트
             this._displayPrice(result);
             
         } catch (error) {
-            console.error('가격 계산 오류:', error);
-            // 에러는 표시하지 않고 조용히 처리
+            console.error('❌ 가격 계산 오류:', error);
+            alert(error.message);
         }
     }
     
@@ -351,18 +384,20 @@ class DeviceDetailPage {
      * ───────────────────────────────────────────────
      * 현재 선택된 기기옵션ID 생성
      * ───────────────────────────────────────────────
+     * 형식: 모델명_용량
+     * 예: "갤럭시 S24_128GB"
+     * 
+     * ★ 색상은 제외! (가격에 영향 없음)
      */
     _getCurrentDeviceOptionId() {
-        if (!this.currentColor || !this.currentCapacity) {
+        if (!this.currentCapacity) {
             return null;
         }
         
-        // allOptions에서 색상+용량에 맞는 옵션 찾기
-        const option = this.currentDevice.allOptions.find(opt => 
-            opt.색상명 === this.currentColor && opt.용량 === this.currentCapacity
-        );
+        const modelName = this.currentDevice.모델명;
         
-        return option ? option.기기옵션ID : null;
+        // 기기옵션ID = 모델명_용량
+        return `${modelName}_${this.currentCapacity}GB`;
     }
     
     /**
@@ -434,11 +469,11 @@ class DeviceDetailPage {
         }
     }
     
- /**
- * ───────────────────────────────────────────────
- * 요금제 선택 모달 열기
- * ───────────────────────────────────────────────
- */
+    /**
+     * ───────────────────────────────────────────────
+     * 요금제 선택 모달 열기
+     * ───────────────────────────────────────────────
+     */
     _openPlanModal() {
         if (window.plansModal) {
             window.plansModal.open();
@@ -446,6 +481,7 @@ class DeviceDetailPage {
             alert('요금제 모달을 로드할 수 없습니다');
         }
     }
+    
     /**
      * ───────────────────────────────────────────────
      * 상담 신청 처리
@@ -502,7 +538,10 @@ class DeviceDetailPage {
     _buildOrderParams() {
         const params = new URLSearchParams();
         
-        params.set('deviceId', this._getCurrentDeviceOptionId());
+        params.set('model', this.currentDevice.모델명);
+        params.set('color', this.currentColor);
+        params.set('capacity', this.currentCapacity);
+        params.set('deviceOptionId', this._getCurrentDeviceOptionId());
         params.set('planId', this.currentPlan.요금제ID);
         params.set('joinType', this._getSelectedValue('type_subscription'));
         params.set('discountType', this._getSelectedValue('type_discount'));
@@ -577,5 +616,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 전역 변수로 노출
 if (typeof window !== 'undefined') {
     window.deviceDetailPage = deviceDetailPage;
-    console.log('✅ 기기 상세 페이지 스크립트 로드 완료');
+    console.log('✅ 기기 상세 페이지 v2.0 스크립트 로드 완료');
 }

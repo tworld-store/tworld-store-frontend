@@ -1,10 +1,11 @@
 /**
  * ═══════════════════════════════════════════════════
- * SKT 쇼핑몰 - 가격 계산 엔진
+ * SKT 쇼핑몰 - 가격 계산 엔진 v2.0
  * ═══════════════════════════════════════════════════
  * 
- * 용도: 약정별 가격 계산 (지원금약정 vs 선택약정)
- * 핵심: TNSHOP과 동일한 계산 로직
+ * 변경사항:
+ * - 조합ID 기반 지원금 조회
+ * - 기기옵션ID = 모델명_용량 (색상 제외)
  */
 
 class PriceCalculator {
@@ -26,7 +27,7 @@ class PriceCalculator {
      * ───────────────────────────────────────────────
      * ★ 메인 계산 함수 ★
      * ───────────────────────────────────────────────
-     * @param {string} deviceOptionId - 기기옵션ID
+     * @param {string} deviceOptionId - 기기옵션ID (모델명_용량)
      * @param {string} planId - 요금제ID
      * @param {string} joinType - 가입유형 (기기변경/번호이동/신규가입)
      * @param {string} discountType - 약정유형 (phone=지원금약정, charge=선택약정)
@@ -38,12 +39,18 @@ class PriceCalculator {
             // 1. 필수값 검증
             this._validateInputs(deviceOptionId, planId, joinType, discountType, installmentMonths);
             
-            // 2. 데이터 로드
+            // 2. 조합ID 생성
+            const combinationId = this._createCombinationId(deviceOptionId, planId, joinType);
+            console.log('📋 조합ID:', combinationId);
+            
+            // 3. 데이터 로드
             const device = await this._getDevice(deviceOptionId);
             const plan = await this._getPlan(planId);
-            const subsidy = await this._getSubsidy(deviceOptionId, planId, joinType);
+            const subsidy = await this._getSubsidyByCombinationId(combinationId, joinType);
             
-            // 3. 약정별 계산 분기
+            console.log('✅ 데이터 로드 완료:', { device, plan, subsidy });
+            
+            // 4. 약정별 계산 분기
             if (discountType === 'phone') {
                 return this._calculatePhoneDiscount(device, plan, subsidy, installmentMonths);
             } else {
@@ -51,9 +58,33 @@ class PriceCalculator {
             }
             
         } catch (error) {
-            console.error('가격 계산 오류:', error);
+            console.error('❌ 가격 계산 오류:', error);
             throw error;
         }
+    }
+    
+    /**
+     * ───────────────────────────────────────────────
+     * 조합ID 생성
+     * ───────────────────────────────────────────────
+     * 형식: 기기옵션ID_요금제ID_가입유형
+     * 예시: "갤럭시 S24_128GB_0청년109_기변"
+     */
+    _createCombinationId(deviceOptionId, planId, joinType) {
+        // 가입유형 매핑
+        const joinTypeMap = {
+            '기기변경': '기변',
+            '번호이동': '번이',
+            '신규가입': '신규'
+        };
+        
+        const shortJoinType = joinTypeMap[joinType];
+        
+        if (!shortJoinType) {
+            throw new Error(`올바르지 않은 가입유형: ${joinType}`);
+        }
+        
+        return `${deviceOptionId}_${planId}_${shortJoinType}`;
     }
     
     /**
@@ -163,9 +194,6 @@ class PriceCalculator {
      * ───────────────────────────────────────────────
      * 할부금 계산 (원리금균등상환)
      * ───────────────────────────────────────────────
-     * @param {number} principal - 원금
-     * @param {number} months - 개월 수
-     * @returns {number} 월 할부금
      */
     _calculateInstallment(principal, months) {
         // 일시불
@@ -179,7 +207,6 @@ class PriceCalculator {
         }
         
         // 원리금균등상환 공식
-        // 월 납부액 = 원금 × (월 이자율 × (1 + 월 이자율)^개월) / ((1 + 월 이자율)^개월 - 1)
         const rate = this.monthlyRate;
         const numerator = principal * rate * Math.pow(1 + rate, months);
         const denominator = Math.pow(1 + rate, months) - 1;
@@ -223,10 +250,17 @@ class PriceCalculator {
      * ───────────────────────────────────────────────
      * 기기 정보 가져오기
      * ───────────────────────────────────────────────
+     * 기기옵션ID로 조회 (모델명_용량)
      */
     async _getDevice(deviceOptionId) {
         const data = await api.load();
-        const device = data.devices.find(d => d.기기옵션ID === deviceOptionId);
+        
+        // 기기옵션ID와 일치하는 첫 번째 기기 찾기
+        // (같은 기기옵션ID면 색상만 다르고 가격은 동일)
+        const device = data.devices.find(d => {
+            const optionId = `${d.모델명}_${d.용량}GB`;
+            return optionId === deviceOptionId;
+        });
         
         if (!device) {
             throw new Error(`기기를 찾을 수 없습니다: ${deviceOptionId}`);
@@ -253,10 +287,10 @@ class PriceCalculator {
     
     /**
      * ───────────────────────────────────────────────
-     * 지원금 정보 가져오기
+     * 조합ID로 지원금 조회 ★ 핵심 변경 ★
      * ───────────────────────────────────────────────
      */
-    async _getSubsidy(deviceOptionId, planId, joinType) {
+    async _getSubsidyByCombinationId(combinationId, joinType) {
         const data = await api.load();
         
         // 가입유형에 따른 지원금 배열 선택
@@ -273,12 +307,20 @@ class PriceCalculator {
             throw new Error(`지원금 데이터를 찾을 수 없습니다: ${joinType}`);
         }
         
-        // 조합ID로 검색
-        const combinationId = `${deviceOptionId}_${planId}_${subsidyKey}`;
+        // ★ 조합ID로 검색 ★
         const subsidy = subsidies.find(s => s.조합ID === combinationId);
         
         if (!subsidy) {
-            throw new Error(`해당 조합의 지원금 정보가 없습니다: ${deviceOptionId} + ${planId}`);
+            throw new Error(
+                `해당 조합의 지원금 정보가 없습니다.\n` +
+                `조합ID: ${combinationId}\n` +
+                `확인: 스프레드시트의 지원금 시트를 확인하세요.`
+            );
+        }
+        
+        // 노출여부 확인
+        if (subsidy.노출여부 !== 'Y') {
+            throw new Error(`이 조합은 현재 판매하지 않습니다: ${combinationId}`);
         }
         
         return subsidy;
@@ -313,5 +355,5 @@ const calculator = new PriceCalculator();
 if (typeof window !== 'undefined') {
     window.calculator = calculator;
     window.PriceCalculator = PriceCalculator;
-    console.log('✅ 가격 계산 엔진 로드 완료');
+    console.log('✅ 가격 계산 엔진 v2.0 로드 완료');
 }

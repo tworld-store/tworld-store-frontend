@@ -7,6 +7,7 @@
  * - URL에서 모델명 받기
  * - 색상은 이미지만 변경 (가격 무관)
  * - 기기옵션ID = 모델명_용량
+ * - 영문 필드명 사용
  */
 
 class DeviceDetailPage {
@@ -94,8 +95,9 @@ class DeviceDetailPage {
         // API에서 전체 데이터 로드
         const data = await api.load();
         
+        // ✅ 영문 필드명 사용
         // 해당 모델의 모든 옵션 찾기
-        const allOptions = data.devices.filter(d => d.모델명 === modelName);
+        const allOptions = data.devices.filter(d => d.model === modelName);
         
         if (allOptions.length === 0) {
             throw new Error(`기기를 찾을 수 없습니다: ${modelName}`);
@@ -123,29 +125,31 @@ class DeviceDetailPage {
     _displayBasicInfo() {
         const device = this.currentDevice;
         
+        // ✅ 영문 필드명 사용
+        
         // 제목
         const titleEl = document.querySelector('h1');
         if (titleEl) {
-            titleEl.textContent = device.모델명;
+            titleEl.textContent = device.model;
         }
         
         // 브랜드
         const brandEl = document.querySelector('.device-brand');
         if (brandEl) {
-            brandEl.textContent = device.브랜드;
+            brandEl.textContent = device.brand;
         }
         
         // 출고가
         const priceEl = document.getElementById('factory-price');
         if (priceEl) {
-            priceEl.textContent = formatPrice(device.출고가);
+            priceEl.textContent = formatPrice(device.price);
         }
         
         // 메인 이미지
         const mainImageEl = document.getElementById('main-image');
-        if (mainImageEl && device.이미지URL) {
-            mainImageEl.src = device.이미지URL;
-            mainImageEl.alt = device.모델명;
+        if (mainImageEl && device.image) {
+            mainImageEl.src = device.image;
+            mainImageEl.alt = device.model;
         }
     }
     
@@ -158,29 +162,30 @@ class DeviceDetailPage {
         const container = document.getElementById('color-options');
         if (!container) return;
         
+        // ✅ 영문 필드명 사용
         // 중복 제거: 같은 색상은 한 번만 표시
         const colors = [...new Map(
-            this.currentDevice.allOptions.map(opt => [opt.색상명, opt])
+            this.currentDevice.allOptions.map(opt => [opt.color.name, opt])
         ).values()];
         
         container.innerHTML = colors.map((option, index) => `
             <input type="radio" 
                    id="color-${index}" 
                    name="product_color" 
-                   value="${option.색상명}"
+                   value="${option.color.name}"
                    class="color-radio"
                    ${index === 0 ? 'checked' : ''}>
             <label for="color-${index}" 
                    class="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center"
-                   style="background-color: ${option.색상HEX};"
-                   title="${option.색상명}">
-                <span class="sr-only">${option.색상명}</span>
+                   style="background-color: ${option.color.hex};"
+                   title="${option.color.name}">
+                <span class="sr-only">${option.color.name}</span>
             </label>
         `).join('');
         
         // 첫 번째 색상 선택
         if (colors.length > 0) {
-            this.currentColor = colors[0].색상명;
+            this.currentColor = colors[0].color.name;
         }
     }
     
@@ -193,9 +198,10 @@ class DeviceDetailPage {
         const container = document.getElementById('capacity-options');
         if (!container) return;
         
+        // ✅ 영문 필드명 사용
         // 중복 제거: 같은 용량은 한 번만 표시
         const capacities = [...new Set(
-            this.currentDevice.allOptions.map(opt => opt.용량)
+            this.currentDevice.allOptions.map(opt => opt.storage)
         )].sort((a, b) => a - b);
         
         container.innerHTML = capacities.map((capacity, index) => `
@@ -314,15 +320,16 @@ class DeviceDetailPage {
      * ───────────────────────────────────────────────
      */
     _updateImage() {
+        // ✅ 영문 필드명 사용
         // 현재 선택된 색상+용량에 해당하는 옵션 찾기
         const option = this.currentDevice.allOptions.find(opt => 
-            opt.색상명 === this.currentColor && opt.용량 === this.currentCapacity
+            opt.color.name === this.currentColor && opt.storage === this.currentCapacity
         );
         
-        if (option && option.이미지URL) {
+        if (option && option.image) {
             const mainImageEl = document.getElementById('main-image');
             if (mainImageEl) {
-                mainImageEl.src = option.이미지URL;
+                mainImageEl.src = option.image;
             }
         }
     }
@@ -354,7 +361,7 @@ class DeviceDetailPage {
             
             console.log('💰 가격 계산 시작:', {
                 deviceOptionId,
-                planId: this.currentPlan.요금제ID,
+                planId: this.currentPlan.id,  // ✅ 영문
                 joinType,
                 discountType,
                 installmentMonths
@@ -363,7 +370,7 @@ class DeviceDetailPage {
             // 4. 가격 계산
             const result = await calculator.calculate(
                 deviceOptionId,
-                this.currentPlan.요금제ID,
+                this.currentPlan.id,  // ✅ 영문
                 joinType,
                 discountType,
                 installmentMonths
@@ -394,7 +401,8 @@ class DeviceDetailPage {
             return null;
         }
         
-        const modelName = this.currentDevice.모델명;
+        // ✅ 영문 필드명 사용
+        const modelName = this.currentDevice.model;
         
         // 기기옵션ID = 모델명_용량
         return `${modelName}_${this.currentCapacity}GB`;
@@ -538,11 +546,12 @@ class DeviceDetailPage {
     _buildOrderParams() {
         const params = new URLSearchParams();
         
-        params.set('model', this.currentDevice.모델명);
+        // ✅ 영문 필드명 사용
+        params.set('model', this.currentDevice.model);
         params.set('color', this.currentColor);
         params.set('capacity', this.currentCapacity);
         params.set('deviceOptionId', this._getCurrentDeviceOptionId());
-        params.set('planId', this.currentPlan.요금제ID);
+        params.set('planId', this.currentPlan.id);
         params.set('joinType', this._getSelectedValue('type_subscription'));
         params.set('discountType', this._getSelectedValue('type_discount'));
         params.set('installment', this._getSelectedValue('type_period'));

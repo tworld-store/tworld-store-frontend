@@ -6,6 +6,7 @@
  * 변경사항:
  * - 조합ID 기반 지원금 조회
  * - 기기옵션ID = 모델명_용량 (색상 제외)
+ * - 영문 필드명 사용
  */
 
 class PriceCalculator {
@@ -93,12 +94,13 @@ class PriceCalculator {
      * ───────────────────────────────────────────────
      */
     _calculatePhoneDiscount(device, plan, subsidy, installmentMonths) {
-        const factoryPrice = device.출고가;
-        const planPrice = plan.기본요금;
+        // ✅ 영문 필드명 사용
+        const factoryPrice = device.price;
+        const planPrice = plan.price;
         
         // 지원금 계산
-        const commonSubsidy = subsidy.공통지원금 || 0;
-        const additionalSubsidy = subsidy.추가지원금 || 0;
+        const commonSubsidy = subsidy.subsidies.common || 0;
+        const additionalSubsidy = subsidy.subsidies.additional || 0;
         const totalSubsidy = commonSubsidy + additionalSubsidy;
         
         // 할부원금 = 출고가 - 총지원금
@@ -145,11 +147,12 @@ class PriceCalculator {
      * ───────────────────────────────────────────────
      */
     _calculateChargeDiscount(device, plan, subsidy, installmentMonths) {
-        const factoryPrice = device.출고가;
-        const planPrice = plan.기본요금;
+        // ✅ 영문 필드명 사용
+        const factoryPrice = device.price;
+        const planPrice = plan.price;
         
         // ★ 선약지원금만 사용 ★
-        const selectSubsidy = subsidy.선약지원금 || 0;
+        const selectSubsidy = subsidy.subsidies.select || 0;
         const totalSubsidy = selectSubsidy;
         
         // 할부원금 = 출고가 - 선약지원금
@@ -255,10 +258,11 @@ class PriceCalculator {
     async _getDevice(deviceOptionId) {
         const data = await api.load();
         
+        // ✅ 영문 필드명 사용
         // 기기옵션ID와 일치하는 첫 번째 기기 찾기
         // (같은 기기옵션ID면 색상만 다르고 가격은 동일)
         const device = data.devices.find(d => {
-            const optionId = `${d.모델명}_${d.용량}GB`;
+            const optionId = `${d.model}_${d.storage}GB`;
             return optionId === deviceOptionId;
         });
         
@@ -276,7 +280,9 @@ class PriceCalculator {
      */
     async _getPlan(planId) {
         const data = await api.load();
-        const plan = data.plans.find(p => p.요금제ID === planId);
+        
+        // ✅ 영문 필드명 사용
+        const plan = data.plans.find(p => p.id === planId);
         
         if (!plan) {
             throw new Error(`요금제를 찾을 수 없습니다: ${planId}`);
@@ -307,8 +313,9 @@ class PriceCalculator {
             throw new Error(`지원금 데이터를 찾을 수 없습니다: ${joinType}`);
         }
         
+        // ✅ 영문 필드명 사용
         // ★ 조합ID로 검색 ★
-        const subsidy = subsidies.find(s => s.조합ID === combinationId);
+        const subsidy = subsidies.find(s => s.id === combinationId);
         
         if (!subsidy) {
             throw new Error(
@@ -316,11 +323,6 @@ class PriceCalculator {
                 `조합ID: ${combinationId}\n` +
                 `확인: 스프레드시트의 지원금 시트를 확인하세요.`
             );
-        }
-        
-        // 노출여부 확인
-        if (subsidy.노출여부 !== 'Y') {
-            throw new Error(`이 조합은 현재 판매하지 않습니다: ${combinationId}`);
         }
         
         return subsidy;

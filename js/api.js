@@ -13,7 +13,7 @@ class DataAPI {
      */
     constructor() {
         // GitHub Pages URL (실제 배포 시 수정 필요)
-        this.jsonUrl = 'https://tworld-store.github.io/tworld-store-frontend/data/products.json';
+        this.jsonUrl = './data/products.json';
         
         // 메모리 캐시
         this.cache = {
@@ -486,4 +486,5 @@ document.addEventListener('DOMContentLoaded', async function() {
             errorBanner.remove();
         }, 5000);
     }
+
 });

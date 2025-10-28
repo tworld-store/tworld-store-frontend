@@ -849,11 +849,6 @@
         // 상담 신청
         // ============================================
         function consultProduct() {
-            if (!document.getElementById('personal_consent').checked) {
-                alert('개인정보 수집 및 이용에 동의해주세요.');
-                return;
-            }
-            
             // 상담 신청 페이지로 이동
             window.location.href = 'contact.html';
         }
@@ -861,12 +856,7 @@
         // ============================================
         // 주문하기
         // ============================================
-        function orderProduct() {
-            if (!document.getElementById('personal_consent').checked) {
-                alert('개인정보 수집 및 이용에 동의해주세요.');
-                return;
-            }
-            
+        function orderProduct() {            
             if (!currentPlan) {
                 alert('요금제를 선택해주세요.');
                 return;

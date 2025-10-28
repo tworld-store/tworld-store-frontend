@@ -1,6 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════
- * SKT 쇼핑몰 - 기기 상세 페이지 v2.0
+ * SKT 쇼핑몰 - 기기 상세 페이지 v2.1
  * ═══════════════════════════════════════════════════
  * 
  * 변경사항:
@@ -8,6 +8,7 @@
  * - 색상은 이미지만 변경 (가격 무관)
  * - 기기옵션ID = 모델명_용량
  * - 영문 필드명 사용
+ * - 로딩 오버레이 제대로 구현
  */
 
 class DeviceDetailPage {
@@ -46,7 +47,10 @@ class DeviceDetailPage {
             }
             
             console.log('📋 모델명:', modelName);
-                        
+            
+            // 2. 로딩 표시
+            this._showLoading();
+            
             // 3. 기기 데이터 로드
             await this._loadDeviceData(modelName);
             
@@ -61,11 +65,14 @@ class DeviceDetailPage {
             // 6. 초기 가격 계산 (요금제 선택 후에만)
             // await this._updatePrice();
             
-    
+            // 7. 로딩 숨김
+            this._hideLoading();
+            
             console.log('✅ 페이지 초기화 완료');
             
         } catch (error) {
             console.error('❌ 초기화 실패:', error);
+            this._hideLoading();
             this._showError(error.message);
         }
     }
@@ -557,41 +564,74 @@ class DeviceDetailPage {
     
     /**
      * ───────────────────────────────────────────────
-     * 로딩 표시
+     * ✅ 로딩 오버레이 표시 (제대로 구현)
      * ───────────────────────────────────────────────
      */
     _showLoading() {
-        const main = document.querySelector('main');
-        if (main) {
-            main.innerHTML = `
-                <div class="flex justify-center items-center min-h-screen">
-                    <div class="text-center">
-                        <div class="loading-spinner mb-4"></div>
-                        <p class="text-gray-600">로딩 중...</p>
-                    </div>
-                </div>
-            `;
+        // 이미 있으면 제거
+        const existing = document.getElementById('loading-overlay');
+        if (existing) {
+            existing.remove();
         }
+        
+        // 로딩 오버레이 생성
+        const overlay = document.createElement('div');
+        overlay.id = 'loading-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        `;
+        
+        overlay.innerHTML = `
+            <div style="text-align: center;">
+                <div style="
+                    width: 50px;
+                    height: 50px;
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #0066ff;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 20px;
+                "></div>
+                <p style="color: #666; font-size: 16px;">로딩 중...</p>
+            </div>
+        `;
+        
+        // 애니메이션 CSS 추가
+        if (!document.getElementById('loading-animation-style')) {
+            const style = document.createElement('style');
+            style.id = 'loading-animation-style';
+            style.textContent = `
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(overlay);
     }
     
     /**
      * ───────────────────────────────────────────────
-     * 로딩 숨김
+     * ✅ 로딩 오버레이 숨김 (제대로 구현)
      * ───────────────────────────────────────────────
      */
     _hideLoading() {
-    // 로딩 오버레이 제거
-    const loadingEl = document.querySelector('.loading-overlay');
-    if (loadingEl) {
-        loadingEl.remove();
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
     }
-    
-    // 메인 컨텐츠 표시
-    const main = document.querySelector('main');
-    if (main) {
-        main.style.display = 'block';
-    }
-}
     
     /**
      * ───────────────────────────────────────────────
@@ -630,5 +670,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 전역 변수로 노출
 if (typeof window !== 'undefined') {
     window.deviceDetailPage = deviceDetailPage;
-    console.log('✅ 기기 상세 페이지 v2.0 스크립트 로드 완료');
+    console.log('✅ 기기 상세 페이지 v2.1 스크립트 로드 완료 (로딩 오버레이 구현)');
 }

@@ -328,7 +328,12 @@ class DeviceDetailPage {
     updatePlanDisplay(plan) {
         console.log('✅ 요금제 표시 업데이트:', plan);
         
-        this.currentPlan = plan;
+        this.currentPlan = plan;   
+        // 선택된 요금제 정보 박스 보이기
+        const infoDiv = document.getElementById('selected-plan-info');
+        if (infoDiv) {
+            infoDiv.classList.remove('hidden');
+        }
         
         // 요금제명 표시
         const planNameEl = document.getElementById('selected-plan-name');

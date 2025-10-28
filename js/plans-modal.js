@@ -261,11 +261,13 @@ class PlansModal {
         
         this.selectedPlan = plan;
         
-        console.log('✅ 요금제 선택:', plan.name);
+        console.log('✅ 요금제 선택:', plan);
         
         // device-detail 페이지에 전달
         if (window.deviceDetailPage) {
             window.deviceDetailPage.currentPlan = plan;
+            
+            console.log('✅ device-detail 페이지에 요금제 전달 완료');
             
             // 선택된 요금제 표시 업데이트
             const planNameEl = document.getElementById('selected-plan-name');
@@ -273,14 +275,27 @@ class PlansModal {
             
             if (planNameEl) {
                 planNameEl.textContent = plan.name;
+                console.log('✅ 요금제명 표시:', plan.name);
+            } else {
+                console.warn('⚠️ selected-plan-name 요소를 찾을 수 없습니다');
             }
             
             if (planPriceEl) {
                 planPriceEl.textContent = formatPrice(plan.price) + '/월';
+                console.log('✅ 요금제 가격 표시:', formatPrice(plan.price));
+            } else {
+                console.warn('⚠️ selected-plan-price 요소를 찾을 수 없습니다');
             }
             
             // 가격 재계산
-            window.deviceDetailPage._updatePrice();
+            try {
+                window.deviceDetailPage._updatePrice();
+                console.log('✅ 가격 재계산 완료');
+            } catch (error) {
+                console.error('❌ 가격 재계산 실패:', error);
+            }
+        } else {
+            console.error('❌ window.deviceDetailPage가 없습니다!');
         }
         
         // 모달 닫기
@@ -289,6 +304,8 @@ class PlansModal {
         // 성공 메시지
         if (typeof showToast === 'function') {
             showToast(`${plan.name} 요금제가 선택되었습니다`);
+        } else {
+            console.log(`✅ ${plan.name} 요금제가 선택되었습니다`);
         }
     }
 }
@@ -298,11 +315,6 @@ class PlansModal {
 // ═══════════════════════════════════════════════════
 
 const plansModal = new PlansModal();
-
-// 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', () => {
-    plansModal.init();
-});
 
 // 전역 함수로 노출 (HTML에서 호출용)
 function openPlanModal() {
@@ -317,5 +329,17 @@ if (typeof window !== 'undefined') {
     window.plansModal = plansModal;
     window.openPlanModal = openPlanModal;
     window.closePlanModal = closePlanModal;
-    console.log('✅ 요금제 모달 스크립트 로드 완료 (영문 필드명)');
 }
+
+// DOM 로드 상태에 따라 초기화
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('📋 DOMContentLoaded 이벤트에서 요금제 모달 초기화');
+        plansModal.init();
+    });
+} else {
+    console.log('📋 DOM이 이미 로드됨, 즉시 요금제 모달 초기화');
+    plansModal.init();
+}
+
+console.log('✅ 요금제 모달 스크립트 로드 완료');

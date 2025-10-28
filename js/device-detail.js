@@ -660,15 +660,26 @@ class DeviceDetailPage {
 // 페이지 로드 시 자동 초기화
 // ═══════════════════════════════════════════════════
 
-let deviceDetailPage;
-
-document.addEventListener('DOMContentLoaded', async () => {
-    deviceDetailPage = new DeviceDetailPage();
-    await deviceDetailPage.init();
-});
+// ✅ 즉시 객체 생성
+const deviceDetailPage = new DeviceDetailPage();
 
 // 전역 변수로 노출
 if (typeof window !== 'undefined') {
     window.deviceDetailPage = deviceDetailPage;
-    console.log('✅ 기기 상세 페이지 v2.1 스크립트 로드 완료 (로딩 오버레이 구현)');
+    window.DeviceDetailPage = DeviceDetailPage;
 }
+
+// DOM 로드 상태에 따라 초기화
+if (document.readyState === 'loading') {
+    // DOM이 아직 로딩 중
+    document.addEventListener('DOMContentLoaded', async () => {
+        console.log('📱 DOMContentLoaded 이벤트에서 초기화');
+        await deviceDetailPage.init();
+    });
+} else {
+    // DOM이 이미 로드됨
+    console.log('📱 DOM이 이미 로드됨, 즉시 초기화');
+    deviceDetailPage.init();
+}
+
+console.log('✅ 기기 상세 페이지 v2.1 스크립트 로드 완료');

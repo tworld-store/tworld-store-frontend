@@ -247,11 +247,10 @@ class PlansModal {
     
     /**
      * ───────────────────────────────────────────────
-     * 요금제 선택 ✅ 영문 필드명
+     * 요금제 선택 ✅ device-detail 페이지에 전달
      * ───────────────────────────────────────────────
      */
     _selectPlan(planId) {
-        // ✅ 영문 필드명 사용
         const plan = this.allPlans.find(p => p.id === planId);
         
         if (!plan) {
@@ -263,39 +262,12 @@ class PlansModal {
         
         console.log('✅ 요금제 선택:', plan);
         
-        // device-detail 페이지에 전달
-        if (window.deviceDetailPage) {
-            window.deviceDetailPage.currentPlan = plan;
-            
+        // ✅ device-detail 페이지의 updatePlanDisplay() 호출
+        if (window.deviceDetailPage && typeof window.deviceDetailPage.updatePlanDisplay === 'function') {
+            window.deviceDetailPage.updatePlanDisplay(plan);
             console.log('✅ device-detail 페이지에 요금제 전달 완료');
-            
-            // 선택된 요금제 표시 업데이트
-            const planNameEl = document.getElementById('selected-plan-name');
-            const planPriceEl = document.getElementById('selected-plan-price');
-            
-            if (planNameEl) {
-                planNameEl.textContent = plan.name;
-                console.log('✅ 요금제명 표시:', plan.name);
-            } else {
-                console.warn('⚠️ selected-plan-name 요소를 찾을 수 없습니다');
-            }
-            
-            if (planPriceEl) {
-                planPriceEl.textContent = formatPrice(plan.price) + '/월';
-                console.log('✅ 요금제 가격 표시:', formatPrice(plan.price));
-            } else {
-                console.warn('⚠️ selected-plan-price 요소를 찾을 수 없습니다');
-            }
-            
-            // 가격 재계산
-            try {
-                window.deviceDetailPage._updatePrice();
-                console.log('✅ 가격 재계산 완료');
-            } catch (error) {
-                console.error('❌ 가격 재계산 실패:', error);
-            }
         } else {
-            console.error('❌ window.deviceDetailPage가 없습니다!');
+            console.error('❌ window.deviceDetailPage.updatePlanDisplay()를 찾을 수 없습니다!');
         }
         
         // 모달 닫기

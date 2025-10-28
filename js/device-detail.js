@@ -1,23 +1,19 @@
 /**
  * ═══════════════════════════════════════════════════
- * SKT 쇼핑몰 - 기기 상세 페이지 v2.1
+ * SKT 쇼핑몰 - 기기 상세 페이지 v3.0
  * ═══════════════════════════════════════════════════
  * 
- * 변경사항:
- * - URL에서 모델명 받기
- * - 색상은 이미지만 변경 (가격 무관)
- * - 기기옵션ID = 모델명_용량
- * - 영문 필드명 사용
- * - 로딩 오버레이 제대로 구현
+ * ✅ 단계별 실시간 가격 반영
+ * 1. 색상 선택 → 이미지만 변경
+ * 2. 용량 선택 → 출고가 업데이트
+ * 3. 요금제 선택 → 요금제 정보 + 통신요금
+ * 4. 가입유형/할인방법/할부 → 전체 가격 계산
  */
 
 class DeviceDetailPage {
-    /**
-     * 생성자
-     */
     constructor() {
         // 현재 선택된 값들
-        this.currentDevice = null;  // 기본 기기 정보
+        this.currentDevice = null;
         this.currentPlan = null;
         this.currentColor = null;
         this.currentCapacity = null;
@@ -40,32 +36,23 @@ class DeviceDetailPage {
         try {
             console.log('📱 기기 상세 페이지 초기화 시작...');
             
-            // 1. URL에서 모델명 가져오기
             const modelName = this._getModelNameFromUrl();
             if (!modelName) {
                 throw new Error('모델명이 없습니다');
             }
             
-            console.log('📋 모델명:', modelName);
-            
-            // 2. 로딩 표시
             this._showLoading();
             
-            // 3. 기기 데이터 로드
             await this._loadDeviceData(modelName);
             
-            // 4. UI 생성
             this._buildColorOptions();
             this._buildCapacityOptions();
             this._setDefaultSelections();
-            
-            // 5. 이벤트 리스너 등록
             this._registerEventListeners();
             
-            // 6. 초기 가격 계산 (요금제 선택 후에만)
-            // await this._updatePrice();
+            // ✅ 초기 출고가 표시
+            this._updateFactoryPrice();
             
-            // 7. 로딩 숨김
             this._hideLoading();
             
             console.log('✅ 페이지 초기화 완료');
@@ -81,7 +68,6 @@ class DeviceDetailPage {
      * ───────────────────────────────────────────────
      * URL에서 모델명 가져오기
      * ───────────────────────────────────────────────
-     * 예: device-detail.html?device=갤럭시 S24
      */
     _getModelNameFromUrl() {
         const params = new URLSearchParams(window.location.search);
@@ -94,28 +80,20 @@ class DeviceDetailPage {
      * ───────────────────────────────────────────────
      */
     async _loadDeviceData(modelName) {
-        // API에서 전체 데이터 로드
         const data = await api.load();
-        
-        // ✅ 영문 필드명 사용
-        // 해당 모델의 모든 옵션 찾기
         const allOptions = data.devices.filter(d => d.model === modelName);
         
         if (allOptions.length === 0) {
             throw new Error(`기기를 찾을 수 없습니다: ${modelName}`);
         }
         
-        // 첫 번째 옵션을 기본으로
-        const baseDevice = allOptions[0];
-        
         this.currentDevice = {
-            ...baseDevice,
-            allOptions: allOptions  // 모든 색상/용량 옵션
+            ...allOptions[0],
+            allOptions: allOptions
         };
         
         console.log(`✅ 기기 로드 완료: ${allOptions.length}개 옵션`);
         
-        // 기본 정보 표시
         this._displayBasicInfo();
     }
     
@@ -127,27 +105,12 @@ class DeviceDetailPage {
     _displayBasicInfo() {
         const device = this.currentDevice;
         
-        // ✅ 영문 필드명 사용
+        const titleEl = document.getElementById('device-model');
+        if (titleEl) titleEl.textContent = device.model;
         
-        // 제목
-        const titleEl = document.querySelector('h1');
-        if (titleEl) {
-            titleEl.textContent = device.model;
-        }
+        const brandEl = document.getElementById('device-brand');
+        if (brandEl) brandEl.textContent = device.brand;
         
-        // 브랜드
-        const brandEl = document.querySelector('.device-brand');
-        if (brandEl) {
-            brandEl.textContent = device.brand;
-        }
-        
-        // 출고가
-        const priceEl = document.getElementById('factory-price');
-        if (priceEl) {
-            priceEl.textContent = formatPrice(device.price);
-        }
-        
-        // 메인 이미지
         const mainImageEl = document.getElementById('main-image');
         if (mainImageEl && device.image) {
             mainImageEl.src = device.image;
@@ -164,8 +127,6 @@ class DeviceDetailPage {
         const container = document.getElementById('color-options');
         if (!container) return;
         
-        // ✅ 영문 필드명 사용
-        // 중복 제거: 같은 색상은 한 번만 표시
         const colors = [...new Map(
             this.currentDevice.allOptions.map(opt => [opt.color.name, opt])
         ).values()];
@@ -185,7 +146,6 @@ class DeviceDetailPage {
             </label>
         `).join('');
         
-        // 첫 번째 색상 선택
         if (colors.length > 0) {
             this.currentColor = colors[0].color.name;
         }
@@ -200,8 +160,6 @@ class DeviceDetailPage {
         const container = document.getElementById('capacity-options');
         if (!container) return;
         
-        // ✅ 영문 필드명 사용
-        // 중복 제거: 같은 용량은 한 번만 표시
         const capacities = [...new Set(
             this.currentDevice.allOptions.map(opt => opt.storage)
         )].sort((a, b) => a - b);
@@ -219,7 +177,6 @@ class DeviceDetailPage {
             </label>
         `).join('');
         
-        // 첫 번째 용량 선택
         if (capacities.length > 0) {
             this.currentCapacity = capacities[0];
         }
@@ -231,19 +188,15 @@ class DeviceDetailPage {
      * ───────────────────────────────────────────────
      */
     _setDefaultSelections() {
-        // 가입유형
         const joinTypeEl = document.querySelector(`input[name="type_subscription"][value="${this.defaults.joinType}"]`);
         if (joinTypeEl) joinTypeEl.checked = true;
         
-        // 약정유형
         const discountTypeEl = document.querySelector(`input[name="type_discount"][value="${this.defaults.discountType}"]`);
         if (discountTypeEl) discountTypeEl.checked = true;
         
-        // 할부개월
         const installmentEl = document.querySelector(`input[name="type_period"][value="${this.defaults.installmentMonths}"]`);
         if (installmentEl) installmentEl.checked = true;
         
-        // 인터넷+TV
         const internetTvEl = document.querySelector(`input[name="type_other"][value="${this.defaults.internetTv}"]`);
         if (internetTvEl) internetTvEl.checked = true;
     }
@@ -254,40 +207,46 @@ class DeviceDetailPage {
      * ───────────────────────────────────────────────
      */
     _registerEventListeners() {
-        // 색상 변경 (이미지만 변경, 가격 무관)
+        // 1. 색상 변경 → 이미지만 변경
         document.querySelectorAll('input[name="product_color"]').forEach(input => {
             input.addEventListener('change', (e) => {
                 this.currentColor = e.target.value;
-                this._updateImage();  // 이미지만 변경
+                this._updateImage();
+                console.log('✅ 색상 변경:', this.currentColor);
             });
         });
         
-        // 용량 변경 (가격 변경)
+        // 2. 용량 변경 → 출고가 + 가격 재계산
         document.querySelectorAll('input[name="type_capacity"]').forEach(input => {
             input.addEventListener('change', (e) => {
                 this.currentCapacity = parseInt(e.target.value);
-                this._updatePrice();  // 가격 재계산
+                console.log('✅ 용량 변경:', this.currentCapacity);
+                this._updateFactoryPrice();
+                this._updatePriceIfReady();
             });
         });
         
-        // 가입유형 변경
+        // 3. 가입유형 변경 → 가격 재계산
         document.querySelectorAll('input[name="type_subscription"]').forEach(input => {
             input.addEventListener('change', () => {
-                this._updatePrice();
+                console.log('✅ 가입유형 변경');
+                this._updatePriceIfReady();
             });
         });
         
-        // 약정유형 변경
+        // 4. 할인방법 변경 → 가격 재계산
         document.querySelectorAll('input[name="type_discount"]').forEach(input => {
             input.addEventListener('change', () => {
-                this._updatePrice();
+                console.log('✅ 할인방법 변경');
+                this._updatePriceIfReady();
             });
         });
         
-        // 할부개월 변경
+        // 5. 할부기간 변경 → 가격 재계산
         document.querySelectorAll('input[name="type_period"]').forEach(input => {
             input.addEventListener('change', () => {
-                this._updatePrice();
+                console.log('✅ 할부기간 변경');
+                this._updatePriceIfReady();
             });
         });
         
@@ -318,12 +277,10 @@ class DeviceDetailPage {
     
     /**
      * ───────────────────────────────────────────────
-     * 이미지 업데이트 (색상 변경 시)
+     * ✅ 1단계: 이미지 업데이트 (색상 변경 시)
      * ───────────────────────────────────────────────
      */
     _updateImage() {
-        // ✅ 영문 필드명 사용
-        // 현재 선택된 색상+용량에 해당하는 옵션 찾기
         const option = this.currentDevice.allOptions.find(opt => 
             opt.color.name === this.currentColor && opt.storage === this.currentCapacity
         );
@@ -338,41 +295,101 @@ class DeviceDetailPage {
     
     /**
      * ───────────────────────────────────────────────
-     * ★ 가격 업데이트 (핵심 함수) ★
+     * ✅ 2단계: 출고가 업데이트 (용량 변경 시)
      * ───────────────────────────────────────────────
      */
-    async _updatePrice() {
+    _updateFactoryPrice() {
+        if (!this.currentCapacity) return;
+        
+        const option = this.currentDevice.allOptions.find(opt => 
+            opt.storage === this.currentCapacity
+        );
+        
+        if (option) {
+            const priceEl = document.getElementById('factory-price');
+            if (priceEl) {
+                priceEl.textContent = formatPrice(option.price);
+                console.log('✅ 출고가 업데이트:', option.price);
+            }
+            
+            // display-factory-price도 업데이트
+            const displayPriceEl = document.getElementById('display-factory-price');
+            if (displayPriceEl) {
+                displayPriceEl.textContent = formatPrice(option.price);
+            }
+        }
+    }
+    
+    /**
+     * ───────────────────────────────────────────────
+     * ✅ 3단계: 요금제 표시 업데이트 (요금제 선택 시 - plans-modal에서 호출)
+     * ───────────────────────────────────────────────
+     */
+    updatePlanDisplay(plan) {
+        console.log('✅ 요금제 표시 업데이트:', plan);
+        
+        this.currentPlan = plan;
+        
+        // 요금제명 표시
+        const planNameEl = document.getElementById('selected-plan-name');
+        if (planNameEl) {
+            planNameEl.textContent = plan.name;
+        }
+        
+        // 요금제 가격 표시
+        const planPriceEl = document.getElementById('selected-plan-price');
+        if (planPriceEl) {
+            planPriceEl.textContent = formatPrice(plan.price) + '/월';
+        }
+        
+        // 요금제 기본료 표시
+        const displayPlanPriceEl = document.getElementById('display-plan-price');
+        if (displayPlanPriceEl) {
+            displayPlanPriceEl.textContent = formatPrice(plan.price);
+        }
+        
+        // 가격 재계산
+        this._updatePriceIfReady();
+    }
+    
+    /**
+     * ───────────────────────────────────────────────
+     * ✅ 4단계: 조건 확인 후 전체 가격 계산
+     * ───────────────────────────────────────────────
+     */
+    async _updatePriceIfReady() {
         try {
-            // 1. 현재 선택된 기기옵션ID 생성 (모델명_용량)
-            const deviceOptionId = this._getCurrentDeviceOptionId();
-            if (!deviceOptionId) {
-                console.warn('기기 옵션이 선택되지 않았습니다');
+            // 필수 조건 확인
+            if (!this.currentCapacity) {
+                console.log('⏸️ 용량이 선택되지 않음');
                 return;
             }
             
-            // 2. 요금제 선택 확인
             if (!this.currentPlan) {
-                console.log('요금제가 선택되지 않았습니다');
+                console.log('⏸️ 요금제가 선택되지 않음');
                 return;
             }
             
-            // 3. 현재 선택값 가져오기
+            // 기기옵션ID 생성
+            const deviceOptionId = `${this.currentDevice.model}_${this.currentCapacity}GB`;
+            
+            // 현재 선택값 가져오기
             const joinType = this._getSelectedValue('type_subscription');
             const discountType = this._getSelectedValue('type_discount');
             const installmentMonths = parseInt(this._getSelectedValue('type_period'));
             
             console.log('💰 가격 계산 시작:', {
                 deviceOptionId,
-                planId: this.currentPlan.id,  // ✅ 영문
+                planId: this.currentPlan.id,
                 joinType,
                 discountType,
                 installmentMonths
             });
             
-            // 4. 가격 계산
+            // 가격 계산
             const result = await calculator.calculate(
                 deviceOptionId,
-                this.currentPlan.id,  // ✅ 영문
+                this.currentPlan.id,
                 joinType,
                 discountType,
                 installmentMonths
@@ -380,44 +397,13 @@ class DeviceDetailPage {
             
             console.log('✅ 가격 계산 완료:', result);
             
-            // 5. 화면 업데이트
+            // 화면 업데이트
             this._displayPrice(result);
             
         } catch (error) {
             console.error('❌ 가격 계산 오류:', error);
-            alert(error.message);
+            // 에러 메시지를 사용자에게 표시하지 않음 (선택 중이므로)
         }
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * 현재 선택된 기기옵션ID 생성
-     * ───────────────────────────────────────────────
-     * 형식: 모델명_용량
-     * 예: "갤럭시 S24_128GB"
-     * 
-     * ★ 색상은 제외! (가격에 영향 없음)
-     */
-    _getCurrentDeviceOptionId() {
-        if (!this.currentCapacity) {
-            return null;
-        }
-        
-        // ✅ 영문 필드명 사용
-        const modelName = this.currentDevice.model;
-        
-        // 기기옵션ID = 모델명_용량
-        return `${modelName}_${this.currentCapacity}GB`;
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * 선택된 라디오 버튼 값 가져오기
-     * ───────────────────────────────────────────────
-     */
-    _getSelectedValue(name) {
-        const selected = document.querySelector(`input[name="${name}"]:checked`);
-        return selected ? selected.value : null;
     }
     
     /**
@@ -458,20 +444,28 @@ class DeviceDetailPage {
         // 월 통신요금
         this._updateElement('charge-month-total', formatPrice(result.월통신요금));
         
-        // 월 총 납부액 (데스크톱)
+        // 월 총 납부액
         this._updateElement('total-month-payment', formatPrice(result.월총납부액));
         
         // 모바일 하단바
         this._updateElement('mobile-phone-price', formatPrice(result.월할부금));
         this._updateElement('mobile-charge-price', formatPrice(result.월통신요금));
         this._updateElement('mobile-total-price', formatPrice(result.월총납부액));
+        
+        console.log('✅ 가격 화면 업데이트 완료');
     }
     
     /**
      * ───────────────────────────────────────────────
-     * 요소 업데이트 헬퍼
+     * 헬퍼 함수들
      * ───────────────────────────────────────────────
      */
+    
+    _getSelectedValue(name) {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        return selected ? selected.value : null;
+    }
+    
     _updateElement(id, value) {
         const el = document.getElementById(id);
         if (el) {
@@ -479,11 +473,6 @@ class DeviceDetailPage {
         }
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 요금제 선택 모달 열기
-     * ───────────────────────────────────────────────
-     */
     _openPlanModal() {
         if (window.plansModal) {
             window.plansModal.open();
@@ -492,152 +481,95 @@ class DeviceDetailPage {
         }
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 상담 신청 처리
-     * ───────────────────────────────────────────────
-     */
     _handleConsult() {
-        // 개인정보 동의 확인
         const consentEl = document.getElementById('personal_consent');
         if (consentEl && !consentEl.checked) {
             alert('개인정보 수집 및 이용에 동의해주세요.');
             return;
         }
         
-        // 필수 선택 확인
         if (!this.currentPlan) {
             alert('요금제를 먼저 선택해주세요.');
             return;
         }
         
-        // 상담 페이지로 이동
         const params = this._buildOrderParams();
         window.location.href = `contact.html?${params.toString()}`;
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 주문하기 처리
-     * ───────────────────────────────────────────────
-     */
     _handleOrder() {
-        // 개인정보 동의 확인
         const consentEl = document.getElementById('personal_consent');
         if (consentEl && !consentEl.checked) {
             alert('개인정보 수집 및 이용에 동의해주세요.');
             return;
         }
         
-        // 필수 선택 확인
         if (!this.currentPlan) {
             alert('요금제를 먼저 선택해주세요.');
             return;
         }
         
-        // 주문 페이지로 이동
         const params = this._buildOrderParams();
         window.location.href = `order.html?${params.toString()}`;
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 주문 파라미터 생성
-     * ───────────────────────────────────────────────
-     */
     _buildOrderParams() {
         const params = new URLSearchParams();
-        
-        // ✅ 영문 필드명 사용
         params.set('model', this.currentDevice.model);
         params.set('color', this.currentColor);
         params.set('capacity', this.currentCapacity);
-        params.set('deviceOptionId', this._getCurrentDeviceOptionId());
+        params.set('deviceOptionId', `${this.currentDevice.model}_${this.currentCapacity}GB`);
         params.set('planId', this.currentPlan.id);
         params.set('joinType', this._getSelectedValue('type_subscription'));
         params.set('discountType', this._getSelectedValue('type_discount'));
         params.set('installment', this._getSelectedValue('type_period'));
         params.set('internetTv', this._getSelectedValue('type_other'));
-        
         return params;
     }
     
     /**
      * ───────────────────────────────────────────────
-     * ✅ 로딩 오버레이 표시 (제대로 구현)
+     * 로딩 오버레이
      * ───────────────────────────────────────────────
      */
+    
     _showLoading() {
-        // 이미 있으면 제거
         const existing = document.getElementById('loading-overlay');
-        if (existing) {
-            existing.remove();
-        }
+        if (existing) existing.remove();
         
-        // 로딩 오버레이 생성
         const overlay = document.createElement('div');
         overlay.id = 'loading-overlay';
         overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
             z-index: 9999;
         `;
         
         overlay.innerHTML = `
             <div style="text-align: center;">
-                <div style="
-                    width: 50px;
-                    height: 50px;
-                    border: 4px solid #f3f3f3;
-                    border-top: 4px solid #0066ff;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                    margin: 0 auto 20px;
-                "></div>
+                <div style="width: 50px; height: 50px; border: 4px solid #f3f3f3;
+                    border-top: 4px solid #0066ff; border-radius: 50%;
+                    animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
                 <p style="color: #666; font-size: 16px;">로딩 중...</p>
             </div>
         `;
         
-        // 애니메이션 CSS 추가
         if (!document.getElementById('loading-animation-style')) {
             const style = document.createElement('style');
             style.id = 'loading-animation-style';
-            style.textContent = `
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `;
+            style.textContent = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
             document.head.appendChild(style);
         }
         
         document.body.appendChild(overlay);
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * ✅ 로딩 오버레이 숨김 (제대로 구현)
-     * ───────────────────────────────────────────────
-     */
     _hideLoading() {
         const overlay = document.getElementById('loading-overlay');
-        if (overlay) {
-            overlay.remove();
-        }
+        if (overlay) overlay.remove();
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 에러 표시
-     * ───────────────────────────────────────────────
-     */
     _showError(message) {
         const main = document.querySelector('main');
         if (main) {
@@ -657,29 +589,24 @@ class DeviceDetailPage {
 }
 
 // ═══════════════════════════════════════════════════
-// 페이지 로드 시 자동 초기화
+// 즉시 초기화
 // ═══════════════════════════════════════════════════
 
-// ✅ 즉시 객체 생성
 const deviceDetailPage = new DeviceDetailPage();
 
-// 전역 변수로 노출
 if (typeof window !== 'undefined') {
     window.deviceDetailPage = deviceDetailPage;
     window.DeviceDetailPage = DeviceDetailPage;
 }
 
-// DOM 로드 상태에 따라 초기화
 if (document.readyState === 'loading') {
-    // DOM이 아직 로딩 중
     document.addEventListener('DOMContentLoaded', async () => {
         console.log('📱 DOMContentLoaded 이벤트에서 초기화');
         await deviceDetailPage.init();
     });
 } else {
-    // DOM이 이미 로드됨
     console.log('📱 DOM이 이미 로드됨, 즉시 초기화');
     deviceDetailPage.init();
 }
 
-console.log('✅ 기기 상세 페이지 v2.1 스크립트 로드 완료');
+console.log('✅ 기기 상세 페이지 v3.0 스크립트 로드 완료 (단계별 실시간 가격 반영)');

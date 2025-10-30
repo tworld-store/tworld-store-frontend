@@ -12,7 +12,7 @@
         <div class="container">
             <div class="header-content">
                 <a href="index.html" class="logo">
-                    <span class="logo-text">T&SHOP</span>
+                    <span class="logo-text">티월드스토어</span>
                 </a>
                 <nav class="main-nav">
                     <a href="devices.html?brand=samsung">삼성</a>
@@ -76,10 +76,19 @@
                     <!-- 요금제 선택 -->
                     <div class="option-group">
                         <label class="option-label">요금제</label>
-                        <select id="plan-select" class="option-select">
-                            <option value="">요금제를 선택하세요</option>
-                            <!-- JS로 동적 생성 -->
-                        </select>
+                        <button type="button" class="option-select-btn" onclick="plansModal.open()">
+                            <span id="selected-plan-display">요금제를 선택하세요</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                        <!-- 선택된 요금제 정보 (숨김 상태로 시작) -->
+                        <div id="selected-plan-info" class="hidden mt-2 p-3 bg-blue-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span id="selected-plan-name" class="font-bold text-gray-900"></span>
+                                <span id="selected-plan-price" class="text-blue-600 font-bold"></span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 할인 방법 -->
@@ -88,11 +97,11 @@
                         <div class="discount-options">
                             <label class="radio-option">
                                 <input type="radio" name="discount-type" value="subsidy" checked>
-                                <span>휴대폰 가격 할인 (지원금약정)</span>
+                                <span>지원금약정</span>
                             </label>
                             <label class="radio-option">
                                 <input type="radio" name="discount-type" value="select">
-                                <span>통신요금 25%할인 (선택약정)</span>
+                                <span>선택약정</span>
                             </label>
                         </div>
                     </div>
@@ -103,15 +112,11 @@
                         <div class="bundle-options">
                             <label class="radio-option">
                                 <input type="radio" name="internet-tv" value="none" checked>
-                                <span>선택안함</span>
+                                <span>신청 안함</span>
                             </label>
                             <label class="radio-option">
-                                <input type="radio" name="internet-tv" value="internet">
-                                <span>상담신청 (인터넷 -5,000원)</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="internet-tv" value="both">
-                                <span>상담신청 (인터넷+TV -10,000원)</span>
+                                <input type="radio" name="internet-tv" value="apply">
+                                <span>상담신청</span>
                             </label>
                         </div>
                     </div>
@@ -238,10 +243,11 @@
     </footer>
 
     <!-- JS 파일 로드 -->
-    <script src="/js/cloudinary.js"></script>
-    <script src="/js/api.js"></script>
-    <script src="/js/calculator.js"></script>
-    <script src="/js/common.js"></script>
+    <script src="js/cloudinary.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/plans-modal.js"></script>
     
     <!-- 인라인 스크립트 -->
     <script>
@@ -258,9 +264,54 @@
         let currentModel = '';
         let currentColor = '';
         let currentCapacity = 0;
+        let currentPlan = null; // 모달에서 선택한 요금제
         let allPlans = [];
         let devicesByCapacity = {};
         let galleryImages = {};
+
+        /**
+         * ───────────────────────────────────────────────
+         * plans-modal과 연동을 위한 전역 함수
+         * ───────────────────────────────────────────────
+         */
+        window.deviceDetailPage = {
+            /**
+             * 요금제 표시 업데이트 (plans-modal.js에서 호출)
+             */
+            updatePlanDisplay: function(plan) {
+                console.log('✅ 요금제 표시 업데이트:', plan);
+                
+                // 선택된 요금제 저장
+                currentPlan = plan;
+                
+                // 버튼 텍스트 업데이트
+                const displayEl = document.getElementById('selected-plan-display');
+                if (displayEl) {
+                    displayEl.textContent = plan.name;
+                }
+                
+                // 선택된 요금제 정보 박스 표시
+                const infoDiv = document.getElementById('selected-plan-info');
+                if (infoDiv) {
+                    infoDiv.classList.remove('hidden');
+                }
+                
+                // 요금제명 표시
+                const planNameEl = document.getElementById('selected-plan-name');
+                if (planNameEl) {
+                    planNameEl.textContent = plan.name;
+                }
+                
+                // 요금제 가격 표시
+                const planPriceEl = document.getElementById('selected-plan-price');
+                if (planPriceEl) {
+                    planPriceEl.textContent = formatPrice(plan.price) + '/월';
+                }
+                
+                // 가격 재계산
+                updatePrice();
+            }
+        };
 
         /**
          * ───────────────────────────────────────────────
@@ -340,7 +391,7 @@
                 renderDeviceName(images.card.title);
                 renderColorOptions(devices);
                 renderCapacityOptions();
-                renderPlanOptions();
+                // renderPlanOptions(); // ⚠️ 주석처리: 모달 방식 사용
                 renderGallery(currentColor);
                 renderDetailSections(images.detail_sections);
                 
@@ -408,7 +459,9 @@
          * ───────────────────────────────────────────────
          * 요금제 옵션 렌더링
          * ───────────────────────────────────────────────
+         * ⚠️ 주석처리: 모달 방식 사용 (plans-modal.js)
          */
+        /*
         function renderPlanOptions() {
             const select = document.getElementById('plan-select');
             
@@ -424,6 +477,7 @@
                 select.value = allPlans[0].요금제ID;
             }
         }
+        */
 
         /**
          * ───────────────────────────────────────────────
@@ -562,7 +616,8 @@
             try {
                 // 1. 현재 선택된 옵션들
                 const joinType = document.getElementById('join-type-select').value;
-                const planId = document.getElementById('plan-select').value;
+                // ✅ 모달에서 선택한 요금제 사용
+                const planId = currentPlan ? currentPlan.id : null;
                 const discountType = document.querySelector('input[name="discount-type"]:checked').value;
                 const internetTv = document.querySelector('input[name="internet-tv"]:checked').value;
                 const installmentMonths = parseInt(document.querySelector('input[name="installment"]:checked').value);
@@ -649,8 +704,8 @@
             // 가입유형 변경
             document.getElementById('join-type-select').addEventListener('change', updatePrice);
             
-            // 요금제 변경
-            document.getElementById('plan-select').addEventListener('change', updatePrice);
+            // 요금제 변경 - ⚠️ 주석처리: 모달 방식 사용
+            // document.getElementById('plan-select').addEventListener('change', updatePrice);
             
             // 할인 방법 변경
             document.querySelectorAll('input[name="discount-type"]').forEach(radio => {
@@ -678,5 +733,41 @@
             container.innerHTML = `<div class="error-message">${message}</div>`;
         }
     </script>
+
+    <!-- 요금제 선택 모달 -->
+    <div id="plans-modal" class="modal-overlay">
+        <div class="modal-content">
+            <!-- 모달 헤더 -->
+            <div class="modal-header">
+                <h2 class="text-2xl font-bold">요금제 선택하기</h2>
+                <button onclick="plansModal.close()" class="close-btn">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 모달 바디 -->
+            <div class="modal-body">
+                <!-- 카테고리 필터 -->
+                <div class="plan-categories mb-6">
+                    <button class="plan-category-btn active" data-category="all">전체</button>
+                    <button class="plan-category-btn" data-category="5gx">5GX 플랜</button>
+                    <button class="plan-category-btn" data-category="5g-young">5G 청소년/어린이</button>
+                    <button class="plan-category-btn" data-category="senior">시니어 전용</button>
+                    <button class="plan-category-btn" data-category="lte">T플랜 LTE</button>
+                    <button class="plan-category-btn" data-category="prepaid">어린이 전용 LTE</button>
+                </div>
+
+                <!-- 요금제 목록 -->
+                <div id="plans-list" class="plans-list">
+                    <div class="text-center py-12">
+                        <p class="text-gray-500">요금제를 불러오는 중...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

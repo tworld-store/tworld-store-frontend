@@ -3,359 +3,488 @@
  * SKT 쇼핑몰 - 가격 계산 엔진 v2.0
  * ═══════════════════════════════════════════════════
  * 
- * 변경사항:
- * - 조합ID 기반 지원금 조회
- * - 기기옵션ID = 모델명_용량 (색상 제외)
- * - 영문 필드명 사용
+ * 기능:
+ * 1. 지원금약정 / 선택약정 계산
+ * 2. 할부 이자 계산
+ * 3. 실시간 가격 업데이트
  */
 
-class PriceCalculator {
-    /**
-     * 생성자
-     */
-    constructor() {
-        // 기본 설정값
-        this.config = {
-            interestRate: 5.9,  // 연 이자율 (%)
-            chargeDiscountRate: 0.25  // 선택약정 요금 할인율 (25%)
+/**
+ * ───────────────────────────────────────────────
+ * 계산기 설정
+ * ───────────────────────────────────────────────
+ */
+const CALCULATOR_CONFIG = {
+    // 할부 이자율 (연 %)
+    interestRate: 5.9,
+    
+    // 반올림 단위
+    roundUnit: 10,
+    
+    // 선택약정 요금 할인율
+    selectPlanDiscountRate: 0.25,  // 25%
+    
+    // 할부 개월 옵션
+    installmentOptions: [0, 12, 24, 36]
+};
+
+/**
+ * ═══════════════════════════════════════════════════
+ * 메인 계산 함수
+ * ═══════════════════════════════════════════════════
+ */
+
+/**
+ * ───────────────────────────────────────────────
+ * 전체 가격 계산 (통합)
+ * ───────────────────────────────────────────────
+ * 
+ * @param {object} device - 기기 정보 (products.json)
+ * @param {object} plan - 요금제 정보 (products.json)
+ * @param {object} subsidy - 지원금 정보 (products.json)
+ * @param {object} options - 계산 옵션
+ * @returns {object} 계산 결과
+ * 
+ * options:
+ * - discountType: 'subsidy' (지원금약정) | 'select' (선택약정)
+ * - installmentMonths: 0 | 12 | 24 | 36
+ * - internetTv: 'none' | 'internet' | 'both'
+ */
+function calculatePrice(device, plan, subsidy, options = {}) {
+    // 기본 옵션
+    const {
+        discountType = 'subsidy',  // 지원금약정
+        installmentMonths = 24,
+        internetTv = 'none'
+    } = options;
+    
+    // 1. 출고가
+    const releasePrice = device.출고가;
+    
+    // 2. 지원금 계산 (약정 타입별)
+    let totalSubsidy = 0;
+    let subsidyBreakdown = {};
+    
+    if (discountType === 'subsidy') {
+        // 지원금약정: 공통 + 추가
+        subsidyBreakdown = {
+            common: subsidy.공통지원금,
+            extra: subsidy.추가지원금,
+            select: 0
         };
+        totalSubsidy = subsidy.공통지원금 + subsidy.추가지원금;
         
-        // 월 이자율 계산
-        this.monthlyRate = (this.config.interestRate / 100) / 12;
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * ★ 메인 계산 함수 ★
-     * ───────────────────────────────────────────────
-     * @param {string} deviceOptionId - 기기옵션ID (모델명_용량)
-     * @param {string} planId - 요금제ID
-     * @param {string} joinType - 가입유형 (기기변경/번호이동/신규가입)
-     * @param {string} discountType - 약정유형 (phone=지원금약정, charge=선택약정)
-     * @param {number} installmentMonths - 할부개월 (0/12/24/36)
-     * @returns {Promise<Object>} 계산 결과
-     */
-    async calculate(deviceOptionId, planId, joinType, discountType, installmentMonths = 24) {
-        try {
-            // 1. 필수값 검증
-            this._validateInputs(deviceOptionId, planId, joinType, discountType, installmentMonths);
-            
-            // 2. 조합ID 생성
-            const combinationId = this._createCombinationId(deviceOptionId, planId, joinType);
-            console.log('📋 조합ID:', combinationId);
-            
-            // 3. 데이터 로드
-            const device = await this._getDevice(deviceOptionId);
-            const plan = await this._getPlan(planId);
-            const subsidy = await this._getSubsidyByCombinationId(combinationId, joinType);
-            
-            console.log('✅ 데이터 로드 완료:', { device, plan, subsidy });
-            
-            // 4. 약정별 계산 분기
-            if (discountType === 'phone') {
-                return this._calculatePhoneDiscount(device, plan, subsidy, installmentMonths);
-            } else {
-                return this._calculateChargeDiscount(device, plan, subsidy, installmentMonths);
-            }
-            
-        } catch (error) {
-            console.error('❌ 가격 계산 오류:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * 조합ID 생성
-     * ───────────────────────────────────────────────
-     * 형식: 기기옵션ID_요금제ID_가입유형
-     * 예시: "갤럭시 S24_128GB_0청년109_기변"
-     */
-    _createCombinationId(deviceOptionId, planId, joinType) {
-        // 가입유형 매핑
-        const joinTypeMap = {
-            '기기변경': '기변',
-            '번호이동': '번이',
-            '신규가입': '신규'
+    } else {
+        // 선택약정: 선약지원금만
+        subsidyBreakdown = {
+            common: 0,
+            extra: 0,
+            select: subsidy.선약지원금 || 0
         };
-        
-        const shortJoinType = joinTypeMap[joinType];
-        
-        if (!shortJoinType) {
-            throw new Error(`올바르지 않은 가입유형: ${joinType}`);
-        }
-        
-        return `${deviceOptionId}_${planId}_${shortJoinType}`;
+        totalSubsidy = subsidy.선약지원금 || 0;
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 지원금약정 계산
-     * ───────────────────────────────────────────────
-     */
-    _calculatePhoneDiscount(device, plan, subsidy, installmentMonths) {
-        // ✅ 영문 필드명 사용
-        const factoryPrice = device.price;
-        const planPrice = plan.price;
-        
-        // 지원금 계산
-        const commonSubsidy = subsidy.subsidies.common || 0;
-        const additionalSubsidy = subsidy.subsidies.additional || 0;
-        const totalSubsidy = commonSubsidy + additionalSubsidy;
-        
-        // 할부원금 = 출고가 - 총지원금
-        const installmentPrincipal = factoryPrice - totalSubsidy;
-        
-        // 월 할부금 계산
-        const monthlyInstallment = this._calculateInstallment(
+    // 3. 할부원금
+    const installmentPrincipal = releasePrice - totalSubsidy;
+    
+    // 4. 월 할부금 계산 (이자 포함)
+    let monthlyInstallment = 0;
+    
+    if (installmentMonths === 0) {
+        // 일시불: 할부금 없음
+        monthlyInstallment = 0;
+    } else {
+        monthlyInstallment = calculateInstallment(
             installmentPrincipal, 
-            installmentMonths
+            installmentMonths, 
+            CALCULATOR_CONFIG.interestRate
         );
-        
-        // 요금 할인 없음
-        const chargeDiscount = 0;
-        const monthlyCharge = planPrice;
-        
-        // 월 총 납부액
-        const totalMonthly = monthlyInstallment + monthlyCharge;
-        
-        return {
-            약정유형: '지원금약정',
-            출고가: factoryPrice,
-            공통지원금: commonSubsidy,
-            추가지원금: additionalSubsidy,
-            총지원금: totalSubsidy,
-            할부원금: installmentPrincipal,
-            할부개월: installmentMonths,
-            월할부금: monthlyInstallment,
-            요금제기본료: planPrice,
-            요금할인: chargeDiscount,
-            월통신요금: monthlyCharge,
-            월총납부액: totalMonthly,
-            // 화면 표시용
-            display: {
-                공통지원금표시: true,
-                공통지원금: commonSubsidy,
-                추가지원금: additionalSubsidy
-            }
-        };
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 선택약정 계산
-     * ───────────────────────────────────────────────
-     */
-    _calculateChargeDiscount(device, plan, subsidy, installmentMonths) {
-        // ✅ 영문 필드명 사용
-        const factoryPrice = device.price;
-        const planPrice = plan.price;
-        
-        // ★ 선약지원금만 사용 ★
-        const selectSubsidy = subsidy.subsidies.select || 0;
-        const totalSubsidy = selectSubsidy;
-        
-        // 할부원금 = 출고가 - 선약지원금
-        const installmentPrincipal = factoryPrice - totalSubsidy;
-        
-        // 월 할부금 계산
-        const monthlyInstallment = this._calculateInstallment(
-            installmentPrincipal, 
-            installmentMonths
-        );
-        
-        // ★ 요금 25% 할인 ★
-        const chargeDiscount = Math.round(planPrice * this.config.chargeDiscountRate);
-        const monthlyCharge = planPrice - chargeDiscount;
-        
-        // 월 총 납부액
-        const totalMonthly = monthlyInstallment + monthlyCharge;
-        
-        return {
-            약정유형: '선택약정',
-            출고가: factoryPrice,
-            공통지원금: 0,  // 선택약정에는 공통지원금 없음
-            추가지원금: selectSubsidy,  // ★ 선약지원금을 "추가지원금"으로 표시 ★
-            총지원금: totalSubsidy,
-            할부원금: installmentPrincipal,
-            할부개월: installmentMonths,
-            월할부금: monthlyInstallment,
-            요금제기본료: planPrice,
-            요금할인: chargeDiscount,
-            월통신요금: monthlyCharge,
-            월총납부액: totalMonthly,
-            // 화면 표시용
-            display: {
-                공통지원금표시: false,  // ★ 공통지원금 행 숨김 ★
-                공통지원금: 0,
-                추가지원금: selectSubsidy
-            }
-        };
+    // 5. 요금제 기본료
+    const basePlanFee = plan.기본요금;
+    
+    // 6. 요금 할인 (선택약정만)
+    let planDiscount = 0;
+    
+    if (discountType === 'select') {
+        planDiscount = Math.round(basePlanFee * CALCULATOR_CONFIG.selectPlanDiscountRate);
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 할부금 계산 (원리금균등상환)
-     * ───────────────────────────────────────────────
-     */
-    _calculateInstallment(principal, months) {
-        // 일시불
-        if (months === 0) {
-            return 0;
+    // 7. 인터넷/TV 결합 할인
+    const bundleDiscount = calculateBundleDiscount(internetTv);
+    
+    // 8. 최종 월 통신요금
+    const monthlyPlanFee = basePlanFee - planDiscount - bundleDiscount;
+    
+    // 9. 월 총 납부액
+    const monthlyTotal = monthlyInstallment + monthlyPlanFee;
+    
+    // 10. 결과 반환
+    return {
+        // 기기 관련
+        releasePrice: releasePrice,
+        subsidy: {
+            total: totalSubsidy,
+            breakdown: subsidyBreakdown
+        },
+        installmentPrincipal: installmentPrincipal,
+        monthlyInstallment: monthlyInstallment,
+        
+        // 요금제 관련
+        basePlanFee: basePlanFee,
+        planDiscount: planDiscount,
+        bundleDiscount: bundleDiscount,
+        monthlyPlanFee: monthlyPlanFee,
+        
+        // 합계
+        monthlyTotal: monthlyTotal,
+        
+        // 옵션 정보
+        options: {
+            discountType: discountType,
+            installmentMonths: installmentMonths,
+            internetTv: internetTv
         }
-        
-        // 무이자 할부
-        if (this.monthlyRate === 0) {
-            return Math.round(principal / months / 100) * 100;
-        }
-        
-        // 원리금균등상환 공식
-        const rate = this.monthlyRate;
-        const numerator = principal * rate * Math.pow(1 + rate, months);
-        const denominator = Math.pow(1 + rate, months) - 1;
-        const monthly = numerator / denominator;
-        
-        // 100원 단위 반올림
-        return Math.round(monthly / 100) * 100;
+    };
+}
+
+/**
+ * ───────────────────────────────────────────────
+ * 할부금 계산 (이자 포함)
+ * ───────────────────────────────────────────────
+ * 
+ * @param {number} principal - 할부원금
+ * @param {number} months - 할부 개월
+ * @param {number} annualRate - 연 이자율 (%)
+ * @returns {number} 월 할부금
+ * 
+ * 계산 공식:
+ * 월 할부금 = 원금 × (월 이자율 × (1 + 월 이자율)^개월) / ((1 + 월 이자율)^개월 - 1)
+ */
+function calculateInstallment(principal, months, annualRate) {
+    if (months === 0 || principal <= 0) {
+        return 0;
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 입력값 검증
-     * ───────────────────────────────────────────────
-     */
-    _validateInputs(deviceOptionId, planId, joinType, discountType, installmentMonths) {
-        if (!deviceOptionId) {
-            throw new Error('기기를 선택해주세요');
-        }
-        
-        if (!planId) {
-            throw new Error('요금제를 선택해주세요');
-        }
-        
-        const validJoinTypes = ['기기변경', '번호이동', '신규가입'];
-        if (!validJoinTypes.includes(joinType)) {
-            throw new Error('올바른 가입유형을 선택해주세요');
-        }
-        
-        const validDiscountTypes = ['phone', 'charge'];
-        if (!validDiscountTypes.includes(discountType)) {
-            throw new Error('올바른 약정유형을 선택해주세요');
-        }
-        
-        const validMonths = [0, 12, 24, 36];
-        if (!validMonths.includes(installmentMonths)) {
-            throw new Error('올바른 할부개월을 선택해주세요');
-        }
+    // 월 이자율
+    const monthlyRate = (annualRate / 100) / 12;
+    
+    // 할부금 계산
+    const numerator = principal * monthlyRate * Math.pow(1 + monthlyRate, months);
+    const denominator = Math.pow(1 + monthlyRate, months) - 1;
+    
+    let monthlyPayment = numerator / denominator;
+    
+    // 반올림
+    monthlyPayment = roundToUnit(monthlyPayment, CALCULATOR_CONFIG.roundUnit);
+    
+    return monthlyPayment;
+}
+
+/**
+ * ───────────────────────────────────────────────
+ * 인터넷/TV 결합 할인 계산
+ * ───────────────────────────────────────────────
+ * 
+ * @param {string} type - 'none' | 'internet' | 'both'
+ * @returns {number} 할인 금액
+ */
+function calculateBundleDiscount(type) {
+    const discounts = {
+        'none': 0,
+        'internet': 5000,    // 인터넷만: 5천원
+        'both': 10000        // 인터넷+TV: 1만원
+    };
+    
+    return discounts[type] || 0;
+}
+
+/**
+ * ═══════════════════════════════════════════════════
+ * 비교 계산 함수
+ * ═══════════════════════════════════════════════════
+ */
+
+/**
+ * ───────────────────────────────────────────────
+ * 지원금약정 vs 선택약정 비교
+ * ───────────────────────────────────────────────
+ * 
+ * @param {object} device - 기기 정보
+ * @param {object} plan - 요금제 정보
+ * @param {object} subsidy - 지원금 정보
+ * @param {number} months - 할부 개월
+ * @returns {object} 비교 결과
+ */
+function compareDiscountTypes(device, plan, subsidy, months = 24) {
+    // 1. 지원금약정 계산
+    const subsidyResult = calculatePrice(device, plan, subsidy, {
+        discountType: 'subsidy',
+        installmentMonths: months,
+        internetTv: 'none'
+    });
+    
+    // 2. 선택약정 계산
+    const selectResult = calculatePrice(device, plan, subsidy, {
+        discountType: 'select',
+        installmentMonths: months,
+        internetTv: 'none'
+    });
+    
+    // 3. 비교
+    const monthlyDiff = subsidyResult.monthlyTotal - selectResult.monthlyTotal;
+    const totalDiff = monthlyDiff * months;
+    
+    // 4. 추천
+    let recommendation = '';
+    
+    if (monthlyDiff > 5000) {
+        recommendation = '선택약정이 월 5천원 이상 저렴합니다';
+    } else if (monthlyDiff < -5000) {
+        recommendation = '지원금약정이 월 5천원 이상 저렴합니다';
+    } else {
+        recommendation = '두 약정의 차이가 크지 않습니다';
     }
     
-    /**
-     * ───────────────────────────────────────────────
-     * 기기 정보 가져오기
-     * ───────────────────────────────────────────────
-     * 기기옵션ID로 조회 (모델명_용량)
-     */
-    async _getDevice(deviceOptionId) {
-        const data = await api.load();
+    return {
+        subsidy: subsidyResult,
+        select: selectResult,
+        comparison: {
+            monthlyDiff: monthlyDiff,
+            totalDiff: totalDiff,
+            recommendation: recommendation,
+            cheaper: monthlyDiff > 0 ? 'select' : 'subsidy'
+        }
+    };
+}
+
+/**
+ * ═══════════════════════════════════════════════════
+ * 유틸리티 함수
+ * ═══════════════════════════════════════════════════
+ */
+
+/**
+ * ───────────────────────────────────────────────
+ * 반올림 (특정 단위로)
+ * ───────────────────────────────────────────────
+ */
+function roundToUnit(value, unit) {
+    return Math.round(value / unit) * unit;
+}
+
+/**
+ * ───────────────────────────────────────────────
+ * 가격 포맷팅
+ * ───────────────────────────────────────────────
+ */
+function formatPrice(price) {
+    if (typeof price !== 'number') {
+        price = parseInt(String(price).replace(/[^0-9-]/g, '')) || 0;
+    }
+    
+    return price.toLocaleString('ko-KR') + '원';
+}
+
+/**
+ * ───────────────────────────────────────────────
+ * 월 납부액 포맷팅 (강조)
+ * ───────────────────────────────────────────────
+ */
+function formatMonthly(price) {
+    return '월 ' + formatPrice(price);
+}
+
+/**
+ * ───────────────────────────────────────────────
+ * 할인 금액 포맷팅 (마이너스 표시)
+ * ───────────────────────────────────────────────
+ */
+function formatDiscount(discount) {
+    if (discount === 0) return '0원';
+    return '-' + formatPrice(discount);
+}
+
+/**
+ * ───────────────────────────────────────────────
+ * 약정 타입 한글 변환
+ * ───────────────────────────────────────────────
+ */
+function getDiscountTypeName(type) {
+    const names = {
+        'subsidy': '공시지원금 (지원금약정)',
+        'select': '선택약정 (25% 요금할인)'
+    };
+    
+    return names[type] || type;
+}
+
+/**
+ * ───────────────────────────────────────────────
+ * 할부 개월 포맷팅
+ * ───────────────────────────────────────────────
+ */
+function formatInstallmentMonths(months) {
+    if (months === 0) return '일시불';
+    return `${months}개월`;
+}
+
+/**
+ * ═══════════════════════════════════════════════════
+ * 실시간 계산 헬퍼
+ * ═══════════════════════════════════════════════════
+ */
+
+/**
+ * ───────────────────────────────────────────────
+ * device-detail.html 실시간 계산 및 업데이트
+ * ───────────────────────────────────────────────
+ * 
+ * 사용자가 옵션을 변경할 때마다 호출
+ */
+async function updatePriceDisplay(options) {
+    const {
+        modelName,
+        capacity,
+        planId,
+        joinType,
+        discountType,
+        installmentMonths,
+        internetTv
+    } = options;
+    
+    try {
+        // 1. 기기옵션ID 생성
+        const deviceOptionId = `${modelName}_${capacity}GB`;
         
-        // ✅ 영문 필드명 사용
-        // 기기옵션ID와 일치하는 첫 번째 기기 찾기
-        // (같은 기기옵션ID면 색상만 다르고 가격은 동일)
-        const device = data.devices.find(d => {
-            const optionId = `${d.model}_${d.storage}GB`;
-            return optionId === deviceOptionId;
+        // 2. 데이터 로드
+        const device = await api.getDeviceOption(deviceOptionId);
+        const plan = await api.getPlan(planId);
+        const subsidy = await api.getSubsidy(deviceOptionId, planId, joinType);
+        
+        if (!device || !plan || !subsidy) {
+            throw new Error('필요한 데이터를 찾을 수 없습니다');
+        }
+        
+        // 3. 가격 계산
+        const result = calculatePrice(device, plan, subsidy, {
+            discountType: discountType,
+            installmentMonths: installmentMonths,
+            internetTv: internetTv
         });
         
-        if (!device) {
-            throw new Error(`기기를 찾을 수 없습니다: ${deviceOptionId}`);
-        }
+        // 4. UI 업데이트
+        displayPriceResult(result);
         
-        return device;
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * 요금제 정보 가져오기
-     * ───────────────────────────────────────────────
-     */
-    async _getPlan(planId) {
-        const data = await api.load();
+        return result;
         
-        // ✅ 영문 필드명 사용
-        const plan = data.plans.find(p => p.id === planId);
-        
-        if (!plan) {
-            throw new Error(`요금제를 찾을 수 없습니다: ${planId}`);
-        }
-        
-        return plan;
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * 조합ID로 지원금 조회 ★ 핵심 변경 ★
-     * ───────────────────────────────────────────────
-     */
-    async _getSubsidyByCombinationId(combinationId, joinType) {
-        const data = await api.load();
-        
-        // 가입유형에 따른 지원금 배열 선택
-        const subsidyMap = {
-            '기기변경': 'change',
-            '번호이동': 'port',
-            '신규가입': 'new'
-        };
-        
-        const subsidyKey = subsidyMap[joinType];
-        const subsidies = data.subsidies[subsidyKey];
-        
-        if (!subsidies) {
-            throw new Error(`지원금 데이터를 찾을 수 없습니다: ${joinType}`);
-        }
-        
-        // ✅ 영문 필드명 사용
-        // ★ 조합ID로 검색 ★
-        const subsidy = subsidies.find(s => s.id === combinationId);
-        
-        if (!subsidy) {
-            throw new Error(
-                `해당 조합의 지원금 정보가 없습니다.\n` +
-                `조합ID: ${combinationId}\n` +
-                `확인: 스프레드시트의 지원금 시트를 확인하세요.`
-            );
-        }
-        
-        return subsidy;
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * 설정 업데이트
-     * ───────────────────────────────────────────────
-     */
-    updateConfig(newConfig) {
-        if (newConfig.interestRate !== undefined) {
-            this.config.interestRate = newConfig.interestRate;
-            this.monthlyRate = (newConfig.interestRate / 100) / 12;
-        }
-        
-        if (newConfig.chargeDiscountRate !== undefined) {
-            this.config.chargeDiscountRate = newConfig.chargeDiscountRate;
-        }
-        
-        console.log('✅ Calculator 설정 업데이트:', this.config);
+    } catch (error) {
+        console.error('가격 계산 실패:', error);
+        return null;
     }
 }
 
-// ═══════════════════════════════════════════════════
-// 전역 인스턴스 생성
-// ═══════════════════════════════════════════════════
+/**
+ * ───────────────────────────────────────────────
+ * 가격 결과 화면 표시
+ * ───────────────────────────────────────────────
+ */
+function displayPriceResult(result) {
+    // 기기 관련
+    updateElement('release-price', formatPrice(result.releasePrice));
+    updateElement('common-subsidy', formatDiscount(result.subsidy.breakdown.common));
+    updateElement('extra-subsidy', formatDiscount(result.subsidy.breakdown.extra));
+    updateElement('select-subsidy', formatDiscount(result.subsidy.breakdown.select));
+    updateElement('installment-principal', formatPrice(result.installmentPrincipal));
+    
+    // 할부금
+    updateElement('monthly-installment', formatPrice(result.monthlyInstallment));
+    
+    // 요금제 관련
+    updateElement('base-plan-fee', formatPrice(result.basePlanFee));
+    updateElement('plan-discount', formatDiscount(result.planDiscount));
+    updateElement('bundle-discount', formatDiscount(result.bundleDiscount));
+    updateElement('monthly-plan-fee', formatPrice(result.monthlyPlanFee));
+    
+    // 월 총 납부액 (강조)
+    updateElement('monthly-total', formatMonthly(result.monthlyTotal), 'highlight');
+    
+    // 하단 고정바
+    updateElement('footer-monthly-phone', formatPrice(result.monthlyInstallment));
+    updateElement('footer-monthly-plan', formatPrice(result.monthlyPlanFee));
+    updateElement('footer-monthly-total', formatMonthly(result.monthlyTotal));
+}
 
-const calculator = new PriceCalculator();
+/**
+ * ───────────────────────────────────────────────
+ * DOM 요소 업데이트 헬퍼
+ * ───────────────────────────────────────────────
+ */
+function updateElement(id, value, className = '') {
+    const element = document.getElementById(id);
+    
+    if (element) {
+        element.textContent = value;
+        
+        if (className) {
+            element.className = className;
+        }
+    }
+}
 
-// 전역 변수로 노출
-if (typeof window !== 'undefined') {
-    window.calculator = calculator;
-    window.PriceCalculator = PriceCalculator;
-    console.log('✅ 가격 계산 엔진 v2.0 로드 완료');
+/**
+ * ═══════════════════════════════════════════════════
+ * 검증 함수
+ * ═══════════════════════════════════════════════════
+ */
+
+/**
+ * ───────────────────────────────────────────────
+ * 계산 옵션 검증
+ * ───────────────────────────────────────────────
+ */
+function validateCalculationOptions(options) {
+    const errors = [];
+    
+    // 할부 개월 검증
+    if (!CALCULATOR_CONFIG.installmentOptions.includes(options.installmentMonths)) {
+        errors.push(`유효하지 않은 할부 개월: ${options.installmentMonths}`);
+    }
+    
+    // 약정 타입 검증
+    if (!['subsidy', 'select'].includes(options.discountType)) {
+        errors.push(`유효하지 않은 약정 타입: ${options.discountType}`);
+    }
+    
+    // 결합 옵션 검증
+    if (!['none', 'internet', 'both'].includes(options.internetTv)) {
+        errors.push(`유효하지 않은 결합 옵션: ${options.internetTv}`);
+    }
+    
+    return {
+        valid: errors.length === 0,
+        errors: errors
+    };
+}
+
+/**
+ * ───────────────────────────────────────────────
+ * 내보내기
+ * ───────────────────────────────────────────────
+ */
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        calculatePrice,
+        calculateInstallment,
+        calculateBundleDiscount,
+        compareDiscountTypes,
+        formatPrice,
+        formatMonthly,
+        formatDiscount,
+        getDiscountTypeName,
+        formatInstallmentMonths,
+        updatePriceDisplay,
+        validateCalculationOptions
+    };
 }

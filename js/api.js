@@ -1,94 +1,74 @@
 /**
  * ═══════════════════════════════════════════════════
- * SKT 쇼핑몰 - API 클래스
+ * SKT 쇼핑몰 - 통합 데이터 API v2.0
  * ═══════════════════════════════════════════════════
  * 
- * 용도: GitHub Pages의 products.json을 로드하고 데이터 제공
- * 특징: 캐싱, 에러 처리, 브랜드/카테고리별 그룹화
+ * 기능:
+ * 1. products.json 로드 (기기/요금제/지원금)
+ * 2. images.json 로드 (3개 파일)
+ * 3. 캐싱 관리
+ * 4. 에러 처리
  */
 
+/**
+ * ───────────────────────────────────────────────
+ * DataAPI 클래스
+ * ───────────────────────────────────────────────
+ */
 class DataAPI {
-    /**
-     * 생성자
-     */
     constructor() {
-        // GitHub Pages URL (실제 배포 시 수정 필요)
-        this.jsonUrl = 'https://tworld-store.github.io/tworld-store-frontend/data/products.json';
+        // 기본 URL 설정
+        this.productsUrl = '/data/products.json';
+        this.imagesIndexUrl = '/images/images-index.json';
+        this.imagesDevicesUrl = '/images/images-devices.json';
+        this.imagesDetailBaseUrl = '/images/images-detail';
         
-        // 메모리 캐시
+        // 캐시 저장소 (각 파일별 독립)
         this.cache = {
-            data: null,
-            timestamp: null,
-            ttl: 3600000 // 1시간 (밀리초)
+            products: null,
+            imagesIndex: null,
+            imagesDevices: null,
+            imagesDetail: {}  // 모델별 캐시
         };
         
-        // 로딩 상태
-        this.loading = false;
-        this.loadPromise = null;
+        // 캐시 타임스탬프
+        this.cacheTime = {
+            products: 0,
+            imagesIndex: 0,
+            imagesDevices: 0,
+            imagesDetail: {}
+        };
+        
+        // 캐시 유효 시간 (밀리초)
+        this.cacheExpiry = 5 * 60 * 1000;  // 5분
+        
+        console.log('✅ DataAPI 초기화 완료');
     }
     
     /**
+     * ═══════════════════════════════════════════════════
+     * products.json 관련
+     * ═══════════════════════════════════════════════════
+     */
+    
+    /**
      * ───────────────────────────────────────────────
-     * JSON 데이터 로드 (캐싱 포함)
+     * products.json 로드 (기존 함수 유지)
      * ───────────────────────────────────────────────
      */
-    async load() {
-        // 1. 캐시 확인
+    async loadProducts() {
         const now = Date.now();
-        if (this.cache.data && this.cache.timestamp) {
-            if (now - this.cache.timestamp < this.cache.ttl) {
-                console.log('✅ 캐시된 데이터 사용');
-                return this.cache.data;
-            }
+        
+        // 캐시 확인
+        if (this.cache.products && (now - this.cacheTime.products) < this.cacheExpiry) {
+            console.log('📦 products.json 캐시 사용');
+            return this.cache.products;
         }
         
-        // 2. 이미 로딩 중이면 기존 Promise 반환
-        if (this.loading && this.loadPromise) {
-            console.log('⏳ 로딩 중... 기존 요청 대기');
-            return this.loadPromise;
-        }
-        
-        // 3. 새로운 데이터 로드
-        this.loading = true;
-        this.loadPromise = this._fetchData();
+        console.log('🔄 products.json 로드 중...');
         
         try {
-            const data = await this.loadPromise;
-            
-            // 캐시 저장
-            this.cache.data = data;
-            this.cache.timestamp = Date.now();
-            
-            console.log('✅ 데이터 로드 성공');
-            return data;
-            
-        } catch (error) {
-            console.error('❌ 데이터 로드 실패:', error);
-            throw error;
-            
-        } finally {
-            this.loading = false;
-            this.loadPromise = null;
-        }
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * 실제 fetch 실행
-     * ───────────────────────────────────────────────
-     * @private
-     */
-    async _fetchData() {
-        const startTime = performance.now();
-        
-        try {
-            const response = await fetch(this.jsonUrl, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
-                }
-            });
+            const response = await fetch(this.productsUrl);
             
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -96,32 +76,30 @@ class DataAPI {
             
             const data = await response.json();
             
-            const duration = (performance.now() - startTime).toFixed(2);
-            console.log(`📊 데이터 로드 완료 (${duration}ms)`);
+            // 데이터 검증
+            this._validateProductsData(data);
             
-            // 데이터 유효성 검증
-            this._validateData(data);
+            // 캐시 저장
+            this.cache.products = data;
+            this.cacheTime.products = now;
+            
+            console.log('✅ products.json 로드 완료');
             
             return data;
             
         } catch (error) {
-            console.error('Fetch 오류:', error);
-            throw new Error(`데이터를 불러올 수 없습니다: ${error.message}`);
+            console.error('❌ products.json 로드 실패:', error);
+            throw error;
         }
     }
     
     /**
      * ───────────────────────────────────────────────
-     * 데이터 유효성 검증
+     * products.json 데이터 검증
      * ───────────────────────────────────────────────
-     * @private
      */
-    _validateData(data) {
-        if (!data) {
-            throw new Error('데이터가 비어있습니다');
-        }
-        
-        if (!data.devices || !Array.isArray(data.devices)) {
+    _validateProductsData(data) {
+        if (!data.deviceOptions || !Array.isArray(data.deviceOptions)) {
             throw new Error('기기 데이터가 올바르지 않습니다');
         }
         
@@ -133,57 +111,37 @@ class DataAPI {
             throw new Error('지원금 데이터가 올바르지 않습니다');
         }
         
-        console.log(`✅ 데이터 검증 완료: 기기 ${data.devices.length}개, 요금제 ${data.plans.length}개`);
+        console.log(`📊 기기 ${data.deviceOptions.length}개, 요금제 ${data.plans.length}개`);
     }
     
     /**
      * ───────────────────────────────────────────────
      * 기기 목록 조회 (브랜드별 그룹화)
      * ───────────────────────────────────────────────
-     * @returns {Object} { samsung: [...], apple: [...], lg: [...] }
      */
-    async getDevices() {
-        const data = await this.load();
+    async getDevices(brand = null) {
+        const data = await this.loadProducts();
+        let devices = data.deviceOptions.filter(d => d.노출여부 === 'Y');
         
-        // 브랜드별 그룹화
-        const grouped = {
-            samsung: [],
-            apple: [],
-            lg: [],
-            other: []
-        };
+        // 브랜드 필터
+        if (brand) {
+            devices = devices.filter(d => d.브랜드 === brand);
+        }
         
-        data.devices.forEach(device => {
-            const brand = device.brand.toLowerCase();
-            
-            if (brand.includes('삼성') || brand.includes('samsung')) {
-                grouped.samsung.push(device);
-            } else if (brand.includes('애플') || brand.includes('apple')) {
-                grouped.apple.push(device);
-            } else if (brand.includes('lg')) {
-                grouped.lg.push(device);
-            } else {
-                grouped.other.push(device);
-            }
-        });
-        
-        return grouped;
+        return devices;
     }
     
     /**
      * ───────────────────────────────────────────────
-     * 특정 기기 조회
+     * 특정 기기옵션 조회
      * ───────────────────────────────────────────────
-     * @param {string} deviceId - 기기옵션ID
-     * @returns {Object|null}
      */
-    async getDevice(deviceId) {
-        const data = await this.load();
-        
-        const device = data.devices.find(d => d.id === deviceId);
+    async getDeviceOption(deviceOptionId) {
+        const data = await this.loadProducts();
+        const device = data.deviceOptions.find(d => d.기기옵션ID === deviceOptionId);
         
         if (!device) {
-            console.warn(`기기를 찾을 수 없습니다: ${deviceId}`);
+            console.warn(`기기를 찾을 수 없습니다: ${deviceOptionId}`);
             return null;
         }
         
@@ -192,58 +150,43 @@ class DataAPI {
     
     /**
      * ───────────────────────────────────────────────
-     * 특정 브랜드의 기기 목록 조회
+     * 모델명으로 기기옵션들 조회 (여러 용량)
      * ───────────────────────────────────────────────
-     * @param {string} brand - 브랜드명 (삼성, 애플, LG 등)
-     * @returns {Array}
      */
-    async getDevicesByBrand(brand) {
-        const data = await this.load();
+    async getDevicesByModel(modelName) {
+        const data = await this.loadProducts();
+        const devices = data.deviceOptions.filter(d => 
+            d.모델명 === modelName && d.노출여부 === 'Y'
+        );
         
-        const brandLower = brand.toLowerCase();
-        
-        return data.devices.filter(device => {
-            const deviceBrand = device.brand.toLowerCase();
-            return deviceBrand.includes(brandLower);
-        });
+        return devices;
     }
     
     /**
      * ───────────────────────────────────────────────
      * 요금제 목록 조회 (카테고리별 그룹화)
      * ───────────────────────────────────────────────
-     * @returns {Object} { '5GX': [...], '청년': [...], ... }
      */
-    async getPlans() {
-        const data = await this.load();
+    async getPlans(categoryId = null) {
+        const data = await this.loadProducts();
+        let plans = data.plans.filter(p => p.노출여부 === 'Y');
         
-        // 카테고리별 그룹화
-        const grouped = {};
+        // 카테고리 필터
+        if (categoryId) {
+            plans = plans.filter(p => p.카테고리ID === categoryId);
+        }
         
-        data.plans.forEach(plan => {
-            const category = plan.category.name || '기타';
-            
-            if (!grouped[category]) {
-                grouped[category] = [];
-            }
-            
-            grouped[category].push(plan);
-        });
-        
-        return grouped;
+        return plans;
     }
     
     /**
      * ───────────────────────────────────────────────
      * 특정 요금제 조회
      * ───────────────────────────────────────────────
-     * @param {string} planId - 요금제ID
-     * @returns {Object|null}
      */
     async getPlan(planId) {
-        const data = await this.load();
-        
-        const plan = data.plans.find(p => p.id === planId);
+        const data = await this.loadProducts();
+        const plan = data.plans.find(p => p.요금제ID === planId);
         
         if (!plan) {
             console.warn(`요금제를 찾을 수 없습니다: ${planId}`);
@@ -255,60 +198,39 @@ class DataAPI {
     
     /**
      * ───────────────────────────────────────────────
-     * 특정 카테고리의 요금제 목록 조회
+     * 지원금 조회
      * ───────────────────────────────────────────────
-     * @param {string} categoryId - 카테고리ID
-     * @returns {Array}
      */
-    async getPlansByCategory(categoryId) {
-        const data = await this.load();
+    async getSubsidy(deviceOptionId, planId, joinType) {
+        const data = await this.loadProducts();
         
-        return data.plans.filter(plan => plan.category.id === categoryId);
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * ★ 지원금 조회 (핵심 메서드)
-     * ───────────────────────────────────────────────
-     * @param {string} deviceId - 기기옵션ID
-     * @param {string} planId - 요금제ID
-     * @param {string} joinType - 가입유형 (기기변경/번호이동/신규가입)
-     * @returns {Object|null}
-     */
-    async getSubsidy(deviceId, planId, joinType) {
-        const data = await this.load();
+        // 가입유형별 시트 매핑
+        const subsidyKey = {
+            '기기변경': 'change',
+            '번호이동': 'port',
+            '신규가입': 'new'
+        }[joinType];
         
-        // 가입유형에 따른 시트 선택
-        let subsidySheet;
-        
-        switch (joinType) {
-            case '기기변경':
-                subsidySheet = data.subsidies.change;
-                break;
-            case '번호이동':
-                subsidySheet = data.subsidies.port;
-                break;
-            case '신규가입':
-                subsidySheet = data.subsidies.new;
-                break;
-            default:
-                console.error(`알 수 없는 가입유형: ${joinType}`);
-                return null;
+        if (!subsidyKey) {
+            console.error(`알 수 없는 가입유형: ${joinType}`);
+            return null;
         }
         
-        if (!subsidySheet || !Array.isArray(subsidySheet)) {
+        const subsidyList = data.subsidies[subsidyKey];
+        
+        if (!subsidyList || !Array.isArray(subsidyList)) {
             console.error(`지원금 데이터가 없습니다: ${joinType}`);
             return null;
         }
         
-        // 조합 찾기
-        const subsidy = subsidySheet.find(s => 
-            s.deviceId === deviceId && 
-            s.planId === planId
+        const subsidy = subsidyList.find(s => 
+            s.기기옵션ID === deviceOptionId && 
+            s.요금제ID === planId &&
+            s.노출여부 === 'Y'
         );
         
         if (!subsidy) {
-            console.warn(`지원금 정보를 찾을 수 없습니다: ${deviceId} + ${planId} (${joinType})`);
+            console.warn(`지원금 정보를 찾을 수 없습니다: ${deviceOptionId} + ${planId} (${joinType})`);
             return null;
         }
         
@@ -316,174 +238,254 @@ class DataAPI {
     }
     
     /**
-     * ───────────────────────────────────────────────
-     * 전역설정 조회
-     * ───────────────────────────────────────────────
-     * @returns {Object}
+     * ═══════════════════════════════════════════════════
+     * images.json 관련 (신규)
+     * ═══════════════════════════════════════════════════
      */
-    async getSettings() {
-        const data = await this.load();
+    
+    /**
+     * ───────────────────────────────────────────────
+     * images-index.json 로드 (메인 페이지용)
+     * ───────────────────────────────────────────────
+     */
+    async loadImagesIndex() {
+        const now = Date.now();
         
-        if (!data.settings) {
-            console.warn('전역설정이 없습니다');
-            return {};
+        // 캐시 확인
+        if (this.cache.imagesIndex && (now - this.cacheTime.imagesIndex) < this.cacheExpiry) {
+            console.log('📦 images-index.json 캐시 사용');
+            return this.cache.imagesIndex;
         }
         
-        return data.settings.parsed || data.settings.raw || {};
+        console.log('🔄 images-index.json 로드 중...');
+        
+        try {
+            const response = await fetch(this.imagesIndexUrl);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            // 캐시 저장
+            this.cache.imagesIndex = data;
+            this.cacheTime.imagesIndex = now;
+            
+            console.log('✅ images-index.json 로드 완료');
+            
+            return data;
+            
+        } catch (error) {
+            console.error('❌ images-index.json 로드 실패:', error);
+            throw error;
+        }
     }
     
     /**
      * ───────────────────────────────────────────────
-     * 특정 설정값 조회
+     * images-devices.json 로드 (기기 목록용)
      * ───────────────────────────────────────────────
-     * @param {string} key - 설정 키
-     * @param {*} defaultValue - 기본값
-     * @returns {*}
      */
-    async getSetting(key, defaultValue = null) {
-        const settings = await this.getSettings();
+    async loadImagesDevices() {
+        const now = Date.now();
         
-        return settings[key] !== undefined ? settings[key] : defaultValue;
+        // 캐시 확인
+        if (this.cache.imagesDevices && (now - this.cacheTime.imagesDevices) < this.cacheExpiry) {
+            console.log('📦 images-devices.json 캐시 사용');
+            return this.cache.imagesDevices;
+        }
+        
+        console.log('🔄 images-devices.json 로드 중...');
+        
+        try {
+            const response = await fetch(this.imagesDevicesUrl);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            // 캐시 저장
+            this.cache.imagesDevices = data;
+            this.cacheTime.imagesDevices = now;
+            
+            console.log('✅ images-devices.json 로드 완료');
+            
+            return data;
+            
+        } catch (error) {
+            console.error('❌ images-devices.json 로드 실패:', error);
+            throw error;
+        }
     }
     
     /**
      * ───────────────────────────────────────────────
-     * 인기 기기 조회 (메인 페이지용)
+     * images-detail/{model}.json 로드 (상세 페이지용)
      * ───────────────────────────────────────────────
-     * @param {number} limit - 가져올 개수 (기본 8개)
-     * @returns {Array}
+     * 
+     * @param {string} modelName - 모델명 (예: '갤럭시S24')
      */
-    async getPopularDevices(limit = 8) {
-        const data = await this.load();
+    async loadImagesDetail(modelName) {
+        const now = Date.now();
         
-        // TODO: 실제로는 조회수나 판매량 기준으로 정렬
-        // 현재는 최신순으로 반환
-        return data.devices.slice(0, limit);
+        // 캐시 확인
+        if (this.cache.imagesDetail[modelName] && 
+            (now - this.cacheTime.imagesDetail[modelName]) < this.cacheExpiry) {
+            console.log(`📦 images-detail/${modelName}.json 캐시 사용`);
+            return this.cache.imagesDetail[modelName];
+        }
+        
+        console.log(`🔄 images-detail/${modelName}.json 로드 중...`);
+        
+        try {
+            const url = `${this.imagesDetailBaseUrl}/${modelName}.json`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            // 캐시 저장
+            this.cache.imagesDetail[modelName] = data;
+            this.cacheTime.imagesDetail[modelName] = now;
+            
+            console.log(`✅ images-detail/${modelName}.json 로드 완료`);
+            
+            return data;
+            
+        } catch (error) {
+            console.error(`❌ images-detail/${modelName}.json 로드 실패:`, error);
+            throw error;
+        }
     }
     
     /**
      * ───────────────────────────────────────────────
-     * 검색 (기기 + 요금제)
+     * 특정 모델의 이미지 정보 조회 (통합)
      * ───────────────────────────────────────────────
-     * @param {string} query - 검색어
-     * @returns {Object} { devices: [...], plans: [...] }
+     * 
+     * devices + detail 정보를 한번에 가져옴
      */
-    async search(query) {
-        const data = await this.load();
+    async getModelImages(modelName) {
+        const [devicesData, detailData] = await Promise.all([
+            this.loadImagesDevices(),
+            this.loadImagesDetail(modelName)
+        ]);
         
-        const queryLower = query.toLowerCase();
+        const deviceInfo = devicesData.devices[modelName];
         
-        const devices = data.devices.filter(device => {
-            return device.searchText && device.searchText.includes(queryLower);
-        });
-        
-        const plans = data.plans.filter(plan => {
-            return plan.searchText && plan.searchText.includes(queryLower);
-        });
-        
-        return { devices, plans };
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * 캐시 강제 새로고침
-     * ───────────────────────────────────────────────
-     */
-    async refresh() {
-        console.log('🔄 캐시 새로고침...');
-        this.cache.data = null;
-        this.cache.timestamp = null;
-        return await this.load();
-    }
-    
-    /**
-     * ───────────────────────────────────────────────
-     * 통계 정보 조회
-     * ───────────────────────────────────────────────
-     * @returns {Object}
-     */
-    async getStats() {
-        const data = await this.load();
+        if (!deviceInfo) {
+            console.warn(`이미지 정보를 찾을 수 없습니다: ${modelName}`);
+            return null;
+        }
         
         return {
-            totalDevices: data.devices.length,
-            totalPlans: data.plans.length,
-            totalSubsidies: {
-                change: data.subsidies.change.length,
-                port: data.subsidies.port.length,
-                new: data.subsidies.new.length
-            },
-            lastUpdated: data.metadata?.updatedAt || 'Unknown',
-            version: data.metadata?.version || '1.0'
+            card: deviceInfo.card,
+            thumbnails: deviceInfo.thumbnails,
+            gallery: detailData.gallery,
+            detail_sections: detailData.detail_sections
         };
     }
-}
-
-// ═══════════════════════════════════════════════════
-// 전역 인스턴스 생성
-// ═══════════════════════════════════════════════════
-const api = new DataAPI();
-
-// ═══════════════════════════════════════════════════
-// 에러 핸들러 (전역)
-// ═══════════════════════════════════════════════════
-window.addEventListener('unhandledrejection', function(event) {
-    console.error('처리되지 않은 Promise 거부:', event.reason);
     
-    // 사용자에게 친절한 메시지 표시
-    if (event.reason && event.reason.message) {
-        if (event.reason.message.includes('데이터를 불러올 수 없습니다')) {
-            alert('데이터를 불러오는 중 문제가 발생했습니다.\n잠시 후 다시 시도해주세요.');
+    /**
+     * ═══════════════════════════════════════════════════
+     * 통합 조회 함수 (products + images)
+     * ═══════════════════════════════════════════════════
+     */
+    
+    /**
+     * ───────────────────────────────────────────────
+     * 카드 표시용 완전한 데이터 조회
+     * ───────────────────────────────────────────────
+     * 
+     * products.json + images.json을 조합하여
+     * devices.html 카드에 필요한 모든 정보 반환
+     * 
+     * @param {string} modelName - 모델명
+     * @returns {object} 카드 표시용 완전한 데이터
+     */
+    async getCardData(modelName) {
+        // 1. 이미지 정보 로드
+        const imagesData = await this.loadImagesDevices();
+        const imageInfo = imagesData.devices[modelName];
+        
+        if (!imageInfo || !imageInfo.visible) {
+            return null;
+        }
+        
+        // 2. 대표 옵션으로 기기옵션ID 생성
+        const defaultOpts = imageInfo.card.default;
+        const deviceOptionId = `${modelName}_${defaultOpts.capacity}GB`;
+        
+        // 3. products.json에서 데이터 가져오기
+        const device = await this.getDeviceOption(deviceOptionId);
+        const plan = await this.getPlan(defaultOpts.plan_id);
+        const subsidy = await this.getSubsidy(
+            deviceOptionId, 
+            defaultOpts.plan_id, 
+            defaultOpts.join_type
+        );
+        
+        if (!device || !plan || !subsidy) {
+            console.warn(`완전한 데이터를 가져올 수 없습니다: ${modelName}`);
+            return null;
+        }
+        
+        // 4. 통합 반환
+        return {
+            model: modelName,
+            image: imageInfo,
+            device: device,
+            plan: plan,
+            subsidy: subsidy
+        };
+    }
+    
+    /**
+     * ───────────────────────────────────────────────
+     * 캐시 초기화
+     * ───────────────────────────────────────────────
+     */
+    clearCache(type = 'all') {
+        if (type === 'all') {
+            this.cache = {
+                products: null,
+                imagesIndex: null,
+                imagesDevices: null,
+                imagesDetail: {}
+            };
+            this.cacheTime = {
+                products: 0,
+                imagesIndex: 0,
+                imagesDevices: 0,
+                imagesDetail: {}
+            };
+            console.log('🗑️ 전체 캐시 초기화');
+        } else {
+            this.cache[type] = null;
+            this.cacheTime[type] = 0;
+            console.log(`🗑️ ${type} 캐시 초기화`);
         }
     }
-});
-
-// ═══════════════════════════════════════════════════
-// 개발자 도구용 헬퍼
-// ═══════════════════════════════════════════════════
-if (typeof window !== 'undefined') {
-    window.API = api;
-    
-    // 개발 모드 감지
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log('🔧 개발 모드: API 객체가 window.API로 노출되었습니다');
-        console.log('사용 예시:');
-        console.log('  await API.load()');
-        console.log('  await API.getDevices()');
-        console.log('  await API.getPlans()');
-        console.log('  await API.getStats()');
-    }
 }
 
-// ═══════════════════════════════════════════════════
-// 페이지 로드 시 미리 데이터 로드 (선택사항)
-// ═══════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', async function() {
-    try {
-        console.log('🚀 페이지 로드 완료, 데이터 미리 로드 중...');
-        
-        const startTime = performance.now();
-        await api.load();
-        const duration = (performance.now() - startTime).toFixed(2);
-        
-        console.log(`✅ 데이터 미리 로드 완료 (${duration}ms)`);
-        
-        // 통계 정보 로그
-        const stats = await api.getStats();
-        console.log('📊 통계:', stats);
-        
-    } catch (error) {
-        console.error('❌ 초기 로드 실패:', error);
-        
-        // 사용자에게 알림
-        const errorBanner = document.createElement('div');
-        errorBanner.className = 'fixed top-0 left-0 right-0 bg-red-500 text-white text-center py-3 z-50';
-        errorBanner.textContent = '데이터를 불러오는 중 문제가 발생했습니다. 페이지를 새로고침해주세요.';
-        document.body.prepend(errorBanner);
-        
-        // 5초 후 자동 제거
-        setTimeout(() => {
-            errorBanner.remove();
-        }, 5000);
-    }
-});
+/**
+ * ───────────────────────────────────────────────
+ * 전역 인스턴스 생성
+ * ───────────────────────────────────────────────
+ */
+const api = new DataAPI();
+
+/**
+ * ───────────────────────────────────────────────
+ * 내보내기
+ * ───────────────────────────────────────────────
+ */
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { DataAPI, api };
+}

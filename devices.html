@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SKT 스마트폰 기기 목록 - 삼성, 애플, LG 최신 모델">
+    <meta name="keywords" content="갤럭시, 아이폰, 스마트폰, 기기변경, 번호이동">
+    <title>기기 선택 - T World Store</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="main.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <!-- ============================================ -->
+    <!-- 헤더 (고정 네비게이션) -->
+    <!-- ============================================ -->
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <!-- 로고 -->
+                <a href="index.html" class="logo">
+                    <span style="color: var(--color-primary);">T</span>
+                    <span>World Store</span>
+                </a>
+                
+                <!-- 데스크탑 네비게이션 -->
+                <nav class="nav hide-mobile">
+                    <a href="devices.html" class="nav-link active">기기</a>
+                    <a href="plans.html" class="nav-link">요금제</a>
+                    <a href="device-detail.html" class="nav-link">상세보기</a>
+                    <a href="contact.html" class="btn btn-primary btn-sm">상담신청</a>
+                </nav>
+                
+                <!-- 모바일 메뉴 버튼 -->
+                <button class="hide-desktop" onclick="toggleMobileMenu()" aria-label="메뉴">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 모바일 메뉴 (숨김) -->
+        <div id="mobile-menu" class="hidden" style="background: white; border-top: 1px solid var(--color-border-gray); padding: 1rem 0;">
+            <div class="container">
+                <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="devices.html" class="nav-link active" style="padding: 0.5rem 0;">기기</a>
+                    <a href="plans.html" class="nav-link" style="padding: 0.5rem 0;">요금제</a>
+                    <a href="device-detail.html" class="nav-link" style="padding: 0.5rem 0;">상세보기</a>
+                    <a href="contact.html" class="btn btn-primary" style="margin-top: 0.5rem;">상담신청</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================ -->
+    <!-- 페이지 타이틀 -->
+    <!-- ============================================ -->
+    <section class="section" style="padding-top: 3rem; padding-bottom: 2rem;">
+        <div class="container">
+            <h1 class="text-4xl font-bold text-center mb-3">기기 선택</h1>
+            <p class="text-center text-xl" style="color: var(--color-text-gray);">원하는 스마트폰을 선택하세요</p>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- 브랜드 필터 섹션 -->
+    <!-- ============================================ -->
+    <section style="background: white; padding: 1.5rem 0; border-top: 1px solid var(--color-border-gray); border-bottom: 1px solid var(--color-border-gray); position: sticky; top: 72px; z-index: 10;">
+        <div class="container">
+            <div class="flex" style="justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <button onclick="filterByBrand('all')" class="btn btn-secondary brand-filter active" data-brand="all">
+                    전체
+                </button>
+                <button onclick="filterByBrand('삼성')" class="btn btn-secondary brand-filter" data-brand="삼성">
+                    삼성
+                </button>
+                <button onclick="filterByBrand('애플')" class="btn btn-secondary brand-filter" data-brand="애플">
+                    애플
+                </button>
+                <button onclick="filterByBrand('LG')" class="btn btn-secondary brand-filter" data-brand="LG">
+                    LG
+                </button>
+            </div>
+            
+            <!-- 검색 결과 카운트 -->
+            <div class="text-center mt-3">
+                <p style="color: var(--color-text-gray);">
+                    총 <strong id="device-count" style="color: var(--color-primary);">0</strong>개
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- 기기 목록 그리드 (동적) -->
+    <!-- ============================================ -->
+    <section class="section">
+        <div class="container">
+            <!-- JavaScript가 products.json을 읽어서 기기 카드 생성 -->
+            <!-- 4열 그리드 -->
+            <div id="devices-grid" class="grid grid-4">
+                <!-- 로딩 상태 -->
+                <div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 5rem 0;">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+            
+            <!-- 결과 없음 메시지 (숨김) -->
+            <div id="no-results" class="hidden" style="text-align: center; padding: 5rem 0;">
+                <svg style="width: 6rem; height: 6rem; margin: 0 auto 2rem; color: var(--color-gray-300);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p style="font-size: 1.25rem; color: var(--color-text-gray);">해당 브랜드의 기기가 없습니다</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- 푸터 -->
+    <!-- ============================================ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <!-- 회사 정보 -->
+                <div>
+                    <h3 class="footer-section-title">T World Store</h3>
+                    <p style="margin-bottom: 1rem;">
+                        SKT 공식 온라인 스토어<br>
+                        믿을 수 있는 통신 서비스
+                    </p>
+                </div>
+                
+                <!-- 바로가기 -->
+                <div>
+                    <h4 class="footer-section-title">바로가기</h4>
+                    <a href="devices.html" class="footer-link">기기</a>
+                    <a href="plans.html" class="footer-link">요금제</a>
+                    <a href="contact.html" class="footer-link">상담신청</a>
+                    <a href="about.html" class="footer-link">회사소개</a>
+                </div>
+                
+                <!-- 고객센터 -->
+                <div>
+                    <h4 class="footer-section-title">고객센터</h4>
+                    <p style="margin-bottom: 0.5rem;">
+                        <strong>1588-0000</strong>
+                    </p>
+                    <p style="font-size: 0.875rem; margin-bottom: 1rem;">
+                        평일 09:00 - 18:00<br>
+                        주말 및 공휴일 휴무
+                    </p>
+                </div>
+                
+                <!-- 법적 고지 -->
+                <div>
+                    <h4 class="footer-section-title">법적 고지</h4>
+                    <a href="privacy.html" class="footer-link">개인정보처리방침</a>
+                    <a href="terms.html" class="footer-link">이용약관</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 T World Store. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================ -->
+    <!-- JavaScript -->
+    <!-- ============================================ -->
+    <script src="api.js"></script>
+    <script src="common.js"></script>
+    <script>
+        /**
+         * ═══════════════════════════════════════════════════
+         * devices.html 전용 스크립트
+         * ═══════════════════════════════════════════════════
+         */
+        
+        // 전역 변수
+        let allDevices = []; // 전체 기기 데이터
+        let currentBrand = 'all'; // 현재 선택된 브랜드
+        
+        // 모바일 메뉴 토글
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+        
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // TODO: products.json 로드
+                // const api = new DataAPI();
+                // const data = await api.load();
+                // allDevices = data.deviceOptions.filter(d => d.노출여부 === 'Y');
+                
+                // 개발 단계: placeholder 데이터
+                allDevices = generatePlaceholderDevices();
+                
+                // 초기 렌더링
+                renderDevices();
+                
+            } catch (error) {
+                console.error('페이지 로드 오류:', error);
+                showError();
+            }
+        });
+        
+        /**
+         * 개발용 placeholder 기기 데이터 생성
+         */
+        function generatePlaceholderDevices() {
+            const brands = ['삼성', '애플', 'LG'];
+            const devices = [];
+            
+            brands.forEach(brand => {
+                for (let i = 1; i <= 5; i++) {
+                    devices.push({
+                        기기옵션ID: `${brand}_DEVICE_${i}`,
+                        브랜드: brand,
+                        모델명: `${brand} 기기 ${i}`,
+                        출고가: 1200000 + (i * 100000),
+                        노출여부: 'Y'
+                    });
+                }
+            });
+            
+            return devices;
+        }
+        
+        /**
+         * 브랜드 필터
+         */
+        function filterByBrand(brand) {
+            currentBrand = brand;
+            
+            // 버튼 활성화 상태 업데이트
+            document.querySelectorAll('.brand-filter').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.brand === brand) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // 기기 목록 재렌더링
+            renderDevices();
+        }
+        
+        /**
+         * 기기 목록 렌더링
+         */
+        function renderDevices() {
+            const container = document.getElementById('devices-grid');
+            const noResults = document.getElementById('no-results');
+            const countElement = document.getElementById('device-count');
+            
+            if (!container) return;
+            
+            // 필터링
+            const filteredDevices = currentBrand === 'all' 
+                ? allDevices 
+                : allDevices.filter(d => d.브랜드 === currentBrand);
+            
+            // 개수 업데이트
+            if (countElement) {
+                countElement.textContent = filteredDevices.length;
+            }
+            
+            // 결과 없음 처리
+            if (filteredDevices.length === 0) {
+                container.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            
+            // 카드 생성
+            container.innerHTML = filteredDevices.map(device => `
+                <a href="device-detail.html?id=${device.기기옵션ID}" class="device-card">
+                    <div class="device-card-image">
+                        <div style="width: 100%; height: 100%; background: var(--color-gray-100); display: flex; align-items: center; justify-content: center; color: var(--color-gray-400);">
+                            <span style="font-size: 3rem;">📱</span>
+                        </div>
+                    </div>
+                    <div class="device-card-body">
+                        <div class="device-card-brand">${device.브랜드}</div>
+                        <h3 class="device-card-title">${device.모델명}</h3>
+                        <p class="device-card-subtitle">skt | 기기변경 | 공시지원</p>
+                        <div class="device-card-prices">
+                            <div class="device-card-price-row">
+                                <span class="device-card-price-label">출고가</span>
+                                <span class="device-card-price-value">${formatPrice(device.출고가)}원</span>
+                            </div>
+                            <div class="device-card-price-row">
+                                <span class="device-card-price-label">출고가 할인금</span>
+                                <span class="device-card-price-value">500,000원</span>
+                            </div>
+                            <div class="device-card-price-row">
+                                <span class="device-card-price-label">예상 월 납부금액</span>
+                                <span class="device-card-price-total">77,430원</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+        
+        /**
+         * 가격 포맷팅 (천단위 콤마)
+         */
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        
+        /**
+         * 에러 표시
+         */
+        function showError() {
+            const container = document.getElementById('devices-grid');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 5rem 0;">
+                    <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-danger);">데이터 로드 오류</h2>
+                    <p style="color: var(--color-text-gray); margin-bottom: 2rem;">기기 목록을 불러오는 중 문제가 발생했습니다.</p>
+                    <button onclick="location.reload()" class="btn btn-primary">새로고침</button>
+                </div>
+            `;
+        }
+    </script>
+    
+    <style>
+        /* 브랜드 필터 버튼 활성화 스타일 */
+        .brand-filter.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        
+        /* 기기 카드 클릭 효과 */
+        .device-card {
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</body>
+</html>

@@ -324,7 +324,7 @@
                 
                 // URL에서 모델명 가져오기
                 const params = new URLSearchParams(window.location.search);
-                currentModel = params.get('model');
+                currentModel = params.get('device');
                 
                 if (!currentModel) {
                     throw new Error('모델명이 없습니다');

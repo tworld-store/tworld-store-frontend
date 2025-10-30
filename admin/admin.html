@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - SKT 쇼핑몰 관리</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.0/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome CDN (아이콘용) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Admin 전용 CSS -->
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="bg-gray-100">
+    
+    <!-- 전체 래퍼 -->
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- ============================================
+             좌측 사이드바 (고정)
+             ============================================ -->
+        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            
+            <!-- 로고 영역 -->
+            <div class="h-16 flex items-center justify-center border-b border-gray-200">
+                <h1 class="text-xl font-bold text-blue-600">
+                    <i class="fas fa-store mr-2"></i>
+                    SKT Admin
+                </h1>
+            </div>
+            
+            <!-- 메뉴 목록 -->
+            <nav class="flex-1 overflow-y-auto py-4">
+                <ul class="space-y-1 px-3">
+                    
+                    <!-- 대시보드 -->
+                    <li>
+                        <a href="#" 
+                           class="menu-item active flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                           data-page="dashboard">
+                            <i class="fas fa-home w-5"></i>
+                            <span class="ml-3">대시보드</span>
+                        </a>
+                    </li>
+                    
+                    <!-- 기기 관리 -->
+                    <li>
+                        <a href="#" 
+                           class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                           data-page="devices">
+                            <i class="fas fa-mobile-alt w-5"></i>
+                            <span class="ml-3">기기 관리</span>
+                        </a>
+                    </li>
+                    
+                    <!-- 메인 페이지 -->
+                    <li>
+                        <a href="#" 
+                           class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                           data-page="main-page">
+                            <i class="fas fa-paint-brush w-5"></i>
+                            <span class="ml-3">메인 페이지</span>
+                        </a>
+                    </li>
+                    
+                    <!-- 요금제 관리 -->
+                    <li>
+                        <a href="#" 
+                           class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                           data-page="plans">
+                            <i class="fas fa-dollar-sign w-5"></i>
+                            <span class="ml-3">요금제 관리</span>
+                        </a>
+                    </li>
+                    
+                    <!-- 설정 -->
+                    <li>
+                        <a href="#" 
+                           class="menu-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                           data-page="settings">
+                            <i class="fas fa-cog w-5"></i>
+                            <span class="ml-3">설정</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </nav>
+            
+            <!-- 하단 사용자 정보 -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                        A
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-700">관리자</p>
+                        <p class="text-xs text-gray-500">admin@skt.com</p>
+                    </div>
+                </div>
+            </div>
+            
+        </aside>
+        
+        <!-- ============================================
+             우측 콘텐츠 영역 (동적으로 변경)
+             ============================================ -->
+        <main class="flex-1 overflow-y-auto">
+            
+            <!-- 상단 헤더 -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+                <h2 id="page-title" class="text-2xl font-bold text-gray-800">대시보드</h2>
+                <div class="flex items-center space-x-4">
+                    <button class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-bell mr-2"></i>
+                        알림
+                    </button>
+                    <button class="px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-save mr-2"></i>
+                        저장
+                    </button>
+                </div>
+            </header>
+            
+            <!-- 콘텐츠 영역 -->
+            <div id="content" class="p-6">
+                <!-- 여기에 동적으로 콘텐츠가 로드됩니다 -->
+            </div>
+            
+        </main>
+        
+    </div>
+    
+    <!-- ============================================
+         페이지 템플릿들 (숨김 상태, JS로 로드)
+         ============================================ -->
+    
+    <!-- 템플릿: 대시보드 -->
+    <template id="template-dashboard">
+        <div class="space-y-6">
+            
+            <!-- 통계 카드들 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- 전체 기기 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">전체 기기</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-1">24</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-mobile-alt text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 노출 중 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">노출 중</p>
+                            <p class="text-3xl font-bold text-green-600 mt-1">20</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 미완성 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">미완성</p>
+                            <p class="text-3xl font-bold text-orange-600 mt-1">4</p>
+                        </div>
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-orange-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- 최근 활동 -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-clock mr-2 text-blue-600"></i>
+                        최근 활동
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-sm">
+                            <span class="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                            <span class="text-gray-700">갤럭시 S24 이미지 수정</span>
+                            <span class="ml-auto text-gray-500">10분 전</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <span class="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
+                            <span class="text-gray-700">아이폰16Pro 추가</span>
+                            <span class="ml-auto text-gray-500">2시간 전</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <span class="w-2 h-2 bg-purple-600 rounded-full mr-3"></span>
+                            <span class="text-gray-700">메인 배너 업데이트</span>
+                            <span class="ml-auto text-gray-500">5시간 전</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 주의 필요 -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-exclamation-circle mr-2 text-orange-600"></i>
+                        주의 필요
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <ul class="space-y-3">
+                        <li class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-image text-orange-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">갤럭시 Z플립7 - 썸네일 없음</span>
+                            </div>
+                            <button class="text-sm text-blue-600 hover:text-blue-800">수정하기</button>
+                        </li>
+                        <li class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-images text-orange-600 mr-3"></i>
+                                <span class="text-sm text-gray-700">갤럭시 A54 - 갤러리 1개만</span>
+                            </div>
+                            <button class="text-sm text-blue-600 hover:text-blue-800">수정하기</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+    </template>
+    
+    <!-- 템플릿: 기기 관리 - 브랜드 선택 -->
+    <template id="template-devices-brands">
+        <div class="space-y-6">
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">브랜드 선택</h3>
+                <p class="text-sm text-gray-600 mb-6">관리할 브랜드를 선택하세요</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <!-- 삼성 -->
+                    <button class="brand-card p-8 border-2 border-gray-200 rounded-lg hover:border-blue-600 hover:shadow-lg transition-all"
+                            data-brand="samsung">
+                        <div class="text-center">
+                            <div class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-mobile-alt text-blue-600 text-3xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-900">삼성</h4>
+                            <p class="text-sm text-gray-500 mt-2">13개 모델</p>
+                        </div>
+                    </button>
+                    
+                    <!-- 애플 -->
+                    <button class="brand-card p-8 border-2 border-gray-200 rounded-lg hover:border-blue-600 hover:shadow-lg transition-all"
+                            data-brand="apple">
+                        <div class="text-center">
+                            <div class="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                <i class="fab fa-apple text-gray-800 text-3xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-900">애플</h4>
+                            <p class="text-sm text-gray-500 mt-2">8개 모델</p>
+                        </div>
+                    </button>
+                    
+                    <!-- 기타 -->
+                    <button class="brand-card p-8 border-2 border-gray-200 rounded-lg hover:border-blue-600 hover:shadow-lg transition-all"
+                            data-brand="others">
+                        <div class="text-center">
+                            <div class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-ellipsis-h text-green-600 text-3xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-900">기타</h4>
+                            <p class="text-sm text-gray-500 mt-2">3개 모델</p>
+                        </div>
+                    </button>
+                    
+                </div>
+            </div>
+            
+        </div>
+    </template>
+    
+    <!-- 템플릿: 기기 관리 - 삼성 모델 목록 -->
+    <template id="template-devices-samsung">
+        <div class="space-y-6">
+            
+            <!-- 뒤로가기 버튼 -->
+            <div>
+                <button class="back-to-brands px-4 py-2 text-sm text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    브랜드 선택으로 돌아가기
+                </button>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">삼성 모델 목록</h3>
+                </div>
+                
+                <div class="p-6">
+                    <div class="grid grid-cols-1 gap-4">
+                        
+                        <!-- 갤럭시 S24 -->
+                        <button class="model-card flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-600 hover:shadow-md transition-all"
+                                data-model="galaxy-s24">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-mobile-alt text-gray-600 text-2xl"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="font-semibold text-gray-900">갤럭시 S24</h4>
+                                    <p class="text-sm text-gray-500">Galaxy S24</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full">노출 중</span>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </button>
+                        
+                        <!-- 갤럭시 Z플립7 -->
+                        <button class="model-card flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-600 hover:shadow-md transition-all"
+                                data-model="galaxy-zflip7">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-mobile-alt text-gray-600 text-2xl"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="font-semibold text-gray-900">갤럭시 Z플립7</h4>
+                                    <p class="text-sm text-gray-500">Galaxy Z Flip7</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <span class="px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">미완성</span>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </button>
+                        
+                        <!-- 갤럭시 S25 FE -->
+                        <button class="model-card flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-600 hover:shadow-md transition-all"
+                                data-model="galaxy-s25fe">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-mobile-alt text-gray-600 text-2xl"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="font-semibold text-gray-900">갤럭시 S25 FE</h4>
+                                    <p class="text-sm text-gray-500">Galaxy S25 FE</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full">노출 중</span>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </template>
+    
+    <!-- 템플릿: 기기 관리 - 갤럭시 S24 (5개 탭) -->
+    <template id="template-device-detail">
+        <div class="space-y-6">
+            
+            <!-- 뒤로가기 버튼 -->
+            <div>
+                <button class="back-to-models px-4 py-2 text-sm text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    모델 목록으로 돌아가기
+                </button>
+            </div>
+            
+            <!-- 모델 정보 헤더 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-mobile-alt text-gray-600 text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">갤럭시 S24</h3>
+                            <p class="text-sm text-gray-500">Galaxy S24 · 삼성</p>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="px-4 py-2 bg-green-100 text-green-700 rounded-lg">노출 중</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 5개 탭 네비게이션 -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="border-b border-gray-200">
+                    <nav class="flex space-x-8 px-6" aria-label="Tabs">
+                        <button class="device-tab active py-4 px-1 border-b-2 border-blue-600 font-medium text-sm text-blue-600"
+                                data-tab="basic">
+                            기본 정보
+                        </button>
+                        <button class="device-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                                data-tab="card">
+                            카드 설정
+                        </button>
+                        <button class="device-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                                data-tab="thumbnail">
+                            썸네일 관리
+                        </button>
+                        <button class="device-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                                data-tab="gallery">
+                            갤러리 관리
+                        </button>
+                        <button class="device-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                                data-tab="detail-page">
+                            상세 페이지
+                        </button>
+                    </nav>
+                </div>
+                
+                <!-- 탭 콘텐츠 -->
+                <div id="tab-content" class="p-6">
+                    <!-- 여기에 탭별 콘텐츠가 동적으로 로드됩니다 -->
+                </div>
+            </div>
+            
+        </div>
+    </template>
+    
+    <!-- 템플릿: [탭1] 기본 정보 -->
+    <template id="template-tab-basic">
+        <div class="max-w-2xl space-y-6">
+            
+            <!-- 모델명 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    모델명
+                </label>
+                <input type="text" 
+                       value="갤럭시 S24"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+            </div>
+            
+            <!-- 브랜드 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    브랜드
+                </label>
+                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                    <option value="samsung" selected>삼성</option>
+                    <option value="apple">애플</option>
+                    <option value="others">기타</option>
+                </select>
+            </div>
+            
+            <!-- 표시 여부 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    표시 여부
+                </label>
+                <label class="flex items-center">
+                    <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-600">
+                    <span class="ml-3 text-gray-700">노출</span>
+                </label>
+            </div>
+            
+            <!-- 정렬 순서 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    정렬 순서
+                </label>
+                <input type="number" 
+                       value="1"
+                       min="1"
+                       class="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                <p class="text-sm text-gray-500 mt-1">숫자가 작을수록 먼저 표시됩니다</p>
+            </div>
+            
+            <!-- 저장 버튼 -->
+            <div class="pt-4">
+                <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                    <i class="fas fa-save mr-2"></i>
+                    저장
+                </button>
+            </div>
+            
+        </div>
+    </template>
+    
+    <!-- 템플릿: [탭2] 카드 설정 -->
+    <template id="template-tab-card">
+        <div class="max-w-2xl space-y-6">
+            
+            <!-- 카드 제목 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    카드 제목
+                </label>
+                <input type="text" 
+                       value="갤럭시 S24"
+                       placeholder="예: 갤럭시 S25FE"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                <p class="text-sm text-gray-500 mt-1">devices.html 카드에 표시될 제목</p>
+            </div>
+            
+            <!-- 카드 부제목 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    카드 부제목
+                </label>
+                <input type="text" 
+                       value="skt|기기변경|공시지원|컬펀트"
+                       placeholder="예: skt|기기변경|공시지원|컬펀트"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                <p class="text-sm text-gray-500 mt-1">카드에 표시될 부제목 (수기 입력)</p>
+            </div>
+            
+            <!-- 뱃지 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    뱃지
+                </label>
+                <div class="flex space-x-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-600">
+                        <span class="ml-2 text-gray-700">Hot</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="w-5 h-5 text-green-600 rounded focus:ring-green-600">
+                        <span class="ml-2 text-gray-700">New</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- 대표 옵션 (가격 계산용) -->
+            <div class="border-t pt-6">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">대표 옵션 (가격 계산용)</h4>
+                
+                <div class="space-y-4">
+                    
+                    <!-- 색상 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">색상</label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="BLACK">팬텀블랙</option>
+                            <option value="CREAM">크림</option>
+                            <option value="GRAY">그레이</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 용량 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">용량</label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="256GB" selected>256GB</option>
+                            <option value="512GB">512GB</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 요금제 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">요금제</label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="5GX_PRIME" selected>5GX 프라임</option>
+                            <option value="5GX_PLATINUM">5GX 플래티넘</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 가입유형 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">가입유형</label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="기기변경" selected>기기변경</option>
+                            <option value="번호이동">번호이동</option>
+                            <option value="신규가입">신규가입</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 약정유형 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">약정유형</label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="지원금약정" selected>지원금약정</option>
+                            <option value="선택약정">선택약정</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 할부개월 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">할부개월</label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="24" selected>24개월</option>
+                            <option value="30">30개월</option>
+                            <option value="36">36개월</option>
+                        </select>
+                    </div>
+                    
+                </div>
+                
+                <!-- 계산하기 버튼 -->
+                <div class="mt-6">
+                    <button class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">
+                        <i class="fas fa-calculator mr-2"></i>
+                        가격 계산하기
+                    </button>
+                </div>
+                
+                <!-- 계산 결과 (예시) -->
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h5 class="font-semibold text-gray-900 mb-3">계산 결과</h5>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">월 휴대폰 요금</span>
+                            <span class="font-bold text-gray-900">38,430원</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">월 통신요금</span>
+                            <span class="font-bold text-gray-900">39,000원</span>
+                        </div>
+                        <div class="flex justify-between pt-2 border-t border-gray-300">
+                            <span class="text-gray-900 font-semibold">예상 월 납부</span>
+                            <span class="font-bold text-blue-600 text-lg">77,430원</span>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- 저장 버튼 -->
+            <div class="pt-4">
+                <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                    <i class="fas fa-save mr-2"></i>
+                    저장
+                </button>
+            </div>
+            
+        </div>
+    </template>
+    
+    <!-- 템플릿: [탭3] 썸네일 관리 -->
+    <template id="template-tab-thumbnail">
+        <div class="space-y-6">
+            
+            <p class="text-sm text-gray-600">
+                devices.html 카드에 표시될 색상별 썸네일 이미지를 관리합니다.
+            </p>
+            
+            <!-- 색상별 썸네일 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- 팬텀블랙 -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-900 mb-3">팬텀블랙</h4>
+                    <div class="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                        <i class="fas fa-image text-gray-400 text-3xl"></i>
+                    </div>
+                    <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        <i class="fas fa-upload mr-2"></i>
+                        업로드
+                    </button>
+                </div>
+                
+                <!-- 크림 -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-900 mb-3">크림</h4>
+                    <div class="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                        <i class="fas fa-image text-gray-400 text-3xl"></i>
+                    </div>
+                    <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        <i class="fas fa-upload mr-2"></i>
+                        업로드
+                    </button>
+                </div>
+                
+                <!-- 그레이 -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-900 mb-3">그레이</h4>
+                    <div class="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                        <i class="fas fa-image text-gray-400 text-3xl"></i>
+                    </div>
+                    <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        <i class="fas fa-upload mr-2"></i>
+                        업로드
+                    </button>
+                </div>
+                
+            </div>
+            
+            <!-- 색상 추가 버튼 -->
+            <div>
+                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                    <i class="fas fa-plus mr-2"></i>
+                    색상 추가
+                </button>
+            </div>
+            
+        </div>
+    </template>
+    
+    <!-- 템플릿: [탭4] 갤러리 관리 -->
+    <template id="template-tab-gallery">
+        <div class="space-y-6">
+            
+            <p class="text-sm text-gray-600">
+                device-detail.html 상단에 표시될 색상/용량별 이미지를 관리합니다.
+            </p>
+            
+            <!-- 옵션별 갤러리 -->
+            <div class="space-y-4">
+                
+                <!-- 팬텀블랙 256GB -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-900">팬텀블랙 256GB</h4>
+                        <button class="text-sm text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-image text-gray-400 text-2xl"></i>
+                        </div>
+                        <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-image text-gray-400 text-2xl"></i>
+                        </div>
+                        <button class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-blue-600 hover:bg-blue-50">
+                            <i class="fas fa-plus text-gray-400 text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 팬텀블랙 512GB -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-900">팬텀블랙 512GB</h4>
+                        <button class="text-sm text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 크림 256GB -->
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-900">크림 256GB</h4>
+                        <button class="text-sm text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+    </template>
+    
+    <!-- 템플릿: [탭5] 상세 페이지 -->
+    <template id="template-tab-detail-page">
+        <div class="space-y-6">
+            
+            <p class="text-sm text-gray-600">
+                device-detail.html 하단에 표시될 상세 섹션 이미지를 관리합니다. (드래그로 순서 변경 가능)
+            </p>
+            
+            <!-- 섹션 목록 -->
+            <div class="space-y-4">
+                
+                <!-- 섹션 1: 프로모션 -->
+                <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-grip-vertical text-gray-400 mr-3 cursor-move"></i>
+                            <h4 class="font-semibold text-gray-900">섹션 1: 프로모션</h4>
+                        </div>
+                        <button class="text-sm text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-3">
+                        <i class="fas fa-image text-gray-400 text-3xl"></i>
+                    </div>
+                    <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        <i class="fas fa-upload mr-2"></i>
+                        이미지 업로드
+                    </button>
+                </div>
+                
+                <!-- 섹션 2: 사은품 -->
+                <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-grip-vertical text-gray-400 mr-3 cursor-move"></i>
+                            <h4 class="font-semibold text-gray-900">섹션 2: 사은품</h4>
+                        </div>
+                        <button class="text-sm text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-3">
+                        <i class="fas fa-image text-gray-400 text-3xl"></i>
+                    </div>
+                    <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        <i class="fas fa-upload mr-2"></i>
+                        이미지 업로드
+                    </button>
+                </div>
+                
+            </div>
+            
+            <!-- 섹션 추가 버튼 -->
+            <div>
+                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                    <i class="fas fa-plus mr-2"></i>
+                    섹션 추가
+                </button>
+            </div>
+            
+        </div>
+    </template>
+    
+    <!-- Admin JavaScript -->
+    <script src="admin.js"></script>
+    
+</body>
+</html>

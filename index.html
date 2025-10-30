@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="T-라운지 - 나에게 맞춘 DIY형 휴대폰 쇼핑몰">
+    <meta name="description" content="SKT 공식 온라인 스토어 - 최신 스마트폰과 알뜰한 요금제">
     <meta name="keywords" content="SKT, 휴대폰, 스마트폰, 요금제, 기기변경, 번호이동">
     <title>T World Store - SKT 공식 온라인 스토어</title>
     
@@ -13,131 +13,93 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="main.css">
     
-    <!-- Font -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        
-        /* Hero Section 배경 그라데이션 */
-        .hero-gradient {
-            background: linear-gradient(135deg, #0066FF 0%, #00C6FF 100%);
-        }
-        
-        /* 카드 호버 효과 강화 */
-        .device-card {
-            transition: all 0.3s ease;
-        }
-        
-        .device-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-        
-        /* 스크롤 애니메이션 */
-        .fade-in-up {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-        
-        .fade-in-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
 </head>
-<body class="bg-gray-50">
+<body>
     
     <!-- ============================================ -->
-    <!-- 헤더 (고정) -->
+    <!-- 헤더 (고정 네비게이션) -->
     <!-- ============================================ -->
-    <header class="sticky top-0 z-50 bg-white shadow-md">
-        <nav class="container mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
                 <!-- 로고 -->
-                <a href="index.html" class="flex items-center space-x-2">
-                    <span class="text-3xl font-bold text-blue-600">T</span>
-                    <span class="text-xl font-semibold">World Store</span>
+                <a href="index.html" class="logo">
+                    <span style="color: var(--color-primary);">T</span>
+                    <span>World Store</span>
                 </a>
                 
-                <!-- 네비게이션 (데스크톱) -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="devices.html" class="text-gray-700 hover:text-blue-600 transition font-medium">기기</a>
-                    <a href="plans.html" class="text-gray-700 hover:text-blue-600 transition font-medium">요금제</a>
-                    <a href="device-detail.html" class="text-gray-700 hover:text-blue-600 transition font-medium">상세보기</a>
-                    <a href="contact.html" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-medium">상담신청</a>
-                </div>
+                <!-- 데스크탑 네비게이션 -->
+                <nav class="nav hide-mobile">
+                    <a href="devices.html" class="nav-link">기기</a>
+                    <a href="plans.html" class="nav-link">요금제</a>
+                    <a href="device-detail.html" class="nav-link">상세보기</a>
+                    <a href="contact.html" class="btn btn-primary btn-sm">상담신청</a>
+                </nav>
                 
                 <!-- 모바일 메뉴 버튼 -->
-                <button class="md:hidden" onclick="toggleMobileMenu()">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button class="hide-desktop" onclick="toggleMobileMenu()" aria-label="메뉴">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
             </div>
-        </nav>
+        </div>
         
         <!-- 모바일 메뉴 (숨김) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
-            <div class="container mx-auto px-4 py-4 space-y-3">
-                <a href="devices.html" class="block text-gray-700 hover:text-blue-600 transition">기기</a>
-                <a href="plans.html" class="block text-gray-700 hover:text-blue-600 transition">요금제</a>
-                <a href="device-detail.html" class="block text-gray-700 hover:text-blue-600 transition">상세보기</a>
-                <a href="contact.html" class="block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition text-center">상담신청</a>
+        <div id="mobile-menu" class="hidden" style="background: white; border-top: 1px solid var(--color-border-gray); padding: 1rem 0;">
+            <div class="container">
+                <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="devices.html" class="nav-link" style="padding: 0.5rem 0;">기기</a>
+                    <a href="plans.html" class="nav-link" style="padding: 0.5rem 0;">요금제</a>
+                    <a href="device-detail.html" class="nav-link" style="padding: 0.5rem 0;">상세보기</a>
+                    <a href="contact.html" class="btn btn-primary" style="margin-top: 0.5rem;">상담신청</a>
+                </nav>
             </div>
         </div>
     </header>
 
     <!-- ============================================ -->
-    <!-- 히어로 섹션 -->
+    <!-- 히어로 배너 섹션 (동적) -->
     <!-- ============================================ -->
-    <section class="hero-gradient text-white py-20 md:py-32">
-        <div class="container mx-auto px-4">
-            <div class="max-w-3xl">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6 fade-in-up">
-                    최신 스마트폰과<br>
-                    알뜰한 요금제를 만나보세요
-                </h1>
-                <p class="text-xl md:text-2xl mb-8 text-blue-100 fade-in-up" style="animation-delay: 0.1s">
-                    SKT 공식 온라인 스토어에서 특별한 혜택을 경험하세요
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 fade-in-up" style="animation-delay: 0.2s">
-                    <a href="devices.html" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition text-center">
-                        기기 둘러보기
-                    </a>
-                    <a href="plans.html" class="bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-800 transition text-center">
-                        요금제 보기
-                    </a>
+    <section class="section" style="padding-top: 0; padding-bottom: 2rem;">
+        <div class="container">
+            <!-- JavaScript가 images.json을 읽어서 슬라이더 생성 -->
+            <!-- 최대 10개 슬라이드 -->
+            <div id="hero-slider" class="hero">
+                <!-- 로딩 상태 -->
+                <div class="flex-center" style="height: 100%;">
+                    <div class="loading-spinner"></div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ============================================ -->
-    <!-- 인기 기기 섹션 -->
+    <!-- 인기 기기 섹션 (동적) -->
     <!-- ============================================ -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">인기 기기</h2>
-                <p class="text-gray-600 text-lg">지금 가장 많이 찾는 스마트폰</p>
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">인기 기기</h2>
+                <p class="section-subtitle">지금 가장 많이 찾는 스마트폰</p>
             </div>
             
-            <!-- 기기 그리드 -->
-            <div id="popular-devices" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- 로딩 -->
-                <div class="col-span-full flex justify-center py-12">
+            <!-- JavaScript가 images.json을 읽어서 기기 카드 생성 -->
+            <!-- layout: 4/8/12개 선택 가능 -->
+            <div id="popular-devices" class="grid grid-4">
+                <!-- 로딩 상태 -->
+                <div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 3rem 0;">
                     <div class="loading-spinner"></div>
                 </div>
             </div>
             
-            <div class="text-center mt-12">
-                <a href="devices.html" class="inline-block bg-gray-100 text-gray-900 px-8 py-3 rounded-lg font-bold hover:bg-gray-200 transition">
+            <!-- 전체 보기 버튼 -->
+            <div class="text-center" style="margin-top: 3rem;">
+                <a href="devices.html" class="btn btn-secondary btn-lg">
                     모든 기기 보기 →
                 </a>
             </div>
@@ -145,134 +107,37 @@
     </section>
 
     <!-- ============================================ -->
-    <!-- 추천 요금제 섹션 -->
+    <!-- 중간 배너 섹션 (동적) -->
     <!-- ============================================ -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">인기 요금제</h2>
-                <p class="text-gray-600 text-lg">나에게 꼭 맞는 요금제를 찾아보세요</p>
-            </div>
-            
-            <!-- 요금제 카테고리 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- 5GX -->
-                <a href="plans.html#5gx" class="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition text-center">
-                    <div class="text-5xl mb-4">📱</div>
-                    <h3 class="text-xl font-bold mb-2">5GX</h3>
-                    <p class="text-gray-600">무제한 데이터</p>
-                </a>
-                
-                <!-- 청년 -->
-                <a href="plans.html#youth" class="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition text-center">
-                    <div class="text-5xl mb-4">🎓</div>
-                    <h3 class="text-xl font-bold mb-2">청년</h3>
-                    <p class="text-gray-600">25세 이하 특가</p>
-                </a>
-                
-                <!-- 시니어 -->
-                <a href="plans.html#senior" class="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition text-center">
-                    <div class="text-5xl mb-4">👴</div>
-                    <h3 class="text-xl font-bold mb-2">시니어</h3>
-                    <p class="text-gray-600">만 65세 이상</p>
-                </a>
-                
-                <!-- LTE -->
-                <a href="plans.html#lte" class="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition text-center">
-                    <div class="text-5xl mb-4">💰</div>
-                    <h3 class="text-xl font-bold mb-2">LTE</h3>
-                    <p class="text-gray-600">합리적 가격</p>
-                </a>
-            </div>
-            
-            <div class="text-center mt-12">
-                <a href="plans.html" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition">
-                    모든 요금제 보기 →
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================ -->
-    <!-- 빠른 상담 신청 섹션 -->
-    <!-- ============================================ -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="bg-blue-600 rounded-2xl p-8 md:p-12 text-white">
-                <div class="max-w-3xl mx-auto text-center">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                        궁금한 점이 있으신가요?
-                    </h2>
-                    <p class="text-xl mb-8 text-blue-100">
-                        전문 상담사가 친절하게 안내해드립니다
-                    </p>
-                    
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="tel:1588-0000" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition flex items-center justify-center">
-                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                            </svg>
-                            전화 상담
-                        </a>
-                        <a href="contact.html" class="bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-800 transition flex items-center justify-center">
-                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-                            </svg>
-                            1:1 상담 신청
-                        </a>
-                    </div>
-                    
-                    <p class="mt-6 text-sm text-blue-200">
-                        운영시간: 평일 09:00 - 18:00
-                    </p>
+    <section class="section" style="background: var(--color-bg-gray);">
+        <div class="container">
+            <!-- JavaScript가 images.json을 읽어서 배너 이미지 생성 -->
+            <!-- 1개 큰 배너 이미지 -->
+            <div id="middle-banner" style="border-radius: var(--radius-xl); overflow: hidden; background: var(--color-gray-100);">
+                <!-- 로딩 상태 -->
+                <div style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
+                    <div class="loading-spinner"></div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ============================================ -->
-    <!-- 특징 섹션 -->
+    <!-- 하단 프로모션 섹션 (동적) -->
     <!-- ============================================ -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- 특징 1 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">최저가 보장</h3>
-                    <p class="text-gray-600">
-                        경쟁사 대비 최고의 혜택을<br>제공합니다
-                    </p>
-                </div>
-                
-                <!-- 특징 2 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">안전한 거래</h3>
-                    <p class="text-gray-600">
-                        SKT 공식 스토어에서<br>안심하고 구매하세요
-                    </p>
-                </div>
-                
-                <!-- 특징 3 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">빠른 배송</h3>
-                    <p class="text-gray-600">
-                        신청 후 영업일 기준<br>1-2일 내 배송
-                    </p>
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">특별 혜택</h2>
+                <p class="section-subtitle">놓치지 마세요</p>
+            </div>
+            
+            <!-- JavaScript가 images.json을 읽어서 프로모션 카드 생성 -->
+            <!-- layout: 2x2 또는 3x3 선택 가능 -->
+            <div id="bottom-promos" class="grid grid-2">
+                <!-- 로딩 상태 -->
+                <div style="grid-column: 1 / -1; display: flex; justify-content: center; padding: 3rem 0;">
+                    <div class="loading-spinner"></div>
                 </div>
             </div>
         </div>
@@ -281,13 +146,13 @@
     <!-- ============================================ -->
     <!-- 푸터 -->
     <!-- ============================================ -->
-    <footer class="bg-gray-900 text-gray-300 py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
                 <!-- 회사 정보 -->
                 <div>
-                    <h3 class="text-white font-bold text-lg mb-4">T World Store</h3>
-                    <p class="text-sm">
+                    <h3 class="footer-section-title">T World Store</h3>
+                    <p style="margin-bottom: 1rem;">
                         SKT 공식 온라인 스토어<br>
                         믿을 수 있는 통신 서비스
                     </p>
@@ -295,51 +160,38 @@
                 
                 <!-- 바로가기 -->
                 <div>
-                    <h4 class="text-white font-bold mb-4">바로가기</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="devices.html" class="hover:text-white transition">기기</a></li>
-                        <li><a href="plans.html" class="hover:text-white transition">요금제</a></li>
-                        <li><a href="device-detail.html" class="hover:text-white transition">상세보기</a></li>
-                        <li><a href="contact.html" class="hover:text-white transition">상담신청</a></li>
-                    </ul>
+                    <h4 class="footer-section-title">바로가기</h4>
+                    <a href="devices.html" class="footer-link">기기</a>
+                    <a href="plans.html" class="footer-link">요금제</a>
+                    <a href="contact.html" class="footer-link">상담신청</a>
+                    <a href="about.html" class="footer-link">회사소개</a>
                 </div>
                 
-                <!-- 고객지원 -->
+                <!-- 고객센터 -->
                 <div>
-                    <h4 class="text-white font-bold mb-4">고객지원</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white transition">자주 묻는 질문</a></li>
-                        <li><a href="#" class="hover:text-white transition">이용약관</a></li>
-                        <li><a href="#" class="hover:text-white transition">개인정보처리방침</a></li>
-                        <li><a href="tel:1588-0000" class="hover:text-white transition">1588-0000</a></li>
-                    </ul>
+                    <h4 class="footer-section-title">고객센터</h4>
+                    <p style="margin-bottom: 0.5rem;">
+                        <strong>1588-0000</strong>
+                    </p>
+                    <p style="font-size: 0.875rem; margin-bottom: 1rem;">
+                        평일 09:00 - 18:00<br>
+                        주말 및 공휴일 휴무
+                    </p>
                 </div>
                 
-                <!-- 운영시간 -->
+                <!-- 법적 고지 -->
                 <div>
-                    <h4 class="text-white font-bold mb-4">운영시간</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li>평일: 09:00 - 18:00</li>
-                        <li>토요일: 09:00 - 13:00</li>
-                        <li>일요일/공휴일: 휴무</li>
-                    </ul>
+                    <h4 class="footer-section-title">법적 고지</h4>
+                    <a href="privacy.html" class="footer-link">개인정보처리방침</a>
+                    <a href="terms.html" class="footer-link">이용약관</a>
                 </div>
             </div>
             
-            <div class="border-t border-gray-800 pt-8 text-sm text-center">
+            <div class="footer-bottom">
                 <p>&copy; 2025 T World Store. All rights reserved.</p>
             </div>
         </div>
     </footer>
-
-    <!-- ============================================ -->
-    <!-- 맨 위로 버튼 -->
-    <!-- ============================================ -->
-    <button id="scroll-to-top" class="fixed bottom-6 right-6 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-blue-700 transition hidden z-40" onclick="scrollToTop()">
-        <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-        </svg>
-    </button>
 
     <!-- ============================================ -->
     <!-- JavaScript -->
@@ -347,117 +199,146 @@
     <script src="api.js"></script>
     <script src="common.js"></script>
     <script>
-        // ============================================
-        // 페이지 로드 시 초기화
-        // ============================================
-        document.addEventListener('DOMContentLoaded', async function() {
-            // 인기 기기 로드
-            await loadPopularDevices();
-            
-            // 스크롤 애니메이션 초기화
-            initScrollAnimations();
-            
-            // 맨 위로 버튼 초기화
-            initScrollToTop();
-        });
+        /**
+         * ═══════════════════════════════════════════════════
+         * index.html 전용 스크립트
+         * ═══════════════════════════════════════════════════
+         */
         
-        // ============================================
-        // 인기 기기 로드
-        // ============================================
-        async function loadPopularDevices() {
-            const container = document.getElementById('popular-devices');
-            
-            try {
-                // API에서 인기 기기 8개 가져오기
-                const devices = await api.getPopularDevices(8);
-                
-                if (!devices || devices.length === 0) {
-                    container.innerHTML = `
-                        <div class="col-span-full text-center py-12">
-                            <p class="text-gray-500">등록된 기기가 없습니다</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // 기기 카드 생성
-                container.innerHTML = devices.map(device => `
-                    <a href="device-detail.html?device=${device.id}" class="device-card bg-white rounded-xl shadow-md overflow-hidden">
-                        <div class="aspect-square bg-gray-100 flex items-center justify-center p-4">
-                            <img src="${device.image || 'https://via.placeholder.com/300'}" 
-                                 alt="${device.name}" 
-                                 class="w-full h-full object-contain">
-                        </div>
-                        <div class="p-4">
-                            <div class="text-sm text-gray-500 mb-1">${device.brand}</div>
-                            <h3 class="font-bold text-lg mb-2">${device.name}</h3>
-                            <div class="flex items-baseline space-x-2">
-                                <span class="text-2xl font-bold text-blue-600">${formatPrice(device.price)}</span>
-                            </div>
-                        </div>
-                    </a>
-                `).join('');
-                
-            } catch (error) {
-                console.error('인기 기기 로드 실패:', error);
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-12">
-                        <p class="text-red-500">데이터를 불러올 수 없습니다</p>
-                        <button onclick="loadPopularDevices()" class="mt-4 text-blue-600 hover:underline">
-                            다시 시도
-                        </button>
-                    </div>
-                `;
+        // 모바일 메뉴 토글
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
             }
         }
         
-        // ============================================
-        // 스크롤 애니메이션
-        // ============================================
-        function initScrollAnimations() {
-            const elements = document.querySelectorAll('.fade-in-up');
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // TODO: images.json 로드
+                // const response = await fetch('data/images.json');
+                // const imagesData = await response.json();
+                
+                // 개발 단계: placeholder 이미지로 테스트
+                loadHeroSlider();
+                loadPopularDevices();
+                loadMiddleBanner();
+                loadBottomPromos();
+                
+            } catch (error) {
+                console.error('페이지 로드 오류:', error);
+                showError();
+            }
+        });
+        
+        /**
+         * 히어로 슬라이더 로드
+         */
+        function loadHeroSlider() {
+            const container = document.getElementById('hero-slider');
+            if (!container) return;
             
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-            
-            elements.forEach(el => observer.observe(el));
+            // 개발 단계: placeholder
+            container.innerHTML = `
+                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                    <div style="text-align: center; padding: 2rem;">
+                        <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem;">최신 스마트폰과 알뜰한 요금제</h1>
+                        <p style="font-size: 1.5rem; opacity: 0.9;">SKT 공식 온라인 스토어에서 특별한 혜택을 경험하세요</p>
+                    </div>
+                </div>
+            `;
         }
         
-        // ============================================
-        // 맨 위로 버튼
-        // ============================================
-        function initScrollToTop() {
-            const button = document.getElementById('scroll-to-top');
+        /**
+         * 인기 기기 로드
+         */
+        function loadPopularDevices() {
+            const container = document.getElementById('popular-devices');
+            if (!container) return;
             
-            window.addEventListener('scroll', () => {
-                if (window.pageYOffset > 300) {
-                    button.classList.remove('hidden');
-                } else {
-                    button.classList.add('hidden');
-                }
-            });
+            // 개발 단계: placeholder (8개)
+            const devices = Array(8).fill(null);
+            
+            container.innerHTML = devices.map((_, index) => `
+                <div class="device-card">
+                    <div class="device-card-image">
+                        <div style="width: 100%; height: 100%; background: var(--color-gray-100); display: flex; align-items: center; justify-content: center; color: var(--color-gray-400);">
+                            <span style="font-size: 3rem;">📱</span>
+                        </div>
+                    </div>
+                    <div class="device-card-body">
+                        <div class="device-card-brand">삼성전자</div>
+                        <h3 class="device-card-title">기기명 ${index + 1}</h3>
+                        <p class="device-card-subtitle">skt | 기기변경 | 공시지원</p>
+                        <div class="device-card-prices">
+                            <div class="device-card-price-row">
+                                <span class="device-card-price-label">출고가 할인금</span>
+                                <span class="device-card-price-value">000,000원</span>
+                            </div>
+                            <div class="device-card-price-row">
+                                <span class="device-card-price-label">예상 월 납부금액</span>
+                                <span class="device-card-price-total">00,000원</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
         
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+        /**
+         * 중간 배너 로드
+         */
+        function loadMiddleBanner() {
+            const container = document.getElementById('middle-banner');
+            if (!container) return;
+            
+            // 개발 단계: placeholder
+            container.innerHTML = `
+                <div style="width: 100%; min-height: 400px; background: linear-gradient(45deg, var(--color-gray-200) 0%, var(--color-gray-100) 100%); display: flex; align-items: center; justify-content: center;">
+                    <div style="text-align: center;">
+                        <span style="font-size: 5rem; display: block; margin-bottom: 1rem;">🎁</span>
+                        <h3 style="font-size: 2rem; font-weight: 700; color: var(--color-text-black);">특별 프로모션</h3>
+                        <p style="font-size: 1.25rem; color: var(--color-text-gray); margin-top: 0.5rem;">중간 배너 이미지 영역</p>
+                    </div>
+                </div>
+            `;
         }
         
-        // ============================================
-        // 모바일 메뉴 토글
-        // ============================================
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+        /**
+         * 하단 프로모션 로드
+         */
+        function loadBottomPromos() {
+            const container = document.getElementById('bottom-promos');
+            if (!container) return;
+            
+            // 개발 단계: placeholder (2x2 = 4개)
+            const promos = Array(4).fill(null);
+            
+            container.innerHTML = promos.map((_, index) => `
+                <div class="card">
+                    <div style="width: 100%; aspect-ratio: 1; background: var(--color-gray-100); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <span style="font-size: 3rem;">🎯</span>
+                    </div>
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">프로모션 ${index + 1}</h3>
+                    <p style="color: var(--color-text-gray);">혜택 설명</p>
+                </div>
+            `).join('');
+        }
+        
+        /**
+         * 에러 표시
+         */
+        function showError() {
+            document.body.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem;">
+                    <div style="text-align: center;">
+                        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-danger);">페이지 로드 오류</h1>
+                        <p style="color: var(--color-text-gray); margin-bottom: 2rem;">페이지를 불러오는 중 문제가 발생했습니다.</p>
+                        <button onclick="location.reload()" class="btn btn-primary">새로고침</button>
+                    </div>
+                </div>
+            `;
         }
     </script>
 </body>

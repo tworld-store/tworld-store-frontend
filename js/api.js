@@ -18,10 +18,10 @@
 class DataAPI {
     constructor() {
         // 기본 URL 설정
-        this.productsUrl = '/data/products.json';
-        this.imagesIndexUrl = '/images/images-index.json';
-        this.imagesDevicesUrl = '/images/images-devices.json';
-        this.imagesDetailBaseUrl = '/images/images-detail';
+        this.productsUrl = 'data/products.json';
+        this.imagesIndexUrl = 'images/images-index.json';
+        this.imagesDevicesUrl = 'images/images-devices.json';
+        this.imagesDetailBaseUrl = 'images/images-detail';
         
         // 캐시 저장소 (각 파일별 독립)
         this.cache = {

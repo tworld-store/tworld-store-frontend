@@ -283,7 +283,7 @@
             const card = document.createElement('div');
             card.className = 'device-card';
             card.onclick = () => {
-                location.href = `/device-detail.html?model=${encodeURIComponent(data.modelName)}`;
+                location.href = `device-detail.html?device=${encodeURIComponent(data.modelName)}`;
             };
             
             card.innerHTML = `

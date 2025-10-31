@@ -43,6 +43,11 @@ class DeviceDetailPage {
             
             this._showLoading();
             
+            // ★ Calculator 초기화 (settings 로드) ★
+            console.log('🔧 Calculator 초기화 중...');
+            await calculator.init();
+            console.log('✅ Calculator 초기화 완료');
+            
             await this._loadDeviceData(modelName);
             
             this._buildColorOptions();

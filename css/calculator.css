@@ -1,8 +1,8 @@
 /**
- * Calculator 페이지 전용 스타일
+ * Calculator íŽ˜ì´ì§€ ì „ìš© ìŠ¤íƒ€ì¼
  */
 
-/* 진행 단계 표시 */
+/* ì§„í–‰ ë‹¨ê³„ í‘œì‹œ */
 .step-item {
   display: flex;
   flex-direction: column;
@@ -62,7 +62,7 @@
   background: #2563eb;
 }
 
-/* 기기 카드 */
+/* ê¸°ê¸° ì¹´ë“œ */
 .device-card {
   background: white;
   border-radius: 12px;
@@ -83,7 +83,7 @@
   background: #eff6ff;
 }
 
-/* 요금제 카드 */
+/* ìš”ê¸ˆì œ ì¹´ë“œ */
 .plan-card {
   background: white;
   border-radius: 12px;
@@ -107,7 +107,7 @@
   background: #eff6ff;
 }
 
-/* 가입유형 버튼 */
+/* ê°€ìž…ìœ í˜• ë²„íŠ¼ */
 .jointype-btn {
   background: white;
   border-radius: 16px;
@@ -129,7 +129,7 @@
   background: #eff6ff;
 }
 
-/* 약정 유형 카드 */
+/* ì•½ì • ìœ í˜• ì¹´ë“œ */
 .contract-card {
   background: white;
   border-radius: 16px;
@@ -151,7 +151,7 @@
   background: #eff6ff;
 }
 
-/* 할부 버튼 */
+/* í• ë¶€ ë²„íŠ¼ */
 .installment-btn {
   background: white;
   border-radius: 12px;
@@ -173,7 +173,7 @@
   background: #eff6ff;
 }
 
-/* 버튼 스타일 */
+/* ë²„íŠ¼ ìŠ¤íƒ€ì¼ */
 .btn-primary {
   background: #2563eb;
   color: white;
@@ -216,7 +216,7 @@
   transform: translateY(-2px);
 }
 
-/* 로딩 스피너 */
+/* ë¡œë”© ìŠ¤í”¼ë„ˆ */
 .spinner {
   width: 48px;
   height: 48px;
@@ -233,7 +233,7 @@
   }
 }
 
-/* 페이드 인 애니메이션 */
+/* íŽ˜ì´ë“œ ì¸ ì• ë‹ˆë©”ì´ì…˜ */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -253,7 +253,7 @@
   animation: fadeIn 0.3s ease;
 }
 
-/* 반응형 */
+/* ë°˜ì‘í˜• */
 @media (max-width: 768px) {
   .step-item {
     font-size: 12px;
@@ -284,7 +284,7 @@
   }
 }
 
-/* 가격 결과 카드 */
+/* ê°€ê²© ê²°ê³¼ ì¹´ë“œ */
 .price-result-card {
   background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   color: white;

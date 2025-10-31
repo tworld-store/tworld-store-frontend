@@ -1,0 +1,103 @@
+{
+  "card": {
+    "title": "갤럭시 S24",
+    "subtitle": "skt|기기변경|공시지원"
+  },
+  "thumbnails": {
+    "팬텀블랙": {
+      "path": "https://via.placeholder.com/400x400/000000/FFFFFF?text=Galaxy+S24+Black"
+    },
+    "크림": {
+      "path": "https://via.placeholder.com/400x400/F5F5DC/000000?text=Galaxy+S24+Cream"
+    },
+    "바이올렛": {
+      "path": "https://via.placeholder.com/400x400/8B00FF/FFFFFF?text=Galaxy+S24+Violet"
+    }
+  },
+  "gallery": {
+    "팬텀블랙": [
+      {
+        "path": "https://via.placeholder.com/800x800/000000/FFFFFF?text=Front+View",
+        "alt": "갤럭시 S24 정면",
+        "is_thumbnail": true
+      },
+      {
+        "path": "https://via.placeholder.com/800x800/1C1C1C/FFFFFF?text=Back+View",
+        "alt": "갤럭시 S24 후면",
+        "is_thumbnail": true
+      },
+      {
+        "path": "https://via.placeholder.com/800x800/2C2C2C/FFFFFF?text=Side+View",
+        "alt": "갤럭시 S24 측면",
+        "is_thumbnail": true
+      },
+      {
+        "path": "https://via.placeholder.com/800x800/3C3C3C/FFFFFF?text=Detail+View",
+        "alt": "갤럭시 S24 상세",
+        "is_thumbnail": true
+      }
+    ],
+    "크림": [
+      {
+        "path": "https://via.placeholder.com/800x800/F5F5DC/000000?text=Front+View",
+        "alt": "갤럭시 S24 크림 정면",
+        "is_thumbnail": true
+      },
+      {
+        "path": "https://via.placeholder.com/800x800/EEE5CC/000000?text=Back+View",
+        "alt": "갤럭시 S24 크림 후면",
+        "is_thumbnail": true
+      },
+      {
+        "path": "https://via.placeholder.com/800x800/E5D5BC/000000?text=Side+View",
+        "alt": "갤럭시 S24 크림 측면",
+        "is_thumbnail": true
+      },
+      {
+        "path": "https://via.placeholder.com/800x800/DCC5AC/000000?text=Detail+View",
+        "alt": "갤럭시 S24 크림 상세",
+        "is_thumbnail": true
+      }
+    ],
+    "바이올렛": [
+      {
+        "path": "https://via.placeholder.com/800x800/8B00FF/FFFFFF?text=Front+View",
+        "alt": "갤럭시 S24 바이올렛 정면",
+        "is_thumbnail": true
+      },
+      {
+        "path": "https://via.placeholder.com/800x800/7B00EF/FFFFFF?text=Back+View",
+        "alt": "갤럭시 S24 바이올렛 후면",
+        "is_thumbnail": true
+      },
+      {
+        "path": "https://via.placeholder.com/800x800/6B00DF/FFFFFF?text=Side+View",
+        "alt": "갤럭시 S24 바이올렛 측면",
+        "is_thumbnail": true
+      },
+      {
+        "path": "https://via.placeholder.com/800x800/5B00CF/FFFFFF?text=Detail+View",
+        "alt": "갤럭시 S24 바이올렛 상세",
+        "is_thumbnail": true
+      }
+    ]
+  },
+  "detail_sections": [
+    {
+      "path": "https://via.placeholder.com/860x600/3617CE/FFFFFF?text=100%25+Genuine+Gift",
+      "alt": "100% 정품 사은품"
+    },
+    {
+      "path": "https://via.placeholder.com/860x600/FF4D4D/FFFFFF?text=Free+Galaxy+Buds",
+      "alt": "갤럭시 버즈 무료 증정"
+    },
+    {
+      "path": "https://via.placeholder.com/860x600/2910A3/FFFFFF?text=T+Premium+Gift",
+      "alt": "T프리미엄 사은품"
+    },
+    {
+      "path": "https://via.placeholder.com/860x600/757380/FFFFFF?text=24+Month+Warranty",
+      "alt": "24개월 무상 보증"
+    }
+  ]
+}

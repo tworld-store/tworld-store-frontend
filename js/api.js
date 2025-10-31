@@ -526,3 +526,47 @@ const api = new DataAPI();
  * 
  * ═══════════════════════════════════════════════════
  */
+
+/**
+ * ═══════════════════════════════════════════════════
+ * 하위 호환성 함수들 (Phase 1-2 HTML과의 호환)
+ * ═══════════════════════════════════════════════════
+ */
+
+/**
+ * 기기 카드 데이터 조회 (devices.html, index.html용)
+ * @param {string} brand - 브랜드 필터 (선택)
+ * @returns {Promise<Array>} 기기 목록
+ */
+api.getCardData = async function(brand = null) {
+    return await api.getDevices(brand);
+};
+
+/**
+ * 특정 모델의 이미지 데이터 조회 (device-detail.html용)
+ * @param {string} modelName - 모델명
+ * @returns {Promise<Object>} 이미지 데이터
+ */
+api.getModelImages = async function(modelName) {
+    try {
+        // 모델명을 파일명으로 변환 (공백 제거)
+        const fileName = modelName.replace(/\s+/g, '');
+        const url = `${api.imagesDetailBaseUrl}/${fileName}.json`;
+        
+        console.log(`🖼️ 이미지 로드: ${url}`);
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            console.warn(`이미지 파일 없음: ${url}`);
+            return null;
+        }
+        
+        const data = await response.json();
+        return data;
+        
+    } catch (error) {
+        console.error(`이미지 로드 실패 (${modelName}):`, error);
+        return null;
+    }
+};

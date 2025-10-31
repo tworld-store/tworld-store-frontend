@@ -1,0 +1,85 @@
+{
+  "hero_slider": {
+    "enabled": true,
+    "auto_play": true,
+    "interval": 5000,
+    "slides": [
+      {
+        "path": "https://via.placeholder.com/1920x500/3617CE/FFFFFF?text=Galaxy+S24+Launch",
+        "link": "device-detail.html?device=갤럭시S24",
+        "alt": "갤럭시 S24 신규 출시"
+      },
+      {
+        "path": "https://via.placeholder.com/1920x500/FF4D4D/FFFFFF?text=iPhone+16+Pro",
+        "link": "device-detail.html?device=아이폰16Pro",
+        "alt": "아이폰 16 Pro"
+      },
+      {
+        "path": "https://via.placeholder.com/1920x500/2910A3/FFFFFF?text=5G+Special+Offer",
+        "link": "devices.html",
+        "alt": "5G 특가 프로모션"
+      }
+    ]
+  },
+  "popular_devices": {
+    "enabled": true,
+    "title": "최신 스마트폰",
+    "layout": 8,
+    "models": [
+      "갤럭시S24",
+      "아이폰16Pro",
+      "갤럭시Z플립7",
+      "아이폰16",
+      "갤럭시S24Ultra",
+      "갤럭시S24Plus",
+      "아이폰15Pro",
+      "갤럭시A54"
+    ],
+    "badges": {
+      "갤럭시S24": {
+        "text": "Hot",
+        "color": "#FF4D4D"
+      },
+      "아이폰16Pro": {
+        "text": "New",
+        "color": "#3617CE"
+      },
+      "갤럭시Z플립7": {
+        "text": "추천",
+        "color": "#FF4D4D"
+      }
+    }
+  },
+  "middle_banner": {
+    "enabled": true,
+    "path": "https://via.placeholder.com/1200x300/757380/FFFFFF?text=Winter+Special+Promotion",
+    "link": "devices.html",
+    "alt": "겨울 특가 프로모션"
+  },
+  "bottom_promos": {
+    "enabled": true,
+    "layout": "2x2",
+    "items": [
+      {
+        "path": "https://via.placeholder.com/600x400/3617CE/FFFFFF?text=5G+Plans",
+        "link": "plans.html",
+        "alt": "5G 요금제"
+      },
+      {
+        "path": "https://via.placeholder.com/600x400/2910A3/FFFFFF?text=Internet+TV",
+        "link": "devices.html",
+        "alt": "인터넷+TV 결합"
+      },
+      {
+        "path": "https://via.placeholder.com/600x400/FF4D4D/FFFFFF?text=Trade-In",
+        "link": "devices.html",
+        "alt": "기기 변경 혜택"
+      },
+      {
+        "path": "https://via.placeholder.com/600x400/757380/FFFFFF?text=Customer+Service",
+        "link": "contact.html",
+        "alt": "고객 상담"
+      }
+    ]
+  }
+}

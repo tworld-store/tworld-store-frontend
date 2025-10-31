@@ -323,6 +323,10 @@
             try {
                 console.log('🚀 device-detail.html 로드 시작');
                 
+                // ★ Calculator 초기화 (settings 로드)
+                await calculator.init();
+                console.log('✅ Calculator 초기화 완료');
+                
                 // URL에서 모델명 가져오기
                 const params = new URLSearchParams(window.location.search);
                 currentModel = params.get('device');
@@ -642,7 +646,7 @@
                 }
                 
                 // 4. 가격 계산
-                const result = calculatePrice(device, plan, subsidy, {
+                const result = calculator.calculate(device, plan, subsidy, {
                     discountType: discountType,
                     installmentMonths: installmentMonths,
                     internetTv: internetTv

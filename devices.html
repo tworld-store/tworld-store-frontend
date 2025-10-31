@@ -111,6 +111,10 @@
             try {
                 console.log('🚀 devices.html 로드 시작');
                 
+                // ★ Calculator 초기화 (settings 로드)
+                await calculator.init();
+                console.log('✅ Calculator 초기화 완료');
+                
                 // URL 파라미터에서 브랜드 확인
                 const urlParams = new URLSearchParams(window.location.search);
                 const brandParam = urlParams.get('brand');
@@ -169,10 +173,10 @@
                         }
                         
                         // 브랜드 결정
-                        const brand = getBrandFromModel(cardData.device.브랜드);
+                        const brand = getBrandFromModel(cardData.device.brand);
                         
                         // 가격 계산
-                        const priceResult = calculatePrice(
+                        const priceResult = calculator.calculate(
                             cardData.device,
                             cardData.plan,
                             cardData.subsidy,

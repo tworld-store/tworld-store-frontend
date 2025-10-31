@@ -106,6 +106,10 @@
             try {
                 console.log('🚀 index.html 로드 시작');
                 
+                // ★ Calculator 초기화 (settings 로드)
+                await calculator.init();
+                console.log('✅ Calculator 초기화 완료');
+                
                 // 1. images-index.json 로드
                 const imagesData = await api.loadImagesIndex();
                 console.log('✅ images-index.json 로드 완료');
@@ -237,7 +241,7 @@
                     }
                     
                     // 가격 계산
-                    const priceResult = calculatePrice(
+                    const priceResult = calculator.calculate(
                         cardData.device,
                         cardData.plan,
                         cardData.subsidy,

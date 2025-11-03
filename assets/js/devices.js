@@ -268,7 +268,7 @@ function createDeviceCard(device) {
     const firstColor = device.colors && device.colors[0];
     const imageUrl = firstColor && firstColor.imageUrl 
         ? firstColor.imageUrl 
-        : '/assets/images/placeholder/device.png';
+        : './assets/images/placeholder/device.svg';
     
     // 3. 가격 포맷팅
     const formattedPrice = formatNumber(price);
@@ -281,7 +281,7 @@ function createDeviceCard(device) {
     return `
         <article class="device-card" data-device-id="${deviceId}" role="button" tabindex="0">
             <div class="device-image">
-                <img src="${imageUrl}" alt="${model}" loading="lazy" onerror="this.src='/assets/images/placeholder/device.png'">
+                <img src="${imageUrl}" alt="${model}" loading="lazy" onerror="this.src='./assets/images/placeholder/device.svg'">
             </div>
             <div class="device-info">
                 <div class="device-brand">${brand}</div>
@@ -328,11 +328,16 @@ function attachCardClickEvents() {
 function handleCardClick(e) {
     e.preventDefault();
     
-    const deviceId = this.dataset.deviceId;
+    const card = this;
+    const deviceId = card.dataset.deviceId;
     
     if (deviceId) {
-        // 기기 상세 페이지로 이동
-        window.location.href = `/device-detail.html?id=${encodeURIComponent(deviceId)}`;
+        // device 객체 찾기
+        const device = allDevices.find(d => d.id === deviceId);
+        if (device && device.model) {
+            // 모델명으로 상세 페이지 이동
+            window.location.href = `./device-detail.html?model=${encodeURIComponent(device.model)}`;
+        }
     }
 }
 

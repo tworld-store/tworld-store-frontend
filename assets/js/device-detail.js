@@ -22,11 +22,16 @@ let productSwiper = null;
 // 현재 기기 데이터
 let currentDevice = null;
 
+// 현재 모델의 모든 기기 옵션들 (용량별)
+let allDeviceOptions = [];
+
 // 전체 products.json 데이터
 let productsData = null;
 
 // 현재 선택 상태
 let currentSelections = {
+  deviceId: null,            // 현재 선택된 기기옵션ID (모델+용량)
+  storage: null,             // 선택된 용량
   colorId: null,              // 색상 ID
   subscriptionType: 'change', // 가입유형 (change/port/new)
   planId: null,              // 요금제 ID
@@ -45,12 +50,15 @@ async function initDeviceDetailPage() {
   try {
     console.log('상품 상세 페이지 초기화 시작...');
     
-    // 1. URL에서 기기 ID 추출
-    const deviceId = getDeviceIdFromURL();
-    if (!deviceId) {
-      showError('기기 ID가 없습니다. 목록 페이지로 이동합니다.');
+    // 1. URL에서 파라미터 추출
+    const urlParams = new URLSearchParams(window.location.search);
+    const model = urlParams.get('model');
+    const deviceId = urlParams.get('id');
+    
+    if (!model && !deviceId) {
+      showError('모델 또는 기기 ID가 없습니다.');
       setTimeout(() => {
-        window.location.href = '/devices.html';
+        window.location.href = './devices.html';
       }, 2000);
       return;
     }
@@ -62,12 +70,21 @@ async function initDeviceDetailPage() {
       return;
     }
     
-    // 3. 기기 찾기
-    currentDevice = productsData.devices.find(d => d.id === deviceId);
+    // 3. 기기 찾기 (model 우선, 없으면 id 사용)
+    if (model) {
+      // 해당 모델의 첫 번째 기기 (첫 용량)
+      currentDevice = productsData.devices.find(d => d.model === model);
+      console.log(`모델 "${model}"로 검색:`, currentDevice);
+    } else {
+      // 기기 ID로 직접 검색 (하위 호환)
+      currentDevice = productsData.devices.find(d => d.id === deviceId);
+      console.log(`기기 ID "${deviceId}"로 검색:`, currentDevice);
+    }
+    
     if (!currentDevice) {
       showError('해당 기기를 찾을 수 없습니다.');
       setTimeout(() => {
-        window.location.href = '/devices.html';
+        window.location.href = './devices.html';
       }, 2000);
       return;
     }
@@ -117,11 +134,24 @@ async function initDeviceDetailPage() {
 // ============================================
 
 /**
- * URL에서 기기 ID 추출
+ * URL에서 모델명 추출 후 기기 ID로 변환
  * @returns {string|null} 기기 ID
  */
 function getDeviceIdFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
+  
+  // model 파라미터 우선 확인
+  const model = urlParams.get('model');
+  if (model && productsData) {
+    // 해당 모델의 첫 번째 기기 찾기
+    const device = productsData.devices.find(d => d.model === model);
+    if (device) {
+      console.log(`모델 "${model}"의 첫 번째 기기: ${device.id}`);
+      return device.id;
+    }
+  }
+  
+  // 하위 호환: id 파라미터도 지원
   return urlParams.get('id');
 }
 
@@ -181,7 +211,7 @@ function renderImageSlider() {
       if (color.images && color.images.main && color.images.main[i-1]) {
         img.src = color.images.main[i-1];
       } else {
-        img.src = '/assets/images/placeholder/device-default.webp';
+        img.src = './assets/images/placeholder/detail-default.svg';
       }
       img.alt = `${currentDevice.model} ${color.name} 이미지 ${i}`;
       

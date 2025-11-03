@@ -14,12 +14,14 @@
  */
 const API_CONFIG = {
   // GitHub Pages에서 호스팅되는 products.json URL
-  PRODUCTS_JSON: 'https://tworld-store.github.io/tworld-store-frontend/data/products.json',
+  // 상대 경로 사용 (자동으로 올바른 경로 찾음)
+  PRODUCTS_JSON: './data/products.json',
   
-  // 로컬 개발 환경
-  PRODUCTS_JSON_LOCAL: '/data/products.json',
+  // 로컬 개발 환경 (상대 경로)
+  PRODUCTS_JSON_LOCAL: './data/products.json',
   
   // Google Sheets API (상담 신청용)
+  // 실제 GAS 배포 후 URL로 교체
   GOOGLE_SHEETS_API: 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec',
   
   // 타임아웃 (밀리초)
@@ -62,7 +64,7 @@ const APP_CONFIG = {
   SITE_NAME: '티월드스토어',
   
   // 상담 전화번호
-  PHONE_NUMBER: '1588-0011',
+  PHONE_NUMBER: '1600-8939',
   
   // 카카오톡 링크
   KAKAO_LINK: 'https://pf.kakao.com/',

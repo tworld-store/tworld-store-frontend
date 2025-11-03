@@ -145,7 +145,7 @@
                         </div>
                     </div>
 
-                    <!-- 가격 정보 -->
+                    <!-- 가격 정보 (9개 항목) -->
                     <div class="price-summary">
                         <h3 class="price-section-title">월 휴대폰 요금</h3>
                         <div class="price-detail-row">
@@ -253,9 +253,9 @@
     <!-- 인라인 스크립트 -->
     <script>
         /**
-         * ═══════════════════════════════════════════════════
+         * ═══════════════════════════════════════════
          * device-detail.html 메인 스크립트
-         * ═══════════════════════════════════════════════════
+         * ═══════════════════════════════════════════
          */
 
         // Cloudinary 설정
@@ -353,52 +353,52 @@
 
         /**
          * ───────────────────────────────────────────────
-         * 상세 페이지 데이터 로드
+         * 데이터 로드
          * ───────────────────────────────────────────────
          */
         async function loadDetailPage() {
             try {
-                // 1. 이미지 데이터 로드 (통합)
-                const images = await api.getModelImages(currentModel);
-                console.log('✅ 이미지 데이터 로드 완료');
+                console.log('📦 데이터 로딩 시작...');
                 
-                // 2. 해당 모델의 모든 기기옵션 로드
-                const devices = await api.getDevicesByModel(currentModel);
-                console.log(`✅ 기기옵션 ${devices.length}개 로드 완료`);
+                // 1. 모든 기기 데이터 로드
+                const allDevices = await api.getAllDeviceOptions();
                 
-                if (devices.length === 0) {
-                    throw new Error('기기 정보를 찾을 수 없습니다');
+                // 2. 현재 모델의 모든 옵션 필터링
+                const deviceOptions = allDevices.filter(d => d.모델명 === currentModel);
+                
+                if (deviceOptions.length === 0) {
+                    throw new Error(`${currentModel} 기기 정보를 찾을 수 없습니다`);
                 }
                 
-                // 3. 용량별로 그룹화
+                console.log(`✅ ${deviceOptions.length}개 옵션 로드`);
+                
+                // 3. 첫 번째 색상/용량 선택
+                currentColor = deviceOptions[0].색상명;
+                currentCapacity = deviceOptions[0].용량;
+                
+                // 4. 용량별 그룹화
                 devicesByCapacity = {};
-                devices.forEach(device => {
-                    if (!devicesByCapacity[device.용량]) {
-                        devicesByCapacity[device.용량] = [];
+                deviceOptions.forEach(device => {
+                    const capacity = device.용량;
+                    if (!devicesByCapacity[capacity]) {
+                        devicesByCapacity[capacity] = [];
                     }
-                    devicesByCapacity[device.용량].push(device);
+                    devicesByCapacity[capacity].push(device);
                 });
                 
-                // 4. 요금제 목록 로드
-                allPlans = await api.getPlans();
-                console.log(`✅ 요금제 ${allPlans.length}개 로드 완료`);
+                // 5. 갤러리 이미지 준비 (placeholder 사용)
+                prepareGalleryImages(deviceOptions);
                 
-                // 5. 갤러리 이미지 저장
-                galleryImages = images.gallery;
-                
-                // 6. 초기 값 설정
-                const firstCapacity = Object.keys(devicesByCapacity)[0];
-                const firstDevice = devicesByCapacity[firstCapacity][0];
-                currentCapacity = firstDevice.용량;
-                currentColor = firstDevice.색상명;
+                // 6. 요금제 로드
+                allPlans = await api.getAllPlans();
+                console.log(`✅ ${allPlans.length}개 요금제 로드`);
                 
                 // 7. UI 렌더링
-                renderDeviceName(images.card.title);
-                renderColorOptions(devices);
+                renderDeviceName(currentModel);
+                renderColorOptions(deviceOptions);
                 renderCapacityOptions();
-                // renderPlanOptions(); // ⚠️ 주석처리: 모달 방식 사용
                 renderGallery(currentColor);
-                renderDetailSections(images.detail_sections);
+                renderDetailSections();
                 
                 // 8. 초기 가격 계산
                 await updatePrice();
@@ -462,27 +462,31 @@
 
         /**
          * ───────────────────────────────────────────────
-         * 요금제 옵션 렌더링
+         * 갤러리 이미지 준비 (placeholder)
          * ───────────────────────────────────────────────
-         * ⚠️ 주석처리: 모달 방식 사용 (plans-modal.js)
          */
-        /*
-        function renderPlanOptions() {
-            const select = document.getElementById('plan-select');
-            
-            allPlans.forEach(plan => {
-                const option = document.createElement('option');
-                option.value = plan.요금제ID;
-                option.textContent = `${plan.요금제명} (${formatPrice(plan.기본요금)})`;
-                select.appendChild(option);
+        function prepareGalleryImages(devices) {
+            // 색상별로 그룹화
+            const colorGroups = {};
+            devices.forEach(device => {
+                const colorName = device.색상명;
+                if (!colorGroups[colorName]) {
+                    colorGroups[colorName] = [];
+                }
+                colorGroups[colorName].push(device);
             });
             
-            // 첫 번째 요금제 선택
-            if (allPlans.length > 0) {
-                select.value = allPlans[0].요금제ID;
-            }
+            // 각 색상마다 4개의 placeholder 이미지 생성
+            galleryImages = {};
+            Object.keys(colorGroups).forEach(colorName => {
+                galleryImages[colorName] = [
+                    `https://via.placeholder.com/600x600/cccccc/333333?text=${encodeURIComponent(colorName)}+정면`,
+                    `https://via.placeholder.com/600x600/cccccc/333333?text=${encodeURIComponent(colorName)}+후면`,
+                    `https://via.placeholder.com/600x600/cccccc/333333?text=${encodeURIComponent(colorName)}+측면`,
+                    `https://via.placeholder.com/600x600/cccccc/333333?text=${encodeURIComponent(colorName)}+확대`
+                ];
+            });
         }
-        */
 
         /**
          * ───────────────────────────────────────────────
@@ -498,29 +502,47 @@
             }
             
             // 큰 이미지 (첫 번째)
-            const mainImg = document.getElementById('main-image');
-            mainImg.src = getImageUrl(images[0].path, { width: 720, height: 720 });
-            mainImg.alt = images[0].alt;
+            const mainImage = document.getElementById('main-image');
+            mainImage.src = images[0];
+            mainImage.alt = `${currentModel} ${colorName}`;
             
-            // 썸네일 그리드 (2x2)
-            const thumbnailContainer = document.getElementById('thumbnail-grid');
-            thumbnailContainer.innerHTML = '';
+            // 썸네일 그리드
+            const thumbnailGrid = document.getElementById('thumbnail-grid');
+            thumbnailGrid.innerHTML = '';
             
-            // 썸네일용 이미지 (is_thumbnail === true인 것들, 최대 4개)
-            const thumbnails = images.filter(img => img.is_thumbnail).slice(0, 4);
-            
-            thumbnails.forEach((img, index) => {
-                const thumbBtn = document.createElement('button');
-                thumbBtn.className = 'thumbnail-item' + (index === 0 ? ' active' : '');
-                thumbBtn.onclick = () => selectThumbnail(img.path, img.alt, index);
-                
-                const thumbImg = document.createElement('img');
-                thumbImg.src = getImageUrl(img.path, { width: 200, height: 200 });
-                thumbImg.alt = img.alt;
-                
-                thumbBtn.appendChild(thumbImg);
-                thumbnailContainer.appendChild(thumbBtn);
+            images.forEach((imgUrl, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
+                thumb.innerHTML = `<img src="${imgUrl}" alt="썸네일 ${index + 1}">`;
+                thumb.onclick = () => selectThumbnail(index, colorName);
+                thumbnailGrid.appendChild(thumb);
             });
+        }
+
+        /**
+         * ───────────────────────────────────────────────
+         * 상세 섹션 렌더링 (placeholder)
+         * ───────────────────────────────────────────────
+         */
+        function renderDetailSections() {
+            const container = document.getElementById('detail-sections');
+            container.innerHTML = `
+                <div class="detail-section">
+                    <img src="https://via.placeholder.com/860x400/f0f0f0/666666?text=프로모션+배너+1" 
+                         alt="프로모션 1" 
+                         loading="lazy">
+                </div>
+                <div class="detail-section">
+                    <img src="https://via.placeholder.com/860x400/f0f0f0/666666?text=프로모션+배너+2" 
+                         alt="프로모션 2" 
+                         loading="lazy">
+                </div>
+                <div class="detail-section">
+                    <img src="https://via.placeholder.com/860x600/f0f0f0/666666?text=상세+스펙+이미지" 
+                         alt="상세 스펙" 
+                         loading="lazy">
+                </div>
+            `;
         }
 
         /**
@@ -528,42 +550,20 @@
          * 썸네일 선택
          * ───────────────────────────────────────────────
          */
-        function selectThumbnail(path, alt, index) {
+        function selectThumbnail(index, colorName) {
+            const images = galleryImages[colorName];
+            
             // 큰 이미지 변경
-            const mainImg = document.getElementById('main-image');
-            mainImg.src = getImageUrl(path, { width: 720, height: 720 });
-            mainImg.alt = alt;
+            const mainImage = document.getElementById('main-image');
+            mainImage.src = images[index];
             
             // 썸네일 활성화 상태 변경
-            document.querySelectorAll('.thumbnail-item').forEach((thumb, i) => {
+            document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
                 if (i === index) {
                     thumb.classList.add('active');
                 } else {
                     thumb.classList.remove('active');
                 }
-            });
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 하단 상세 섹션 렌더링
-         * ───────────────────────────────────────────────
-         */
-        function renderDetailSections(sections) {
-            const container = document.getElementById('detail-sections');
-            container.innerHTML = '';
-            
-            sections.forEach(section => {
-                const sectionDiv = document.createElement('div');
-                sectionDiv.className = 'detail-section-item';
-                
-                const img = document.createElement('img');
-                img.src = getDetailSectionUrl(section.path);
-                img.alt = section.alt;
-                img.loading = 'lazy';
-                
-                sectionDiv.appendChild(img);
-                container.appendChild(sectionDiv);
             });
         }
 
@@ -584,7 +584,7 @@
                 }
             });
             
-            // 갤러리 업데이트
+            // 갤러리 이미지 변경
             renderGallery(color);
             
             // 가격 재계산
@@ -662,7 +662,7 @@
 
         /**
          * ───────────────────────────────────────────────
-         * 가격 표시
+         * 가격 표시 (9개 항목)
          * ───────────────────────────────────────────────
          */
         function displayPrice(result) {
@@ -702,17 +702,14 @@
 
         /**
          * ───────────────────────────────────────────────
-         * 이벤트 리스너 설정
+         * 이벤트 리스너 등록
          * ───────────────────────────────────────────────
          */
         function setupEventListeners() {
             // 가입유형 변경
             document.getElementById('join-type-select').addEventListener('change', updatePrice);
             
-            // 요금제 변경 - ⚠️ 주석처리: 모달 방식 사용
-            // document.getElementById('plan-select').addEventListener('change', updatePrice);
-            
-            // 할인 방법 변경
+            // 할인방법 변경
             document.querySelectorAll('input[name="discount-type"]').forEach(radio => {
                 radio.addEventListener('change', updatePrice);
             });
@@ -722,10 +719,12 @@
                 radio.addEventListener('change', updatePrice);
             });
             
-            // 할부 개월 변경
+            // 할부개월 변경
             document.querySelectorAll('input[name="installment"]').forEach(radio => {
                 radio.addEventListener('change', updatePrice);
             });
+            
+            console.log('✅ 이벤트 리스너 등록 완료');
         }
 
         /**

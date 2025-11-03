@@ -48,17 +48,21 @@
                     <p>기기 정보를 불러오는 중...</p>
                 </div>
             </div>
+            <div class="section-more">
+                <a href="devices.html" class="btn-secondary">전체 기기 보기</a>
+            </div>
         </div>
     </section>
 
     <!-- 중간 배너 -->
-    <section class="middle-banner-section" id="middle-banner-section">
+    <section class="middle-banner" id="middle-banner">
         <!-- JS로 동적 생성 -->
     </section>
 
-    <!-- 하단 프로모션 -->
-    <section class="promo-section">
+    <!-- 프로모션 섹션 -->
+    <section class="promo-section" id="promo-section">
         <div class="container">
+            <h2 class="section-title">특별 혜택</h2>
             <div class="promo-grid" id="promo-grid">
                 <!-- JS로 동적 생성 -->
             </div>
@@ -94,310 +98,256 @@
          * ═══════════════════════════════════════════════════
          */
 
-        // Cloudinary 설정 (실제 사용시 변경 필요)
+        // Cloudinary 설정
         setCloudinaryConfig('tworld-store');
 
         /**
-         * ───────────────────────────────────────────────
-         * 페이지 초기화
-         * ───────────────────────────────────────────────
+         * ═══════════════════════════════════════════════════
+         * DOMContentLoaded 이벤트
+         * ═══════════════════════════════════════════════════
          */
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                console.log('🚀 index.html 로드 시작');
+                console.log('=== index.html 초기화 시작 ===');
                 
-                // ★ Calculator 초기화 (settings 로드)
+                // 1. Calculator 초기화
                 await calculator.init();
                 console.log('✅ Calculator 초기화 완료');
                 
-                // 1. images-index.json 로드
-                const imagesData = await api.loadImagesIndex();
-                console.log('✅ images-index.json 로드 완료');
-                
-                // 2. 각 섹션 렌더링
+                // 2. 병렬로 모든 섹션 로드
                 await Promise.all([
-                    renderHeroSlider(imagesData.hero_slider),
-                    renderPopularDevices(imagesData.popular_devices),
-                    renderMiddleBanner(imagesData.middle_banner),
-                    renderPromoBlocks(imagesData.bottom_promos)
+                    renderHeroSlider(),
+                    renderPopularDevices(),
+                    renderMiddleBanner(),
+                    renderPromoGrid()
                 ]);
                 
-                console.log('✅ 모든 섹션 렌더링 완료');
-                
+                console.log('=== index.html 초기화 완료 ===');
             } catch (error) {
-                console.error('❌ 페이지 로드 실패:', error);
-                showError('페이지를 불러오는 중 오류가 발생했습니다.');
+                console.error('❌ 초기화 실패:', error);
             }
         });
 
         /**
-         * ───────────────────────────────────────────────
+         * ═══════════════════════════════════════════════════
          * 히어로 슬라이더 렌더링
-         * ───────────────────────────────────────────────
+         * ═══════════════════════════════════════════════════
          */
-        async function renderHeroSlider(sliderConfig) {
-            if (!sliderConfig || !sliderConfig.enabled) {
-                document.querySelector('.hero-section').style.display = 'none';
-                return;
-            }
+        async function renderHeroSlider() {
+            const container = document.getElementById('hero-slider');
             
-            const slider = document.getElementById('hero-slider');
-            const dots = document.getElementById('slider-dots');
+            // Placeholder 슬라이더 (3개)
+            const slides = [
+                { title: '갤럭시 S24 출시', link: 'device-detail.html?device=갤럭시S24' },
+                { title: '아이폰 16 Pro', link: 'device-detail.html?device=아이폰16Pro' },
+                { title: '특별 할인 이벤트', link: 'devices.html' }
+            ];
             
-            // 슬라이드 생성
-            slider.innerHTML = '';
-            dots.innerHTML = '';
+            container.innerHTML = slides.map((slide, index) => `
+                <div class="hero-slide ${index === 0 ? 'active' : ''}" onclick="location.href='${slide.link}'">
+                    <div class="hero-content">
+                        <h1>${slide.title}</h1>
+                        <p>지금 바로 확인하세요</p>
+                    </div>
+                </div>
+            `).join('');
             
-            sliderConfig.slides.forEach((slide, index) => {
-                // 슬라이드 아이템
-                const slideItem = document.createElement('div');
-                slideItem.className = 'slider-item' + (index === 0 ? ' active' : '');
-                
-                const link = document.createElement('a');
-                link.href = slide.link || '#';
-                
-                const img = document.createElement('img');
-                img.src = getBannerUrl(slide.path, 'hero');
-                img.alt = slide.alt;
-                img.loading = index === 0 ? 'eager' : 'lazy';
-                
-                link.appendChild(img);
-                slideItem.appendChild(link);
-                slider.appendChild(slideItem);
-                
-                // 도트 인디케이터
-                const dot = document.createElement('button');
-                dot.className = 'slider-dot' + (index === 0 ? ' active' : '');
-                dot.setAttribute('aria-label', `슬라이드 ${index + 1}`);
-                dot.onclick = () => goToSlide(index);
-                dots.appendChild(dot);
-            });
+            // 도트 생성
+            const dotsContainer = document.getElementById('slider-dots');
+            dotsContainer.innerHTML = slides.map((_, index) => `
+                <button class="dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></button>
+            `).join('');
             
-            // 자동 재생
-            if (sliderConfig.auto_play) {
-                startAutoPlay(sliderConfig.interval || 5000);
-            }
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 슬라이더 자동 재생
-         * ───────────────────────────────────────────────
-         */
-        let autoPlayInterval;
-        let currentSlide = 0;
-        
-        function startAutoPlay(interval) {
-            autoPlayInterval = setInterval(() => {
-                const slides = document.querySelectorAll('.slider-item');
+            // 자동 슬라이드
+            let currentSlide = 0;
+            setInterval(() => {
                 currentSlide = (currentSlide + 1) % slides.length;
                 goToSlide(currentSlide);
-            }, interval);
+            }, 5000);
         }
-        
+
+        /**
+         * 슬라이드 이동
+         */
         function goToSlide(index) {
-            const slides = document.querySelectorAll('.slider-item');
-            const dots = document.querySelectorAll('.slider-dot');
+            const slides = document.querySelectorAll('.hero-slide');
+            const dots = document.querySelectorAll('.dot');
             
-            slides.forEach(slide => slide.classList.remove('active'));
-            dots.forEach(dot => dot.classList.remove('active'));
-            
-            slides[index].classList.add('active');
-            dots[index].classList.add('active');
-            
-            currentSlide = index;
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 인기 기기 렌더링
-         * ───────────────────────────────────────────────
-         */
-        async function renderPopularDevices(popularConfig) {
-            if (!popularConfig || !popularConfig.enabled) {
-                document.querySelector('.popular-section').style.display = 'none';
-                return;
-            }
-            
-            // 제목 설정
-            document.getElementById('popular-title').textContent = 
-                popularConfig.title || '최신 스마트폰';
-            
-            const container = document.getElementById('popular-devices');
-            container.innerHTML = '';
-            
-            // 표시할 모델 수 제한
-            const modelsToShow = popularConfig.models.slice(0, popularConfig.layout || 8);
-            
-            // 각 모델별 카드 생성
-            for (const modelName of modelsToShow) {
-                try {
-                    // ✅ products.json에서 직접 로드 (images.json 불필요)
-                    const allDevices = await api.getDevices();
-                    const modelDevices = allDevices.filter(d => d.모델명 === modelName);
-                    
-                    if (modelDevices.length === 0) {
-                        console.warn(`기기를 찾을 수 없음: ${modelName}`);
-                        continue;
-                    }
-                    
-                    // 첫 번째 기기옵션 사용 (대표 기기)
-                    const device = modelDevices[0];
-                    const deviceOptionId = device.기기옵션ID;
-                    
-                    // 기본 요금제 로드 (첫 번째 5G 요금제)
-                    const allPlans = await api.getPlans();
-                    const plan = allPlans.find(p => p.카테고리.includes('5G')) || allPlans[0];
-                    
-                    // 지원금 로드 (기기변경 기준)
-                    const subsidy = await api.getSubsidy(deviceOptionId, plan.요금제ID, '기기변경');
-                    
-                    if (!device || !plan || !subsidy) {
-                        console.warn(`필수 데이터 없음: ${modelName}`);
-                        continue;
-                    }
-                    
-                    // 가격 계산
-                    const priceResult = calculator.calculate(
-                        device,
-                        plan,
-                        subsidy,
-                        {
-                            discountType: 'subsidy',
-                            installmentMonths: 24,
-                            internetTv: 'none'
-                        }
-                    );
-                    
-                    // ✅ placeholder 썸네일
-                    const thumbnailUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="%23666" text-anchor="middle" dy=".3em"%3E📱 ' + encodeURIComponent(modelName) + '%3C/text%3E%3C/svg%3E';
-                    
-                    // 뱃지
-                    const badge = popularConfig.badges && popularConfig.badges[modelName];
-                    
-                    // 카드 생성
-                    const card = createDeviceCard({
-                        modelName: modelName,
-                        title: modelName, // ✅ 모델명 그대로 사용
-                        subtitle: `${device.용량}GB · ${device.색상명}`, // ✅ 기기 정보로 subtitle 생성
-                        thumbnailUrl: thumbnailUrl,
-                        monthlyTotal: priceResult.monthlyTotal,
-                        subsidyTotal: priceResult.subsidy.total,
-                        badge: badge
-                    });
-                    
-                    container.appendChild(card);
-                    
-                } catch (error) {
-                    console.error(`카드 생성 실패: ${modelName}`, error);
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
                 }
+            });
+            
+            dots.forEach((dot, i) => {
+                if (i === index) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        /**
+         * ═══════════════════════════════════════════════════
+         * 인기 기기 렌더링
+         * ═══════════════════════════════════════════════════
+         */
+        async function renderPopularDevices() {
+            const container = document.getElementById('popular-devices');
+            
+            try {
+                // ✅ products.json에서 직접 로드 (영문 필드명)
+                const allDevices = await api.getDevices();
+                
+                // 모델별 그룹화
+                const modelGroups = {};
+                allDevices.forEach(device => {
+                    const modelName = device.model;
+                    if (!modelGroups[modelName]) {
+                        modelGroups[modelName] = [];
+                    }
+                    modelGroups[modelName].push(device);
+                });
+                
+                // 최대 8개 모델 표시
+                const modelNames = Object.keys(modelGroups).slice(0, 8);
+                
+                // 각 모델별 카드 생성
+                const cards = [];
+                
+                for (const modelName of modelNames) {
+                    try {
+                        const device = modelGroups[modelName][0]; // 첫 번째 옵션 사용
+                        const deviceId = device.id;
+                        
+                        // 기본 요금제
+                        const allPlans = await api.getPlans();
+                        const plan = allPlans.find(p => p.category && p.category.name && p.category.name.includes('5G')) || allPlans[0];
+                        
+                        // 지원금
+                        const subsidy = await api.getSubsidy(deviceId, plan.id, 'change');
+                        
+                        if (!plan || !subsidy) continue;
+                        
+                        // 가격 계산
+                        const priceResult = calculator.calculate(
+                            device,
+                            plan,
+                            subsidy,
+                            {
+                                discountType: 'subsidy',
+                                installmentMonths: 24,
+                                internetTv: 'none'
+                            }
+                        );
+                        
+                        // Placeholder 썸네일
+                        const thumbnailUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="%23666" text-anchor="middle" dy=".3em"%3E📱 ' + encodeURIComponent(modelName) + '%3C/text%3E%3C/svg%3E';
+                        
+                        cards.push({
+                            modelName: modelName,
+                            title: modelName,
+                            subtitle: `${device.storage}GB · ${device.color.name}`,
+                            thumbnailUrl: thumbnailUrl,
+                            monthlyTotal: priceResult.monthlyTotal,
+                            subsidyTotal: priceResult.subsidy.total,
+                            releasePrice: priceResult.releasePrice
+                        });
+                        
+                    } catch (error) {
+                        console.error(`카드 생성 실패: ${modelName}`, error);
+                    }
+                }
+                
+                // 렌더링
+                container.innerHTML = cards.map(card => `
+                    <div class="device-card" onclick="location.href='device-detail.html?device=${encodeURIComponent(card.modelName)}'">
+                        <div class="device-image">
+                            <img src="${card.thumbnailUrl}" alt="${card.title}">
+                        </div>
+                        <div class="device-info">
+                            <h3 class="device-title">${card.title}</h3>
+                            <p class="device-subtitle">${card.subtitle}</p>
+                            <div class="device-pricing">
+                                <div class="price-row">
+                                    <span class="price-label">출고가</span>
+                                    <span class="price-value">${formatPrice(card.releasePrice)}원</span>
+                                </div>
+                                <div class="price-row">
+                                    <span class="price-label">지원금</span>
+                                    <span class="price-value discount">${formatPrice(card.subsidyTotal)}원</span>
+                                </div>
+                                <div class="price-row highlight">
+                                    <span class="price-label">월 납부금</span>
+                                    <span class="price-value">${formatPrice(card.monthlyTotal)}원</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                console.log(`✅ 인기 기기 ${cards.length}개 렌더링 완료`);
+                
+            } catch (error) {
+                console.error('❌ 인기 기기 로드 실패:', error);
+                container.innerHTML = '<div class="error-message"><p>기기 정보를 불러올 수 없습니다.</p></div>';
             }
         }
 
         /**
-         * ───────────────────────────────────────────────
-         * 기기 카드 생성
-         * ───────────────────────────────────────────────
+         * ═══════════════════════════════════════════════════
+         * 중간 배너 렌더링
+         * ═══════════════════════════════════════════════════
          */
-        function createDeviceCard(data) {
-            const card = document.createElement('div');
-            card.className = 'device-card';
-            card.onclick = () => {
-                location.href = `device-detail.html?device=${encodeURIComponent(data.modelName)}`;
-            };
+        async function renderMiddleBanner() {
+            const container = document.getElementById('middle-banner');
             
-            card.innerHTML = `
-                <div class="device-card-image">
-                    <img src="${data.thumbnailUrl}" alt="${data.title}" loading="lazy">
-                    ${data.badge ? `<span class="badge" style="background-color: ${data.badge.color}">${data.badge.text}</span>` : ''}
-                </div>
-                <div class="device-card-body">
-                    <h3 class="device-title">${data.title}</h3>
-                    <p class="device-subtitle">${data.subtitle}</p>
-                    <div class="device-prices">
-                        <div class="price-row">
-                            <span class="price-label">출고가 할인금</span>
-                            <span class="price-value">${formatDiscount(data.subsidyTotal)}</span>
-                        </div>
-                        <div class="price-row total">
-                            <span class="price-label">월 예상 납부</span>
-                            <span class="price-value highlight">${formatMonthly(data.monthlyTotal)}</span>
-                        </div>
+            // Placeholder 배너
+            container.innerHTML = `
+                <div class="banner-item" onclick="location.href='devices.html'">
+                    <div class="banner-content">
+                        <h3>겨울 특가 이벤트</h3>
+                        <p>최대 30만원 할인</p>
                     </div>
                 </div>
             `;
-            
-            return card;
         }
 
         /**
-         * ───────────────────────────────────────────────
-         * 중간 배너 렌더링
-         * ───────────────────────────────────────────────
+         * ═══════════════════════════════════════════════════
+         * 프로모션 그리드 렌더링
+         * ═══════════════════════════════════════════════════
          */
-        function renderMiddleBanner(bannerConfig) {
-            const section = document.getElementById('middle-banner-section');
-            
-            if (!bannerConfig || !bannerConfig.enabled) {
-                section.style.display = 'none';
-                return;
-            }
-            
-            const bannerUrl = getBannerUrl(bannerConfig.path, 'middle');
-            
-            section.innerHTML = `
-                <div class="container">
-                    <a href="${bannerConfig.link || '#'}" class="middle-banner-link">
-                        <img src="${bannerUrl}" alt="${bannerConfig.alt}" loading="lazy">
-                    </a>
-                </div>
-            `;
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 하단 프로모션 블록 렌더링
-         * ───────────────────────────────────────────────
-         */
-        function renderPromoBlocks(promosConfig) {
-            if (!promosConfig || !promosConfig.enabled) {
-                document.querySelector('.promo-section').style.display = 'none';
-                return;
-            }
-            
+        async function renderPromoGrid() {
             const container = document.getElementById('promo-grid');
-            container.innerHTML = '';
             
-            // 레이아웃에 따라 클래스 설정
-            container.className = `promo-grid layout-${promosConfig.layout}`;
+            // Placeholder 프로모션 (2x2 그리드)
+            const promos = [
+                { title: '5G 요금제', link: 'plans.html' },
+                { title: '인터넷+TV', link: 'plans.html' },
+                { title: '액세서리', link: 'devices.html' },
+                { title: '이벤트', link: 'devices.html' }
+            ];
             
-            // 각 프로모션 블록
-            promosConfig.items.forEach(item => {
-                const promoUrl = getBannerUrl(item.path, 'promo');
-                
-                const promoItem = document.createElement('div');
-                promoItem.className = 'promo-item';
-                
-                promoItem.innerHTML = `
-                    <a href="${item.link || '#'}">
-                        <img src="${promoUrl}" alt="${item.alt}" loading="lazy">
-                    </a>
-                `;
-                
-                container.appendChild(promoItem);
-            });
+            container.innerHTML = promos.map(promo => `
+                <div class="promo-item" onclick="location.href='${promo.link}'">
+                    <div class="promo-content">
+                        <h4>${promo.title}</h4>
+                    </div>
+                </div>
+            `).join('');
         }
 
         /**
-         * ───────────────────────────────────────────────
-         * 에러 표시
-         * ───────────────────────────────────────────────
+         * ═══════════════════════════════════════════════════
+         * 가격 포맷팅 헬퍼
+         * ═══════════════════════════════════════════════════
          */
-        function showError(message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = message;
-            document.body.insertBefore(errorDiv, document.body.firstChild);
+        function formatPrice(price) {
+            return new Intl.NumberFormat('ko-KR').format(price);
         }
     </script>
 </body>

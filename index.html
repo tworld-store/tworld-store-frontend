@@ -1,341 +1,344 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <base href="/tworld-store-frontend/">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>티월드스토어 - SKT 공식 온라인샵</title>
-    <link rel="stylesheet" href="css/main.css">
+  <!-- ============================================
+       기본 메타 태그
+       ============================================ -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO -->
+  <title>티월드스토어 - SKT 휴대폰 최저가 상담</title>
+  <meta name="description" content="실시간 가격 계산으로 정확한 월 납부액 확인. 갤럭시, 아이폰 등 다양한 기기를 최저가로 만나보세요.">
+  <meta name="keywords" content="SKT, 휴대폰, 갤럭시, 아이폰, 요금제, 기기변경, 번호이동, 신규가입">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="티월드스토어">
+  <meta property="og:description" content="실시간 가격 계산으로 정확한 월 납부액 확인">
+  <meta property="og:url" content="https://tworld-store.com">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+  
+  <!-- ============================================
+       CSS 파일
+       ============================================ -->
+  <!-- 1. CSS 초기화 -->
+  <link rel="stylesheet" href="/assets/css/reset.css">
+  
+  <!-- 2. 공통 스타일 (헤더/푸터/버튼) -->
+  <link rel="stylesheet" href="/assets/css/common.css">
+  
+  <!-- 3. 메인 페이지 스타일 -->
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <!-- 4. Swiper.js 스타일 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
 </head>
+
 <body>
-    <!-- 헤더 -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <a href="index.html" class="logo">
-                    <span class="logo-text">티월드스토어</span>
-                </a>
-                <nav class="main-nav">
-                    <a href="devices.html?brand=samsung">삼성</a>
-                    <a href="devices.html?brand=apple">애플</a>
-                    <a href="devices.html">전체기기</a>
-                    <a href="plans.html">요금제</a>
-                </nav>
-            </div>
+  <!-- ============================================
+       건너뛰기 링크 (접근성)
+       ============================================ -->
+  <a href="#main-content" class="skip-link">본문 바로가기</a>
+  
+  <!-- ============================================
+       헤더 (Header)
+       ============================================ -->
+  <header class="header">
+    <div class="header-inner">
+      <!-- 로고 -->
+      <div class="header-logo">
+        <a href="/">
+          <img src="/assets/images/logo.svg" alt="티월드스토어" width="140" height="40">
+        </a>
+      </div>
+      
+      <!-- GNB 메뉴 -->
+      <nav class="gnb-nav" aria-label="주 메뉴">
+        <ul>
+          <li><a href="/devices.html?brand=samsung">삼성</a></li>
+          <li><a href="/devices.html?brand=apple">애플</a></li>
+          <li><a href="/devices.html?brand=lg">LG</a></li>
+          <li><a href="/devices.html">전체보기</a></li>
+        </ul>
+      </nav>
+      
+      <!-- 상담 링크 -->
+      <div class="contact-links">
+        <a href="tel:1588-0011" class="contact-link contact-phone">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+          <span>전화상담</span>
+        </a>
+        <a href="https://pf.kakao.com/_example" target="_blank" rel="noopener" class="contact-link contact-kakao">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 2C5.03 2 1 5.14 1 9c0 2.56 1.67 4.8 4.18 6.13-.18.64-.65 2.32-.73 2.67-.1.43.16.42.33.31.14-.1 2.26-1.53 3.12-2.12.37.05.74.08 1.1.08 4.97 0 9-3.14 9-7s-4.03-7-9-7z"/>
+          </svg>
+          <span>카카오톡</span>
+        </a>
+      </div>
+      
+      <!-- 모바일 메뉴 버튼 -->
+      <button class="mobile-menu-btn" aria-label="메뉴 열기" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+  
+  <!-- ============================================
+       메인 컨텐츠
+       ============================================ -->
+  <main id="main-content" class="main-page">
+    
+    <!-- ────────────────────────────────────────
+         섹션 1: 히어로 배너 (Swiper 슬라이더)
+         ──────────────────────────────────────── -->
+    <section class="hero-section">
+      <div class="hero-swiper swiper">
+        <div class="swiper-wrapper">
+          <!-- 슬라이드 1 -->
+          <div class="swiper-slide">
+            <a href="/devices.html?brand=samsung" class="hero-slide">
+              <!-- PC 이미지 -->
+              <picture>
+                <source media="(min-width: 768px)" srcset="/assets/images/banners/hero-1-pc.jpg">
+                <img src="/assets/images/banners/hero-1-mobile.jpg" alt="갤럭시 S24 출시 프로모션" loading="lazy">
+              </picture>
+              <div class="hero-content">
+                <h2 class="hero-title">갤럭시 S24<br>특별 혜택</h2>
+                <p class="hero-desc">최대 60만원 지원금</p>
+                <span class="hero-cta">자세히 보기 →</span>
+              </div>
+            </a>
+          </div>
+          
+          <!-- 슬라이드 2 -->
+          <div class="swiper-slide">
+            <a href="/devices.html?brand=apple" class="hero-slide">
+              <picture>
+                <source media="(min-width: 768px)" srcset="/assets/images/banners/hero-2-pc.jpg">
+                <img src="/assets/images/banners/hero-2-mobile.jpg" alt="아이폰 15 출시" loading="lazy">
+              </picture>
+              <div class="hero-content">
+                <h2 class="hero-title">iPhone 15<br>사전예약</h2>
+                <p class="hero-desc">에어팟 프로 증정</p>
+                <span class="hero-cta">자세히 보기 →</span>
+              </div>
+            </a>
+          </div>
+          
+          <!-- 슬라이드 3 -->
+          <div class="swiper-slide">
+            <a href="/devices.html" class="hero-slide">
+              <picture>
+                <source media="(min-width: 768px)" srcset="/assets/images/banners/hero-3-pc.jpg">
+                <img src="/assets/images/banners/hero-3-mobile.jpg" alt="청년 요금제 혜택" loading="lazy">
+              </picture>
+              <div class="hero-content">
+                <h2 class="hero-title">청년 요금제<br>특별 혜택</h2>
+                <p class="hero-desc">월 6만원대 무제한 요금제</p>
+                <span class="hero-cta">자세히 보기 →</span>
+              </div>
+            </a>
+          </div>
         </div>
-    </header>
-
-    <!-- 메인 컨텐츠 -->
-    <main>
-        <!-- 히어로 슬라이더 섹션 -->
-        <section class="hero-section">
-            <div class="hero-slider" id="hero-slider">
-                <!-- JS로 동적 생성 -->
-                <div class="slider-loading">로딩 중...</div>
-            </div>
-            <div class="slider-dots" id="slider-dots">
-                <!-- JS로 동적 생성 -->
-            </div>
-        </section>
-
-        <!-- 인기 기기 섹션 -->
-        <section class="popular-section">
-            <div class="container">
-                <h2 class="section-title">인기 기기</h2>
-                <div class="devices-grid" id="popular-devices">
-                    <!-- JS로 동적 생성 -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 중간 배너 섹션 -->
-        <section class="banner-section">
-            <div class="container">
-                <div class="middle-banner" id="middle-banner">
-                    <!-- JS로 동적 생성 -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 프로모션 섹션 -->
-        <section class="promo-section">
-            <div class="container">
-                <div class="promo-grid" id="bottom-promos">
-                    <!-- JS로 동적 생성 -->
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- 푸터 -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-info">
-                    <p>고객센터: 1600-8939</p>
-                    <p>상담시간: 평일 09:00 - 18:00</p>
-                </div>
-                <div class="footer-legal">
-                    <p>© 2025 SKT. All rights reserved.</p>
-                </div>
-            </div>
+        
+        <!-- 페이지네이션 (하단 점) -->
+        <div class="swiper-pagination"></div>
+        
+        <!-- 좌우 버튼 (Desktop) -->
+        <div class="swiper-button-prev" aria-label="이전 슬라이드"></div>
+        <div class="swiper-button-next" aria-label="다음 슬라이드"></div>
+      </div>
+    </section>
+    
+    <!-- ────────────────────────────────────────
+         섹션 2: 빠른 상담 CTA
+         ──────────────────────────────────────── -->
+    <section class="quick-consult-section">
+      <div class="container">
+        <div class="quick-consult-inner">
+          <div class="quick-consult-text">
+            <h3 class="quick-consult-title">상담을 원하시나요?</h3>
+            <p class="quick-consult-desc">티월드스토어의 빠른상담 서비스를 이용해 보세요</p>
+          </div>
+          <button type="button" class="btn btn-lg btn-white" id="quick-consult-btn">
+            빠른상담 신청
+          </button>
         </div>
-    </footer>
-
-    <!-- JS 파일 로드 -->
-    <script src="js/cloudinary.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/calculator.js"></script>
-    <script src="js/common.js"></script>
-
-    <!-- 인라인 스크립트 -->
-    <script>
-        /**
-         * ═══════════════════════════════════════════
-         * index.html 메인 스크립트
-         * ═══════════════════════════════════════════
-         */
-
-        // Cloudinary 설정
-        setCloudinaryConfig('tworld-store');
-
-        // 전역 변수
-        let sliderInterval = null;
-        let currentSlide = 0;
-
-        /**
-         * ───────────────────────────────────────────
-         * 페이지 초기화
-         * ───────────────────────────────────────────
-         */
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                console.log('🚀 index.html 로드 시작');
-                
-                // Calculator 초기화
-                await calculator.init();
-                console.log('✅ Calculator 초기화 완료');
-                
-                // 모든 섹션 렌더링
-                await Promise.all([
-                    renderHeroSlider(),
-                    renderPopularDevices(),
-                    renderMiddleBanner(),
-                    renderBottomPromos()
-                ]);
-                
-                console.log('✅ index.html 로드 완료');
-                
-            } catch (error) {
-                console.error('❌ 페이지 로드 실패:', error);
-            }
-        });
-
-        /**
-         * ───────────────────────────────────────────
-         * 히어로 슬라이더 렌더링
-         * ───────────────────────────────────────────
-         */
-        async function renderHeroSlider() {
-            const container = document.getElementById('hero-slider');
-            const dotsContainer = document.getElementById('slider-dots');
-            
-            // Placeholder 슬라이드 3개
-            const slides = [
-                {
-                    url: 'https://via.placeholder.com/1200x500/3617CE/ffffff?text=프로모션+배너+1',
-                    alt: '프로모션 1',
-                    link: '#'
-                },
-                {
-                    url: 'https://via.placeholder.com/1200x500/2910A3/ffffff?text=프로모션+배너+2',
-                    alt: '프로모션 2',
-                    link: '#'
-                },
-                {
-                    url: 'https://via.placeholder.com/1200x500/4E2EE8/ffffff?text=프로모션+배너+3',
-                    alt: '프로모션 3',
-                    link: '#'
-                }
-            ];
-            
-            // 슬라이드 생성
-            container.innerHTML = '';
-            slides.forEach((slide, index) => {
-                const slideItem = document.createElement('div');
-                slideItem.className = 'slider-item' + (index === 0 ? ' active' : '');
-                slideItem.innerHTML = `
-                    <a href="${slide.link}">
-                        <img src="${slide.url}" alt="${slide.alt}" loading="${index === 0 ? 'eager' : 'lazy'}">
-                    </a>
-                `;
-                container.appendChild(slideItem);
-            });
-            
-            // 도트 생성
-            dotsContainer.innerHTML = '';
-            slides.forEach((_, index) => {
-                const dot = document.createElement('button');
-                dot.className = 'slider-dot' + (index === 0 ? ' active' : '');
-                dot.onclick = () => goToSlide(index);
-                dotsContainer.appendChild(dot);
-            });
-            
-            // 자동 재생 시작
-            startAutoPlay();
-        }
-
-        /**
-         * ───────────────────────────────────────────
-         * 슬라이드 이동
-         * ───────────────────────────────────────────
-         */
-        function goToSlide(index) {
-            const slides = document.querySelectorAll('.slider-item');
-            const dots = document.querySelectorAll('.slider-dot');
-            
-            // 현재 슬라이드 비활성화
-            slides[currentSlide].classList.remove('active');
-            dots[currentSlide].classList.remove('active');
-            
-            // 새 슬라이드 활성화
-            currentSlide = index;
-            slides[currentSlide].classList.add('active');
-            dots[currentSlide].classList.add('active');
-        }
-
-        /**
-         * ───────────────────────────────────────────
-         * 자동 재생
-         * ───────────────────────────────────────────
-         */
-        function startAutoPlay() {
-            // 기존 interval 제거
-            if (sliderInterval) {
-                clearInterval(sliderInterval);
-            }
-            
-            // 5초마다 다음 슬라이드
-            sliderInterval = setInterval(() => {
-                const slides = document.querySelectorAll('.slider-item');
-                const nextSlide = (currentSlide + 1) % slides.length;
-                goToSlide(nextSlide);
-            }, 5000);
-        }
-
-        /**
-         * ───────────────────────────────────────────
-         * 인기 기기 렌더링
-         * ───────────────────────────────────────────
-         */
-        async function renderPopularDevices() {
-            const container = document.getElementById('popular-devices');
-            
-            try {
-                // 실제 데이터 로드
-                const allDevices = await api.getDevices();
-                
-                // 각 브랜드에서 2~3개씩 선택 (총 8개)
-                const samsung = allDevices.filter(d => d.brand === '삼성').slice(0, 3);
-                const apple = allDevices.filter(d => d.brand === '애플').slice(0, 3);
-                const lg = allDevices.filter(d => d.brand === 'LG').slice(0, 2);
-                
-                // 모델별로 그룹화 (중복 제거)
-                const modelMap = new Map();
-                [...samsung, ...apple, ...lg].forEach(device => {
-                    if (!modelMap.has(device.model)) {
-                        modelMap.set(device.model, device);
-                    }
-                });
-                
-                const popularDevices = Array.from(modelMap.values()).slice(0, 8);
-                
-                container.innerHTML = '';
-                
-                for (const device of popularDevices) {
-                    const card = document.createElement('div');
-                    card.className = 'device-card';
-                    card.onclick = () => location.href = `device-detail.html?device=${encodeURIComponent(device.model)}`;
-                    
-                    // Placeholder 이미지 (나중에 Cloudinary로 교체)
-                    const imageUrl = `https://via.placeholder.com/400x400/cccccc/333333?text=${encodeURIComponent(device.model)}`;
-                    
-                    card.innerHTML = `
-                        <div class="device-image">
-                            <img src="${imageUrl}" 
-                                 alt="${device.model}"
-                                 loading="lazy">
-                        </div>
-                        <div class="device-info">
-                            <h3 class="device-title">${device.model}</h3>
-                            <p class="device-subtitle">${device.storage}GB · ${device.color.name}</p>
-                            <p class="device-price">월 ${formatPrice(Math.round(device.price / 24))}</p>
-                        </div>
-                    `;
-                    
-                    container.appendChild(card);
-                }
-                
-                console.log(`✅ 인기 기기 ${popularDevices.length}개 렌더링 완료`);
-                
-            } catch (error) {
-                console.error('❌ 인기 기기 렌더링 실패:', error);
-                container.innerHTML = '<p class="error-message">기기를 불러오는 중 오류가 발생했습니다.</p>';
-            }
-        }
-
-        /**
-         * ───────────────────────────────────────────
-         * 중간 배너 렌더링
-         * ───────────────────────────────────────────
-         */
-        async function renderMiddleBanner() {
-            const container = document.getElementById('middle-banner');
-            
-            container.innerHTML = `
-                <a href="#" class="banner-link">
-                    <img src="https://via.placeholder.com/860x300/f0f0f0/666666?text=중간+프로모션+배너" 
-                         alt="중간 배너"
-                         loading="lazy">
-                </a>
-            `;
-            
-            console.log('✅ 중간 배너 렌더링 완료');
-        }
-
-        /**
-         * ───────────────────────────────────────────
-         * 하단 프로모션 렌더링
-         * ───────────────────────────────────────────
-         */
-        async function renderBottomPromos() {
-            const container = document.getElementById('bottom-promos');
-            
-            // 2x2 그리드 (4개)
-            const promos = [
-                { title: '프로모션 1', link: '#' },
-                { title: '프로모션 2', link: '#' },
-                { title: '프로모션 3', link: '#' },
-                { title: '프로모션 4', link: '#' }
-            ];
-            
-            container.innerHTML = '';
-            
-            promos.forEach(promo => {
-                const promoItem = document.createElement('div');
-                promoItem.className = 'promo-item';
-                promoItem.innerHTML = `
-                    <a href="${promo.link}">
-                        <img src="https://via.placeholder.com/400x400/e5e5e5/666666?text=${encodeURIComponent(promo.title)}" 
-                             alt="${promo.title}"
-                             loading="lazy">
-                    </a>
-                `;
-                container.appendChild(promoItem);
-            });
-            
-            console.log('✅ 하단 프로모션 렌더링 완료');
-        }
-    </script>
+      </div>
+    </section>
+    
+    <!-- ────────────────────────────────────────
+         섹션 3: 브랜드 카테고리
+         ──────────────────────────────────────── -->
+    <section class="brand-category-section">
+      <div class="container">
+        <h2 class="section-title">브랜드별 보기</h2>
+        <div class="brand-tabs" role="tablist">
+          <button class="brand-tab active" data-brand="all" role="tab" aria-selected="true">전체</button>
+          <button class="brand-tab" data-brand="samsung" role="tab" aria-selected="false">삼성</button>
+          <button class="brand-tab" data-brand="apple" role="tab" aria-selected="false">애플</button>
+          <button class="brand-tab" data-brand="lg" role="tab" aria-selected="false">LG</button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- ────────────────────────────────────────
+         섹션 4: 인기 기기 BEST 8
+         ──────────────────────────────────────── -->
+    <section class="popular-devices-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">인기 많은 휴대폰 BEST 8</h2>
+          <a href="/devices.html" class="section-link">전체보기 →</a>
+        </div>
+        
+        <!-- 기기 그리드 (JavaScript로 생성) -->
+        <div class="device-grid" id="device-grid">
+          <!-- 로딩 스켈레톤 -->
+          <div class="device-skeleton"></div>
+          <div class="device-skeleton"></div>
+          <div class="device-skeleton"></div>
+          <div class="device-skeleton"></div>
+          <div class="device-skeleton hide-mobile"></div>
+          <div class="device-skeleton hide-mobile"></div>
+          <div class="device-skeleton hide-mobile"></div>
+          <div class="device-skeleton hide-mobile"></div>
+        </div>
+        
+        <!-- 에러 메시지 (숨김 상태) -->
+        <div class="error-message hide" id="error-message">
+          <svg width="48" height="48" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+          <p>데이터를 불러오는 중 오류가 발생했습니다.</p>
+          <button type="button" class="btn btn-sm btn-primary" id="retry-btn">다시 시도</button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- ────────────────────────────────────────
+         섹션 5: 프로모션 배너
+         ──────────────────────────────────────── -->
+    <section class="promo-banner-section">
+      <div class="container">
+        <a href="/devices.html" class="promo-banner">
+          <picture>
+            <source media="(min-width: 768px)" srcset="/assets/images/banners/promo-pc.jpg">
+            <img src="/assets/images/banners/promo-mobile.jpg" alt="사은품 프로모션" loading="lazy">
+          </picture>
+        </a>
+      </div>
+    </section>
+    
+    <!-- ────────────────────────────────────────
+         섹션 6: 고객센터
+         ──────────────────────────────────────── -->
+    <section class="customer-service-section">
+      <div class="container">
+        <h2 class="section-title">고객센터</h2>
+        <div class="cs-content">
+          <div class="cs-info">
+            <div class="cs-phone">
+              <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+              </svg>
+              <div>
+                <strong>1588-0011</strong>
+                <span>평일, 토요일 10:00 ~ 20:00</span>
+              </div>
+            </div>
+          </div>
+          <div class="cs-buttons">
+            <a href="tel:1588-0011" class="btn btn-lg btn-primary">전화 상담</a>
+            <a href="https://pf.kakao.com/_example" target="_blank" rel="noopener" class="btn btn-lg btn-secondary">카카오톡 상담</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  </main>
+  
+  <!-- ============================================
+       푸터 (Footer)
+       ============================================ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="/assets/images/logo-white.svg" alt="티월드스토어" width="120" height="34">
+        </div>
+        <nav class="footer-nav">
+          <a href="/about.html">회사소개</a>
+          <a href="/terms.html">이용약관</a>
+          <a href="/privacy.html" class="footer-nav-important">개인정보처리방침</a>
+          <a href="/faq.html">FAQ</a>
+        </nav>
+      </div>
+      
+      <div class="footer-info">
+        <dl>
+          <dt>대표자</dt>
+          <dd>홍길동</dd>
+          <dt>사업자등록번호</dt>
+          <dd>123-45-67890</dd>
+          <dt>통신판매업신고</dt>
+          <dd>제2024-서울강남-01234호</dd>
+        </dl>
+        <dl>
+          <dt>주소</dt>
+          <dd>서울특별시 강남구 테헤란로 000</dd>
+          <dt>대표전화</dt>
+          <dd>1588-0011</dd>
+          <dt>이메일</dt>
+          <dd>support@tworld-store.com</dd>
+        </dl>
+      </div>
+      
+      <div class="footer-bottom">
+        <p class="footer-copyright">
+          © 2024 T World Store. All rights reserved.
+        </p>
+        <div class="footer-social">
+          <a href="#" aria-label="페이스북">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z" clip-rule="evenodd"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="인스타그램">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 0C7.284 0 6.944.012 5.877.06 4.813.109 4.086.278 3.45.525a4.902 4.902 0 00-1.772 1.153A4.902 4.902 0 00.525 3.45C.278 4.086.109 4.813.06 5.877.012 6.944 0 7.284 0 10s.012 3.056.06 4.123c.049 1.064.218 1.791.465 2.427a4.902 4.902 0 001.153 1.772 4.902 4.902 0 001.772 1.153c.636.247 1.363.416 2.427.465 1.067.048 1.407.06 4.123.06s3.056-.012 4.123-.06c1.064-.049 1.791-.218 2.427-.465a4.902 4.902 0 001.772-1.153 4.902 4.902 0 001.153-1.772c.247-.636.416-1.363.465-2.427.048-1.067.06-1.407.06-4.123s-.012-3.056-.06-4.123c-.049-1.064-.218-1.791-.465-2.427a4.902 4.902 0 00-1.153-1.772A4.902 4.902 0 0016.55.525C15.914.278 15.187.109 14.123.06 13.056.012 12.716 0 10 0zm0 1.802c2.67 0 2.986.01 4.04.058.975.045 1.504.207 1.857.344.466.181.8.398 1.15.748.35.35.567.684.748 1.15.137.353.299.882.344 1.857.048 1.054.058 1.37.058 4.04s-.01 2.986-.058 4.04c-.045.975-.207 1.504-.344 1.857-.181.466-.398.8-.748 1.15-.35.35-.684.567-1.15.748-.353.137-.882.299-1.857.344-1.054.048-1.37.058-4.04.058s-2.986-.01-4.04-.058c-.975-.045-1.504-.207-1.857-.344a3.097 3.097 0 01-1.15-.748 3.097 3.097 0 01-.748-1.15c-.137-.353-.299-.882-.344-1.857-.048-1.054-.058-1.37-.058-4.04s.01-2.986.058-4.04c.045-.975.207-1.504.344-1.857.181-.466.398-.8.748-1.15.35-.35.684-.567 1.15-.748.353-.137.882-.299 1.857-.344 1.054-.048 1.37-.058 4.04-.058z" clip-rule="evenodd"/>
+              <path d="M10 13.333a3.333 3.333 0 100-6.666 3.333 3.333 0 000 6.666zm0-8.468a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm6.538-.203a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- ============================================
+       JavaScript 파일
+       ============================================ -->
+  <!-- 1. Swiper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  
+  <!-- 2. 설정 (제일 먼저) -->
+  <script src="/assets/js/config.js"></script>
+  
+  <!-- 3. 유틸리티 -->
+  <script src="/assets/js/utils.js"></script>
+  
+  <!-- 4. API 클래스 -->
+  <script src="/assets/js/api.js"></script>
+  
+  <!-- 5. 메인 페이지 로직 -->
+  <script src="/assets/js/main.js"></script>
 </body>
 </html>

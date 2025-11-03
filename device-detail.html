@@ -1,783 +1,359 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <base href="/tworld-store-frontend/">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>기기 상세 - SKT 공식 온라인샵</title>
-    <link rel="stylesheet" href="css/main.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>상품 상세 - 티월드스토어</title>
+  
+  <!-- SEO -->
+  <meta name="description" content="실시간 가격 계산으로 정확한 월 납부액 확인">
+  <meta name="keywords" content="SKT, 휴대폰, 갤럭시, 아이폰, 요금제">
+  
+  <!-- OG -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="상품 상세 - 티월드스토어">
+  <meta property="og:description" content="실시간 가격 계산으로 정확한 월 납부액 확인">
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/reset.css">
+  <link rel="stylesheet" href="/assets/css/common.css">
+  <link rel="stylesheet" href="/assets/css/device-detail.css">
+  
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper@10/swiper-bundle.min.css">
 </head>
 <body>
-    <!-- 헤더 -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <a href="index.html" class="logo">
-                    <span class="logo-text">티월드스토어</span>
-                </a>
-                <nav class="main-nav">
-                    <a href="devices.html?brand=samsung">삼성</a>
-                    <a href="devices.html?brand=apple">애플</a>
-                    <a href="devices.html">전체기기</a>
-                    <a href="plans.html">요금제</a>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <!-- 메인 컨텐츠 -->
-    <main class="detail-page">
-        <div class="container">
-            <!-- 상단 섹션: 갤러리 + 옵션 -->
-            <div class="detail-container" id="detail-container">
-                <!-- 좌측: 이미지 갤러리 (60%) -->
-                <div class="gallery-section">
-                    <!-- 큰 이미지 -->
-                    <div class="main-image-wrapper">
-                        <img id="main-image" src="" alt="기기 이미지" class="main-image">
-                    </div>
-                    
-                    <!-- 썸네일 그리드 (2x2) -->
-                    <div class="thumbnail-grid" id="thumbnail-grid">
-                        <!-- JS로 동적 생성 -->
-                    </div>
-                </div>
-
-                <!-- 우측: 옵션 및 가격 (40%) -->
-                <div class="options-section">
-                    <!-- 모델명 -->
-                    <h1 class="device-name" id="device-name">로딩 중...</h1>
-                    
-                    <!-- 색상 선택 -->
-                    <div class="option-group">
-                        <label class="option-label">색상</label>
-                        <div class="color-options" id="color-options">
-                            <!-- JS로 동적 생성 -->
-                        </div>
-                    </div>
-
-                    <!-- 용량 선택 -->
-                    <div class="option-group">
-                        <label class="option-label">용량</label>
-                        <div class="capacity-options" id="capacity-options">
-                            <!-- JS로 동적 생성 -->
-                        </div>
-                    </div>
-
-                    <!-- 가입유형 선택 -->
-                    <div class="option-group">
-                        <label class="option-label">가입유형</label>
-                        <select id="join-type-select" class="option-select">
-                            <option value="기기변경">기기변경</option>
-                            <option value="번호이동">번호이동</option>
-                            <option value="신규가입">신규가입</option>
-                        </select>
-                    </div>
-
-                    <!-- 요금제 선택 -->
-                    <div class="option-group">
-                        <label class="option-label">요금제</label>
-                        <button type="button" class="option-select-btn" onclick="plansModal.open()">
-                            <span id="selected-plan-display">요금제를 선택하세요</span>
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </button>
-                        <!-- 선택된 요금제 정보 (숨김 상태로 시작) -->
-                        <div id="selected-plan-info" class="hidden mt-2 p-3 bg-blue-50 rounded-lg">
-                            <div class="flex justify-between items-center">
-                                <span id="selected-plan-name" class="font-bold text-gray-900"></span>
-                                <span id="selected-plan-price" class="text-blue-600 font-bold"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 할인 방법 -->
-                    <div class="option-group">
-                        <label class="option-label">할인 방법</label>
-                        <div class="discount-options">
-                            <label class="radio-option">
-                                <input type="radio" name="discount-type" value="subsidy" checked>
-                                <span>지원금약정</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="discount-type" value="select">
-                                <span>선택약정</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- 인터넷+TV 결합 -->
-                    <div class="option-group">
-                        <label class="option-label">인터넷+TV</label>
-                        <div class="bundle-options">
-                            <label class="radio-option">
-                                <input type="radio" name="internet-tv" value="none" checked>
-                                <span>신청 안함</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="internet-tv" value="apply">
-                                <span>상담신청</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- 할부 개월 -->
-                    <div class="option-group">
-                        <label class="option-label">할부 개월</label>
-                        <div class="installment-options">
-                            <label class="radio-option">
-                                <input type="radio" name="installment" value="0">
-                                <span>일시불</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="installment" value="12">
-                                <span>12개월</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="installment" value="24" checked>
-                                <span>24개월</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="installment" value="36">
-                                <span>36개월</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- 가격 정보 (9개 항목) -->
-                    <div class="price-summary">
-                        <h3 class="price-section-title">월 휴대폰 요금</h3>
-                        <div class="price-detail-row">
-                            <span>출고가</span>
-                            <span id="release-price">-</span>
-                        </div>
-                        <div class="price-detail-row discount">
-                            <span>휴대폰 할인금</span>
-                            <span id="phone-discount">-</span>
-                        </div>
-                        <div class="price-detail-row">
-                            <span>할부원금</span>
-                            <span id="installment-principal">-</span>
-                        </div>
-                        <div class="price-result-row">
-                            <span>월 휴대폰 요금</span>
-                            <span class="price-highlight" id="monthly-phone">-</span>
-                        </div>
-
-                        <hr class="divider">
-
-                        <h3 class="price-section-title">월 통신요금</h3>
-                        <div class="price-detail-row">
-                            <span>요금제</span>
-                            <span id="base-plan-fee">-</span>
-                        </div>
-                        <div class="price-detail-row discount">
-                            <span>요금할인</span>
-                            <span id="plan-discount">-</span>
-                        </div>
-                        <div class="price-detail-row discount">
-                            <span>결합할인</span>
-                            <span id="bundle-discount">-</span>
-                        </div>
-                        <div class="price-result-row">
-                            <span>월 통신요금</span>
-                            <span class="price-highlight" id="monthly-plan">-</span>
-                        </div>
-
-                        <hr class="divider">
-
-                        <div class="price-total-row">
-                            <span>월 예상 납부 금액</span>
-                            <span class="price-total" id="monthly-total">-</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 하단 상세 섹션 -->
-            <div class="detail-sections" id="detail-sections">
-                <!-- JS로 동적 생성 -->
-            </div>
-        </div>
-    </main>
-
-    <!-- 하단 고정 푸터 -->
-    <div class="fixed-footer" id="fixed-footer">
-        <div class="container">
-            <div class="footer-price-summary">
-                <div class="footer-price-item">
-                    <span class="footer-label">월 휴대폰 요금</span>
-                    <span class="footer-value" id="footer-monthly-phone">-</span>
-                </div>
-                <span class="footer-plus">+</span>
-                <div class="footer-price-item">
-                    <span class="footer-label">월 통신요금</span>
-                    <span class="footer-value" id="footer-monthly-plan">-</span>
-                </div>
-                <span class="footer-equals">=</span>
-                <div class="footer-price-item total">
-                    <span class="footer-label">월 예상 납부 금액</span>
-                    <span class="footer-value-total" id="footer-monthly-total">-</span>
-                </div>
-            </div>
-            <div class="footer-actions">
-                <button class="btn-consult">상담신청</button>
-                <button class="btn-order">주문하기</button>
-            </div>
-        </div>
+  <!-- ============================================
+       Header (공통)
+       ============================================ -->
+  <header id="header" class="header">
+    <div class="header-inner">
+      <!-- 로고 -->
+      <h1 class="header-logo">
+        <a href="/">
+          <img src="/assets/images/ui/logo.svg" alt="티월드스토어">
+        </a>
+      </h1>
+      
+      <!-- GNB -->
+      <nav class="gnb-nav">
+        <ul>
+          <li><a href="/devices.html?brand=samsung">삼성</a></li>
+          <li><a href="/devices.html?brand=apple">애플</a></li>
+          <li><button type="button" id="consultBtn" class="btn-consult">빠른상담</button></li>
+        </ul>
+      </nav>
+      
+      <!-- 상담 링크 -->
+      <div class="contact-links">
+        <a href="tel:1588-0011" class="link-item">
+          <img src="/assets/images/ui/icon-phone.svg" alt="전화상담">
+        </a>
+        <a href="https://pf.kakao.com/" target="_blank" class="link-item">
+          <img src="/assets/images/ui/icon-kakao.svg" alt="카카오톡 상담">
+        </a>
+      </div>
+      
+      <!-- 모바일 메뉴 버튼 -->
+      <button class="menu-toggle-btn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
+  </header>
 
-    <!-- 페이지 푸터 -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-info">
-                    <p>고객센터: 1600-8939</p>
-                    <p>상담시간: 평일 09:00 - 18:00</p>
-                </div>
-                <div class="footer-legal">
-                    <p>© 2025 SKT. All rights reserved.</p>
-                </div>
+  <!-- ============================================
+       Main Content
+       ============================================ -->
+  <main class="main-content">
+    <div class="container">
+      <!-- 상품 상세 컨테이너 -->
+      <div class="product-detail-container">
+        
+        <!-- ============================================
+             좌측: 이미지 슬라이더 영역 (60%)
+             ============================================ -->
+        <div class="product-image-section">
+          <div class="swiper product-swiper">
+            <div class="swiper-wrapper" id="productImageWrapper">
+              <!-- JavaScript로 동적 생성 -->
+              <!-- 예시:
+              <div class="swiper-slide" data-color-id="xxx">
+                <img src="placeholder.jpg" alt="제품 이미지">
+              </div>
+              -->
             </div>
+            
+            <!-- 페이지네이션 -->
+            <div class="swiper-pagination"></div>
+            
+            <!-- 좌우 버튼 -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+          </div>
         </div>
-    </footer>
-
-    <!-- JS 파일 로드 -->
-    <script src="js/cloudinary.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/calculator.js"></script>
-    <script src="js/common.js"></script>
-    <script src="js/plans-modal.js"></script>
-    
-    <!-- 인라인 스크립트 -->
-    <script>
-        /**
-         * ═══════════════════════════════════════════
-         * device-detail.html 메인 스크립트
-         * ═══════════════════════════════════════════
-         */
-
-        // Cloudinary 설정
-        setCloudinaryConfig('tworld-store');
-
-        // 전역 변수
-        let currentModel = '';
-        let currentColor = '';
-        let currentCapacity = 0;
-        let currentPlan = null; // 모달에서 선택한 요금제
-        let allPlans = [];
-        let devicesByCapacity = {};
-        let galleryImages = {};
-
-        /**
-         * ───────────────────────────────────────────────
-         * plans-modal과 연동을 위한 전역 함수
-         * ───────────────────────────────────────────────
-         */
-        window.deviceDetailPage = {
-            /**
-             * 요금제 표시 업데이트 (plans-modal.js에서 호출)
-             */
-            updatePlanDisplay: function(plan) {
-                console.log('✅ 요금제 표시 업데이트:', plan);
-                
-                // 선택된 요금제 저장
-                currentPlan = plan;
-                
-                // 버튼 텍스트 업데이트
-                const displayEl = document.getElementById('selected-plan-display');
-                if (displayEl) {
-                    displayEl.textContent = plan.name;
-                }
-                
-                // 선택된 요금제 정보 박스 표시
-                const infoDiv = document.getElementById('selected-plan-info');
-                if (infoDiv) {
-                    infoDiv.classList.remove('hidden');
-                }
-                
-                // 요금제명 표시
-                const planNameEl = document.getElementById('selected-plan-name');
-                if (planNameEl) {
-                    planNameEl.textContent = plan.name;
-                }
-                
-                // 요금제 가격 표시
-                const planPriceEl = document.getElementById('selected-plan-price');
-                if (planPriceEl) {
-                    planPriceEl.textContent = formatPrice(plan.price) + '/월';
-                }
-                
-                // 가격 재계산
-                updatePrice();
-            }
-        };
-
-        /**
-         * ───────────────────────────────────────────────
-         * 페이지 초기화
-         * ───────────────────────────────────────────────
-         */
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                console.log('🚀 device-detail.html 로드 시작');
-                
-                // ★ Calculator 초기화 (settings 로드)
-                await calculator.init();
-                console.log('✅ Calculator 초기화 완료');
-                
-                // URL에서 모델명 가져오기
-                const params = new URLSearchParams(window.location.search);
-                currentModel = params.get('device');
-                
-                if (!currentModel) {
-                    throw new Error('모델명이 없습니다');
-                }
-                
-                console.log(`📱 모델: ${currentModel}`);
-                
-                // 데이터 로드
-                await loadDetailPage();
-                
-                // 이벤트 리스너 등록
-                setupEventListeners();
-                
-                console.log('✅ device-detail.html 로드 완료');
-                
-            } catch (error) {
-                console.error('❌ 페이지 로드 실패:', error);
-                showError('페이지를 불러오는 중 오류가 발생했습니다.');
-            }
-        });
-
-        /**
-         * ───────────────────────────────────────────────
-         * 데이터 로드
-         * ───────────────────────────────────────────────
-         */
-        async function loadDetailPage() {
-            try {
-                console.log('📦 데이터 로딩 시작...');
-                
-                // 1. 모든 기기 데이터 로드
-                const allDevices = await api.getDevices();
-                
-                // 2. 현재 모델의 모든 옵션 필터링
-                const deviceOptions = allDevices.filter(d => d.model === currentModel);
-                
-                if (deviceOptions.length === 0) {
-                    throw new Error(`${currentModel} 기기 정보를 찾을 수 없습니다`);
-                }
-                
-                console.log(`✅ ${deviceOptions.length}개 옵션 로드`);
-                
-                // 3. 첫 번째 색상/용량 선택
-                currentColor = deviceOptions[0].color.name;
-                currentCapacity = deviceOptions[0].storage;
-                
-                // 4. 용량별 그룹화
-                devicesByCapacity = {};
-                deviceOptions.forEach(device => {
-                    const capacity = device.storage;
-                    if (!devicesByCapacity[capacity]) {
-                        devicesByCapacity[capacity] = [];
-                    }
-                    devicesByCapacity[capacity].push(device);
-                });
-                
-                // 5. 갤러리 이미지 준비 (placeholder 사용)
-                prepareGalleryImages(deviceOptions);
-                
-                // 6. 요금제 로드
-                allPlans = await api.getAllPlans();
-                console.log(`✅ ${allPlans.length}개 요금제 로드`);
-                
-                // 7. UI 렌더링
-                renderDeviceName(currentModel);
-                renderColorOptions(deviceOptions);
-                renderCapacityOptions();
-                renderGallery(currentColor);
-                renderDetailSections();
-                
-                // 8. 초기 가격 계산
-                await updatePrice();
-                
-            } catch (error) {
-                console.error('❌ 데이터 로드 실패:', error);
-                throw error;
-            }
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 모델명 렌더링
-         * ───────────────────────────────────────────────
-         */
-        function renderDeviceName(title) {
-            document.getElementById('device-name').textContent = title;
-            document.title = `${title} - SKT 공식 온라인샵`;
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 색상 옵션 렌더링
-         * ───────────────────────────────────────────────
-         */
-        function renderColorOptions(devices) {
-            const container = document.getElementById('color-options');
-            container.innerHTML = '';
+        
+        <!-- ============================================
+             우측: 옵션/가격 섹션 (40%)
+             ============================================ -->
+        <div class="product-option-section">
+          
+          <!-- 1. 제품 기본 정보 -->
+          <div class="product-info">
+            <h1 class="product-name" id="productName">로딩 중...</h1>
+            <div class="product-price">
+              <span class="label">출고가</span>
+              <span class="price" id="productPrice">0원</span>
+            </div>
+          </div>
+          
+          <!-- 2. 색상 선택 -->
+          <div class="option-item">
+            <label class="option-label">색상</label>
+            <div class="color-selector" id="colorSelector">
+              <!-- JavaScript로 동적 생성 -->
+              <!-- 예시:
+              <div class="color-item">
+                <input type="radio" name="color" id="color-1" value="xxx">
+                <label for="color-1" style="background-color: #1C1C1C">
+                  <span class="sr-only">팬텀블랙</span>
+                </label>
+              </div>
+              -->
+            </div>
+            <div class="selected-color-name" id="selectedColorName">색상을 선택하세요</div>
+          </div>
+          
+          <!-- 3. 용량 표시 (변경 불가) -->
+          <div class="option-item">
+            <label class="option-label">용량</label>
+            <div class="storage-display" id="storageDisplay">-</div>
+          </div>
+          
+          <!-- 4. 가입유형 선택 -->
+          <div class="option-item">
+            <label class="option-label">가입유형</label>
+            <div class="button-group" id="subscriptionTypeGroup">
+              <button type="button" class="option-btn active" data-value="change">기기변경</button>
+              <button type="button" class="option-btn" data-value="port">번호이동</button>
+              <button type="button" class="option-btn" data-value="new">신규가입</button>
+            </div>
+          </div>
+          
+          <!-- 5. 요금제 선택 -->
+          <div class="option-item">
+            <label class="option-label">요금제</label>
+            <button type="button" class="plan-select-btn" id="planSelectBtn">
+              <span class="selected-plan" id="selectedPlanText">요금제를 선택하세요</span>
+              <span class="arrow">▼</span>
+            </button>
             
-            // 색상 목록 추출 (중복 제거)
-            const colors = [...new Set(devices.map(d => d.color.name))];
-            
-            colors.forEach((color, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'color-btn' + (index === 0 ? ' active' : '');
-                btn.textContent = color;
-                btn.onclick = () => selectColor(color);
-                container.appendChild(btn);
-            });
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 용량 옵션 렌더링
-         * ───────────────────────────────────────────────
-         */
-        function renderCapacityOptions() {
-            const container = document.getElementById('capacity-options');
-            container.innerHTML = '';
-            
-            const capacities = Object.keys(devicesByCapacity).sort((a, b) => a - b);
-            
-            capacities.forEach((capacity, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'capacity-btn' + (index === 0 ? ' active' : '');
-                btn.textContent = `${capacity}GB`;
-                btn.onclick = () => selectCapacity(parseInt(capacity));
-                container.appendChild(btn);
-            });
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 갤러리 이미지 준비 (placeholder)
-         * ───────────────────────────────────────────────
-         */
-        function prepareGalleryImages(devices) {
-            // 색상별로 그룹화
-            const colorGroups = {};
-            devices.forEach(device => {
-                const colorName = device.색상명;
-                if (!colorGroups[colorName]) {
-                    colorGroups[colorName] = [];
-                }
-                colorGroups[colorName].push(device);
-            });
-            
-            // 각 색상마다 4개의 placeholder 이미지 생성
-            galleryImages = {};
-            Object.keys(colorGroups).forEach(colorName => {
-                galleryImages[colorName] = [
-                    `https://via.placeholder.com/600x600/cccccc/333333?text=${encodeURIComponent(colorName)}+정면`,
-                    `https://via.placeholder.com/600x600/cccccc/333333?text=${encodeURIComponent(colorName)}+후면`,
-                    `https://via.placeholder.com/600x600/cccccc/333333?text=${encodeURIComponent(colorName)}+측면`,
-                    `https://via.placeholder.com/600x600/cccccc/333333?text=${encodeURIComponent(colorName)}+확대`
-                ];
-            });
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 갤러리 렌더링
-         * ───────────────────────────────────────────────
-         */
-        function renderGallery(colorName) {
-            const images = galleryImages[colorName];
-            
-            if (!images || images.length === 0) {
-                console.warn(`갤러리 이미지 없음: ${colorName}`);
-                return;
-            }
-            
-            // 큰 이미지 (첫 번째)
-            const mainImage = document.getElementById('main-image');
-            mainImage.src = images[0];
-            mainImage.alt = `${currentModel} ${colorName}`;
-            
-            // 썸네일 그리드
-            const thumbnailGrid = document.getElementById('thumbnail-grid');
-            thumbnailGrid.innerHTML = '';
-            
-            images.forEach((imgUrl, index) => {
-                const thumb = document.createElement('div');
-                thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
-                thumb.innerHTML = `<img src="${imgUrl}" alt="썸네일 ${index + 1}">`;
-                thumb.onclick = () => selectThumbnail(index, colorName);
-                thumbnailGrid.appendChild(thumb);
-            });
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 상세 섹션 렌더링 (placeholder)
-         * ───────────────────────────────────────────────
-         */
-        function renderDetailSections() {
-            const container = document.getElementById('detail-sections');
-            container.innerHTML = `
-                <div class="detail-section">
-                    <img src="https://via.placeholder.com/860x400/f0f0f0/666666?text=프로모션+배너+1" 
-                         alt="프로모션 1" 
-                         loading="lazy">
-                </div>
-                <div class="detail-section">
-                    <img src="https://via.placeholder.com/860x400/f0f0f0/666666?text=프로모션+배너+2" 
-                         alt="프로모션 2" 
-                         loading="lazy">
-                </div>
-                <div class="detail-section">
-                    <img src="https://via.placeholder.com/860x600/f0f0f0/666666?text=상세+스펙+이미지" 
-                         alt="상세 스펙" 
-                         loading="lazy">
-                </div>
-            `;
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 썸네일 선택
-         * ───────────────────────────────────────────────
-         */
-        function selectThumbnail(index, colorName) {
-            const images = galleryImages[colorName];
-            
-            // 큰 이미지 변경
-            const mainImage = document.getElementById('main-image');
-            mainImage.src = images[index];
-            
-            // 썸네일 활성화 상태 변경
-            document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
-                if (i === index) {
-                    thumb.classList.add('active');
-                } else {
-                    thumb.classList.remove('active');
-                }
-            });
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 색상 선택
-         * ───────────────────────────────────────────────
-         */
-        function selectColor(color) {
-            currentColor = color;
-            
-            // 버튼 활성화 상태 변경
-            document.querySelectorAll('.color-btn').forEach(btn => {
-                if (btn.textContent === color) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-            
-            // 갤러리 이미지 변경
-            renderGallery(color);
-            
-            // 가격 재계산
-            updatePrice();
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 용량 선택
-         * ───────────────────────────────────────────────
-         */
-        function selectCapacity(capacity) {
-            currentCapacity = capacity;
-            
-            // 버튼 활성화 상태 변경
-            document.querySelectorAll('.capacity-btn').forEach(btn => {
-                if (btn.textContent === `${capacity}GB`) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-            
-            // 가격 재계산
-            updatePrice();
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 가격 업데이트 (메인 함수)
-         * ───────────────────────────────────────────────
-         */
-        async function updatePrice() {
-            try {
-                // 1. 현재 선택된 옵션들
-                const joinType = document.getElementById('join-type-select').value;
-                // ✅ 모달에서 선택한 요금제 사용
-                const planId = currentPlan ? currentPlan.id : null;
-                const discountType = document.querySelector('input[name="discount-type"]:checked').value;
-                const internetTv = document.querySelector('input[name="internet-tv"]:checked').value;
-                const installmentMonths = parseInt(document.querySelector('input[name="installment"]:checked').value);
-                
-                if (!planId) {
-                    console.warn('요금제가 선택되지 않았습니다');
-                    return;
-                }
-                
-                // 2. 기기 데이터 조회 (모델명 + 용량으로 찾기)
-                const allDevices = await api.getDevices();
-                const device = allDevices.find(d => 
-                    d.model === currentModel && 
-                    d.storage === currentCapacity
-                );
-                
-                // 3. 요금제 및 지원금 데이터 로드
-                const plan = await api.getPlan(planId);
-                
-                // 지원금 조회를 위한 deviceId (첫 번째 매칭 기기의 ID 사용)
-                const deviceId = device ? device.id : null;
-                const subsidy = deviceId ? await api.getSubsidy(deviceId, planId, joinType) : null;
-                
-                if (!device || !plan || !subsidy) {
-                    console.error('필요한 데이터를 찾을 수 없습니다');
-                    return;
-                }
-                
-                // 4. 가격 계산
-                const result = calculator.calculate(device, plan, subsidy, {
-                    discountType: discountType,
-                    installmentMonths: installmentMonths,
-                    internetTv: internetTv
-                });
-                
-                // 5. UI 업데이트
-                displayPrice(result);
-                
-            } catch (error) {
-                console.error('❌ 가격 계산 실패:', error);
-            }
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 가격 표시 (9개 항목)
-         * ───────────────────────────────────────────────
-         */
-        function displayPrice(result) {
-            // 출고가
-            document.getElementById('release-price').textContent = formatPrice(result.releasePrice);
-            
-            // 휴대폰 할인금
-            const phoneDiscount = result.subsidy.total;
-            document.getElementById('phone-discount').textContent = formatDiscount(phoneDiscount);
-            
-            // 할부원금
-            document.getElementById('installment-principal').textContent = formatPrice(result.installmentPrincipal);
-            
-            // 월 휴대폰 요금
-            document.getElementById('monthly-phone').textContent = formatPrice(result.monthlyInstallment);
-            
-            // 요금제 기본료
-            document.getElementById('base-plan-fee').textContent = formatPrice(result.basePlanFee);
-            
-            // 요금할인
-            document.getElementById('plan-discount').textContent = formatDiscount(result.planDiscount);
-            
-            // 결합할인
-            document.getElementById('bundle-discount').textContent = formatDiscount(result.bundleDiscount);
-            
-            // 월 통신요금
-            document.getElementById('monthly-plan').textContent = formatPrice(result.monthlyPlanFee);
-            
-            // 월 예상 납부 금액
-            document.getElementById('monthly-total').textContent = formatPrice(result.monthlyTotal);
-            
-            // 하단 고정 푸터도 업데이트
-            document.getElementById('footer-monthly-phone').textContent = formatPrice(result.monthlyInstallment);
-            document.getElementById('footer-monthly-plan').textContent = formatPrice(result.monthlyPlanFee);
-            document.getElementById('footer-monthly-total').textContent = formatPrice(result.monthlyTotal);
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 이벤트 리스너 등록
-         * ───────────────────────────────────────────────
-         */
-        function setupEventListeners() {
-            // 가입유형 변경
-            document.getElementById('join-type-select').addEventListener('change', updatePrice);
-            
-            // 할인방법 변경
-            document.querySelectorAll('input[name="discount-type"]').forEach(radio => {
-                radio.addEventListener('change', updatePrice);
-            });
-            
-            // 인터넷+TV 변경
-            document.querySelectorAll('input[name="internet-tv"]').forEach(radio => {
-                radio.addEventListener('change', updatePrice);
-            });
-            
-            // 할부개월 변경
-            document.querySelectorAll('input[name="installment"]').forEach(radio => {
-                radio.addEventListener('change', updatePrice);
-            });
-            
-            console.log('✅ 이벤트 리스너 등록 완료');
-        }
-
-        /**
-         * ───────────────────────────────────────────────
-         * 에러 표시
-         * ───────────────────────────────────────────────
-         */
-        function showError(message) {
-            const container = document.getElementById('detail-container');
-            container.innerHTML = `<div class="error-message">${message}</div>`;
-        }
-    </script>
-
-    <!-- 요금제 선택 모달 -->
-    <div id="plans-modal" class="modal-overlay">
-        <div class="modal-content">
-            <!-- 모달 헤더 -->
-            <div class="modal-header">
-                <h2 class="text-2xl font-bold">요금제 선택하기</h2>
-                <button onclick="plansModal.close()" class="close-btn">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+            <!-- 요금제 펼침 영역 -->
+            <div class="plan-list" id="planList" style="display: none;">
+              <!-- JavaScript로 동적 생성 -->
+              <!-- 예시:
+              <div class="plan-item" data-plan-id="xxx">
+                <div class="plan-name">프리미엄</div>
+                <div class="plan-price">65,000원</div>
+                <div class="plan-data">무제한</div>
+              </div>
+              -->
+            </div>
+          </div>
+          
+          <!-- 6. 할인유형 선택 -->
+          <div class="option-item">
+            <label class="option-label">할인유형</label>
+            <div class="button-group" id="discountTypeGroup">
+              <button type="button" class="option-btn active" data-value="subsidy">공시지원</button>
+              <button type="button" class="option-btn" data-value="selective">선택약정</button>
+            </div>
+          </div>
+          
+          <!-- 7. 할부개월 선택 -->
+          <div class="option-item">
+            <label class="option-label">할부개월</label>
+            <select class="installment-select" id="installmentSelect">
+              <option value="24">24개월</option>
+              <option value="30">30개월</option>
+              <option value="36">36개월</option>
+            </select>
+          </div>
+          
+          <!-- 8. 실시간 가격 표시 -->
+          <div class="price-summary">
+            <div class="price-item">
+              <span class="label">월 할부금</span>
+              <span class="value" id="monthlyInstallment">0원</span>
+            </div>
+            <div class="price-item">
+              <span class="label">월 통신요금</span>
+              <span class="value" id="monthlyPlan">0원</span>
+            </div>
+            <div class="price-item total">
+              <span class="label">총 월 납부액</span>
+              <span class="value" id="totalMonthly">0원</span>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <!-- ============================================
+           하단: 탭 섹션 (상품내용 / FAQ)
+           ============================================ -->
+      <div class="product-detail-tabs">
+        <!-- 탭 헤더 -->
+        <div class="tab-header">
+          <button class="tab-btn active" data-tab="description">상품내용</button>
+          <button class="tab-btn" data-tab="faq">FAQ</button>
+        </div>
+        
+        <!-- 탭 컨텐츠 -->
+        <div class="tab-content">
+          <!-- 상품내용 탭 -->
+          <div class="tab-panel active" id="tab-description">
+            <div class="product-description">
+              <!-- Admin에서 관리 (초기 개발: placeholder) -->
+              <img src="/assets/images/placeholder/detail-default.webp" alt="상세 이미지 1">
+              <p>제품 상세 정보는 Admin에서 관리됩니다.</p>
+              <img src="/assets/images/placeholder/detail-default.webp" alt="상세 이미지 2">
+            </div>
+          </div>
+          
+          <!-- FAQ 탭 -->
+          <div class="tab-panel" id="tab-faq">
+            <div class="faq-list">
+              <!-- FAQ 항목 1 -->
+              <div class="faq-item">
+                <button class="faq-question">
+                  Q. 기기변경과 번호이동의 차이는?
+                  <span class="arrow">▼</span>
                 </button>
-            </div>
-
-            <!-- 모달 바디 -->
-            <div class="modal-body">
-                <!-- 카테고리 필터 -->
-                <div class="plan-categories mb-6">
-                    <button class="plan-category-btn active" data-category="all">전체</button>
-                    <button class="plan-category-btn" data-category="5gx">5GX 플랜</button>
-                    <button class="plan-category-btn" data-category="5g-young">5G 청소년/어린이</button>
-                    <button class="plan-category-btn" data-category="senior">시니어 전용</button>
-                    <button class="plan-category-btn" data-category="lte">T플랜 LTE</button>
-                    <button class="plan-category-btn" data-category="prepaid">어린이 전용 LTE</button>
+                <div class="faq-answer" style="display: none;">
+                  <p>A. 기기변경은 현재 SKT를 사용 중이며 번호를 유지한 채 새 기기로 변경하는 것이고, 번호이동은 타사(KT, LG U+)에서 SKT로 통신사를 변경하는 것입니다.</p>
                 </div>
-
-                <!-- 요금제 목록 -->
-                <div id="plans-list" class="plans-list">
-                    <div class="text-center py-12">
-                        <p class="text-gray-500">요금제를 불러오는 중...</p>
-                    </div>
+              </div>
+              
+              <!-- FAQ 항목 2 -->
+              <div class="faq-item">
+                <button class="faq-question">
+                  Q. 공시지원과 선택약정의 차이는?
+                  <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer" style="display: none;">
+                  <p>A. 공시지원은 기기 구매 시 지원금을 받는 방식이고, 선택약정은 요금제 할인을 받는 방식입니다. 공시지원은 초기 비용이 낮지만 월 요금이 높고, 선택약정은 초기 비용이 높지만 월 요금이 낮습니다.</p>
                 </div>
+              </div>
+              
+              <!-- FAQ 항목 3 -->
+              <div class="faq-item">
+                <button class="faq-question">
+                  Q. 할부 개월 수는 어떻게 선택하나요?
+                  <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer" style="display: none;">
+                  <p>A. 24개월, 30개월, 36개월 중 선택할 수 있으며, 할부 개월이 길수록 월 할부금은 낮아지지만 총 이자 비용은 증가합니다.</p>
+                </div>
+              </div>
+              
+              <!-- FAQ 항목 4 -->
+              <div class="faq-item">
+                <button class="faq-question">
+                  Q. 상담은 어떻게 신청하나요?
+                  <span class="arrow">▼</span>
+                </button>
+                <div class="faq-answer" style="display: none;">
+                  <p>A. 하단의 '신청하기' 버튼을 클릭하시면 상담 신청 폼이 나타납니다. 간단한 정보를 입력하시면 빠른 시일 내에 연락드리겠습니다.</p>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+      
     </div>
+  </main>
 
+  <!-- ============================================
+       Footer (공통)
+       ============================================ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-info">
+        <p class="company-name">티월드스토어</p>
+        <p class="company-detail">대표: 홍길동 | 사업자등록번호: 123-45-67890</p>
+        <p class="company-detail">주소: 서울특별시 강남구 테헤란로 123</p>
+        <p class="company-detail">고객센터: 1588-0011 (평일 10:00~20:00)</p>
+      </div>
+      <div class="footer-links">
+        <a href="/about.html">회사소개</a>
+        <a href="/terms.html">이용약관</a>
+        <a href="/privacy.html">개인정보처리방침</a>
+      </div>
+      <p class="copyright">© 2025 T-World Store. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ============================================
+       하단 고정 CTA Bar
+       ============================================ -->
+  <div class="fixed-cta-bar">
+    <div class="cta-inner">
+      <!-- 좌측: 가격 계산식 -->
+      <div class="price-formula">
+        <!-- 월 휴대폰요금 -->
+        <div class="price-item">
+          <div class="label">월 휴대폰요금</div>
+          <div class="value" id="ctaInstallment">0<span>원</span></div>
+        </div>
+        
+        <!-- 더하기 기호 -->
+        <div class="operator">+</div>
+        
+        <!-- 월 통신요금 -->
+        <div class="price-item">
+          <div class="label">월 통신요금</div>
+          <div class="value" id="ctaPlanFee">0<span>원</span></div>
+        </div>
+        
+        <!-- 등호 기호 -->
+        <div class="operator">=</div>
+        
+        <!-- 월 예상 납부금액 (강조) -->
+        <div class="price-item total">
+          <div class="label">월 예상 납부금액</div>
+          <div class="value" id="ctaTotalPrice">0<span>원</span></div>
+          <div class="sub-label">(부가세포함)</div>
+        </div>
+      </div>
+      
+      <!-- 우측: 신청하기 버튼 -->
+      <button type="button" class="apply-btn" id="applyBtn">
+        신청하기
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================
+       Scripts
+       ============================================ -->
+  <!-- Swiper JS -->
+  <script src="https://unpkg.com/swiper@10/swiper-bundle.min.js"></script>
+  
+  <!-- Custom Scripts -->
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/utils.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/calculator.js"></script>
+  <script src="/assets/js/device-detail.js"></script>
 </body>
 </html>

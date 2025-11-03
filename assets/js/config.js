@@ -14,7 +14,7 @@
  */
 const API_CONFIG = {
   // GitHub Pages에서 호스팅되는 products.json URL
-  PRODUCTS_JSON: 'https://github.com/tworld-store/tworld-store-frontend/blob/main/data/products.json',
+  PRODUCTS_JSON: 'https://tworld-store.github.io/tworld-store-frontend/data/products.json',
   
   // 로컬 개발 환경
   PRODUCTS_JSON_LOCAL: '/data/products.json',

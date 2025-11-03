@@ -273,7 +273,7 @@ function createDeviceCard(device) {
     // 3. 가격 포맷팅
     const formattedPrice = formatNumber(price);
     
-    // 4. 출고가 기준 월 납부액 계산 (예시: 24개월 할부)
+    // 4. 월 납부액 계산 (단순 24개월 할부, 추후 Admin에서 요금제 반영)
     const monthlyPayment = Math.floor(price / 24);
     const formattedMonthly = formatNumber(monthlyPayment);
     
@@ -288,13 +288,11 @@ function createDeviceCard(device) {
                 <h3 class="device-name">${model}</h3>
                 <div class="device-storage">${storage}GB</div>
                 <div class="device-price">
-                    <div class="device-price-label">출고가</div>
                     <div class="device-price-value">
-                        ${formattedPrice}
-                        <span class="device-price-unit">원</span>
+                        ${formattedPrice}원
                     </div>
-                    <div class="device-price-label" style="margin-top: 8px; font-size: 0.875rem;">
-                        월 약 ${formattedMonthly}원 (24개월)
+                    <div class="device-price-monthly">
+                        월 ${formattedMonthly}원
                     </div>
                 </div>
             </div>

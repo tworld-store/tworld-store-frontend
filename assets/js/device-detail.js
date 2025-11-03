@@ -55,6 +55,8 @@ async function initDeviceDetailPage() {
     const model = urlParams.get('model');
     const deviceId = urlParams.get('id');
     
+    console.log('📍 URL 파라미터:', { model, deviceId });
+    
     if (!model && !deviceId) {
       showError('모델 또는 기기 ID가 없습니다.');
       setTimeout(() => {
@@ -70,18 +72,36 @@ async function initDeviceDetailPage() {
       return;
     }
     
+    console.log('📦 products.json 로드 완료, 기기 수:', productsData.devices.length);
+    
     // 3. 기기 찾기 (model 우선, 없으면 id 사용)
     if (model) {
-      // 해당 모델의 첫 번째 기기 (첫 용량)
+      console.log(`🔍 모델 "${model}"로 검색 중...`);
+      
+      // 전체 기기 목록 확인
+      const allModels = productsData.devices.map(d => d.model);
+      console.log('📋 사용 가능한 모델들:', allModels.slice(0, 5));
+      
+      // 정확히 일치하는 모델 찾기
       currentDevice = productsData.devices.find(d => d.model === model);
-      console.log(`모델 "${model}"로 검색:`, currentDevice);
+      
+      if (!currentDevice) {
+        // 대소문자 무시하고 찾기
+        currentDevice = productsData.devices.find(d => 
+          d.model && d.model.toLowerCase() === model.toLowerCase()
+        );
+      }
+      
+      console.log(`모델 "${model}"로 검색 결과:`, currentDevice ? currentDevice.id : 'null');
     } else {
       // 기기 ID로 직접 검색 (하위 호환)
+      console.log(`🔍 기기 ID "${deviceId}"로 검색 중...`);
       currentDevice = productsData.devices.find(d => d.id === deviceId);
-      console.log(`기기 ID "${deviceId}"로 검색:`, currentDevice);
+      console.log(`기기 ID "${deviceId}"로 검색 결과:`, currentDevice ? currentDevice.id : 'null');
     }
     
     if (!currentDevice) {
+      console.error('❌ 기기를 찾을 수 없습니다.', { model, deviceId });
       showError('해당 기기를 찾을 수 없습니다.');
       setTimeout(() => {
         window.location.href = './devices.html';
@@ -89,7 +109,7 @@ async function initDeviceDetailPage() {
       return;
     }
     
-    console.log('현재 기기:', currentDevice);
+    console.log('✅ 현재 기기:', currentDevice);
     
     // 4. 기본 정보 렌더링
     renderDeviceInfo();

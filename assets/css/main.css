@@ -346,6 +346,12 @@
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
   color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.device-price-monthly {
+  font-size: var(--text-sm);
+  color: var(--color-text-light);
 }
 
 .device-price-unit {

@@ -163,10 +163,20 @@ function renderDevices(brand = 'all') {
         });
     }
     
-    // 2. 상위 N개만 선택
-    const displayDevices = filteredDevices.slice(0, DISPLAY_COUNT);
+    // 1.5. 모델명 기준 중복 제거 (각 모델의 첫 번째 용량만 표시)
+    const seenModels = new Set();
+    const uniqueDevices = filteredDevices.filter(device => {
+        if (seenModels.has(device.model)) {
+            return false; // 이미 표시한 모델은 제외
+        }
+        seenModels.add(device.model);
+        return true;
+    });
     
-    console.log(`📱 렌더링: ${displayDevices.length}개 기기 (브랜드: ${brand})`);
+    // 2. 상위 N개만 선택
+    const displayDevices = uniqueDevices.slice(0, DISPLAY_COUNT);
+    
+    console.log(`📱 렌더링: ${displayDevices.length}개 기기 (브랜드: ${brand}, 중복 제거 후)`);
     
     // 3. HTML 생성
     if (displayDevices.length === 0) {
@@ -206,7 +216,7 @@ function createDeviceCard(device) {
     // 3. 가격 포맷팅
     const formattedPrice = formatNumber(price);
     
-    // 4. 출고가 기준 월 납부액 계산 (예시: 24개월 할부)
+    // 4. 월 납부액 계산 (단순 24개월 할부, 추후 Admin에서 요금제 반영)
     const monthlyPayment = Math.floor(price / 24);
     const formattedMonthly = formatNumber(monthlyPayment);
     
@@ -221,13 +231,11 @@ function createDeviceCard(device) {
                 <h3 class="device-name">${model}</h3>
                 <div class="device-storage">${storage}GB</div>
                 <div class="device-price">
-                    <div class="device-price-label">출고가</div>
                     <div class="device-price-value">
-                        ${formattedPrice}
-                        <span class="device-price-unit">원</span>
+                        ${formattedPrice}원
                     </div>
-                    <div class="device-price-label" style="margin-top: 8px; font-size: 0.875rem;">
-                        월 약 ${formattedMonthly}원 (24개월)
+                    <div class="device-price-monthly">
+                        월 ${formattedMonthly}원
                     </div>
                 </div>
             </div>

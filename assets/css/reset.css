@@ -1,0 +1,339 @@
+/**
+ * CSS Reset - reset.css
+ * 
+ * 브라우저 기본 스타일 초기화 및 일관성 확보
+ * 모던 브라우저 호환 (Chrome, Safari, Firefox, Edge)
+ */
+
+/* ============================================
+   Box Sizing
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ============================================
+   기본 여백/패딩 제거
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   HTML & Body
+   ============================================ */
+
+html {
+  /* 1rem = 16px 기준 */
+  font-size: 16px;
+  
+  /* 부드러운 스크롤 */
+  scroll-behavior: smooth;
+  
+  /* iOS에서 가로 스크롤 방지 */
+  overflow-x: hidden;
+  
+  /* 텍스트 크기 자동 조정 방지 (iOS) */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  /* 최소 높이 100vh */
+  min-height: 100vh;
+  
+  /* 가로 스크롤 방지 */
+  overflow-x: hidden;
+  
+  /* 기본 폰트 설정 */
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 
+    'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  
+  /* 폰트 렌더링 최적화 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* 기본 텍스트 색상 */
+  color: #1a1a1a;
+  
+  /* 기본 배경색 */
+  background-color: #fff;
+  
+  /* 기본 폰트 크기 */
+  font-size: 16px;
+  
+  /* 기본 행간 */
+  line-height: 1.5;
+}
+
+/* ============================================
+   제목 (Headings)
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+/* ============================================
+   리스트 (Lists)
+   ============================================ */
+
+ul, ol {
+  list-style: none;
+}
+
+/* ============================================
+   링크 (Links)
+   ============================================ */
+
+a {
+  color: inherit;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/* ============================================
+   이미지 & 미디어
+   ============================================ */
+
+img, 
+picture, 
+video, 
+canvas, 
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================
+   버튼 & 폼
+   ============================================ */
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  border: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+/* 모바일에서 input 확대 방지 (iOS) */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+textarea {
+  font-size: 16px;
+}
+
+/* ============================================
+   테이블
+   ============================================ */
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* ============================================
+   인용문
+   ============================================ */
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+  content: '';
+  content: none;
+}
+
+/* ============================================
+   수평선
+   ============================================ */
+
+hr {
+  border: 0;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 20px 0;
+}
+
+/* ============================================
+   텍스트 선택
+   ============================================ */
+
+::selection {
+  background-color: #3617CE;
+  color: #fff;
+}
+
+::-moz-selection {
+  background-color: #3617CE;
+  color: #fff;
+}
+
+/* ============================================
+   스크롤바 (Webkit)
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* ============================================
+   Placeholder
+   ============================================ */
+
+::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: #999;
+}
+
+::-ms-input-placeholder {
+  color: #999;
+}
+
+/* ============================================
+   모바일 탭 하이라이트 제거
+   ============================================ */
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================
+   드래그 방지 (이미지)
+   ============================================ */
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ============================================
+   텍스트 선택 가능하게
+   ============================================ */
+
+body {
+  user-select: auto;
+  -webkit-user-select: auto;
+}
+
+/* ============================================
+   숨김 유틸리티
+   ============================================ */
+
+.hidden {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   접근성 - 포커스 표시
+   ============================================ */
+
+:focus-visible {
+  outline: 2px solid #3617CE;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   출력용 스타일
+   ============================================ */
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+  
+  img {
+    page-break-inside: avoid;
+  }
+  
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+  
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}

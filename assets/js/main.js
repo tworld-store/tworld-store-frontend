@@ -112,7 +112,7 @@ async function loadDevices() {
         console.log('🔄 기기 데이터 로딩 중...');
         
         // 1. API로부터 전체 데이터 로드
-        const data = await api.load();
+        const data = await api.fetchProducts();
         
         if (!data || !data.devices || data.devices.length === 0) {
             throw new Error('기기 데이터가 없습니다.');

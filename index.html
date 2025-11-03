@@ -232,30 +232,45 @@
             // 각 모델별 카드 생성
             for (const modelName of modelsToShow) {
                 try {
-                    // 완전한 카드 데이터 가져오기 (images + products)
-                    const cardData = await api.getCardData(modelName);
+                    // ✅ products.json에서 직접 로드 (images.json 불필요)
+                    const allDevices = await api.getDevices();
+                    const modelDevices = allDevices.filter(d => d.모델명 === modelName);
                     
-                    if (!cardData) {
-                        console.warn(`카드 데이터 없음: ${modelName}`);
+                    if (modelDevices.length === 0) {
+                        console.warn(`기기를 찾을 수 없음: ${modelName}`);
+                        continue;
+                    }
+                    
+                    // 첫 번째 기기옵션 사용 (대표 기기)
+                    const device = modelDevices[0];
+                    const deviceOptionId = device.기기옵션ID;
+                    
+                    // 기본 요금제 로드 (첫 번째 5G 요금제)
+                    const allPlans = await api.getPlans();
+                    const plan = allPlans.find(p => p.카테고리.includes('5G')) || allPlans[0];
+                    
+                    // 지원금 로드 (기기변경 기준)
+                    const subsidy = await api.getSubsidy(deviceOptionId, plan.요금제ID, '기기변경');
+                    
+                    if (!device || !plan || !subsidy) {
+                        console.warn(`필수 데이터 없음: ${modelName}`);
                         continue;
                     }
                     
                     // 가격 계산
                     const priceResult = calculator.calculate(
-                        cardData.device,
-                        cardData.plan,
-                        cardData.subsidy,
+                        device,
+                        plan,
+                        subsidy,
                         {
-                            discountType: cardData.image.card.default.join_type === '기기변경' ? 'subsidy' : 'subsidy',
+                            discountType: 'subsidy',
                             installmentMonths: 24,
                             internetTv: 'none'
                         }
                     );
                     
-                    // 썸네일 URL
-                    const defaultColor = cardData.image.card.default.color;
-                    const thumbnailPath = cardData.image.thumbnails[defaultColor].path;
-                    const thumbnailUrl = getThumbnailUrl(thumbnailPath, 'medium');
+                    // ✅ placeholder 썸네일
+                    const thumbnailUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="%23666" text-anchor="middle" dy=".3em"%3E📱 ' + encodeURIComponent(modelName) + '%3C/text%3E%3C/svg%3E';
                     
                     // 뱃지
                     const badge = popularConfig.badges && popularConfig.badges[modelName];
@@ -263,8 +278,8 @@
                     // 카드 생성
                     const card = createDeviceCard({
                         modelName: modelName,
-                        title: cardData.image.card.title,
-                        subtitle: cardData.image.card.subtitle,
+                        title: modelName, // ✅ 모델명 그대로 사용
+                        subtitle: `${device.용량}GB · ${device.색상명}`, // ✅ 기기 정보로 subtitle 생성
                         thumbnailUrl: thumbnailUrl,
                         monthlyTotal: priceResult.monthlyTotal,
                         subsidyTotal: priceResult.subsidy.total,

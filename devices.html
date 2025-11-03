@@ -146,40 +146,52 @@
          */
         async function loadDevices() {
             try {
-                // 1. images-devices.json 로드
-                const imagesData = await api.loadImagesDevices();
-                console.log('✅ images-devices.json 로드 완료');
+                // ✅ products.json만 로드 (images.json 불필요)
+                const allDevicesData = await api.getDevices();
+                console.log(`✅ 전체 기기옵션 ${allDevicesData.length}개 로드 완료`);
                 
-                // 2. products.json 로드
-                const productsData = await api.loadProducts();
-                console.log('✅ products.json 로드 완료');
+                // 모델별로 그룹화
+                const modelGroups = {};
+                allDevicesData.forEach(device => {
+                    const modelName = device.모델명;
+                    if (!modelGroups[modelName]) {
+                        modelGroups[modelName] = [];
+                    }
+                    modelGroups[modelName].push(device);
+                });
                 
-                // 3. 표시 가능한 모델 목록
-                const visibleModels = Object.entries(imagesData.devices)
-                    .filter(([_, data]) => data.visible)
-                    .sort((a, b) => (a[1].sort_order || 999) - (b[1].sort_order || 999));
+                const modelNames = Object.keys(modelGroups);
+                console.log(`✅ 총 ${modelNames.length}개 모델 발견`);
                 
-                // 4. 각 모델별 카드 데이터 생성
+                // 각 모델별 카드 데이터 생성
                 allDevices = [];
                 
-                for (const [modelName, imageData] of visibleModels) {
+                for (const modelName of modelNames) {
                     try {
-                        // 카드 데이터 가져오기
-                        const cardData = await api.getCardData(modelName);
+                        // 첫 번째 기기옵션을 대표로 사용
+                        const device = modelGroups[modelName][0];
+                        const deviceOptionId = device.기기옵션ID;
                         
-                        if (!cardData) {
-                            console.warn(`카드 데이터 없음: ${modelName}`);
+                        // 브랜드 결정
+                        const brand = getBrandFromModel(device.브랜드);
+                        
+                        // 기본 요금제 로드 (첫 번째 5G 요금제)
+                        const allPlans = await api.getPlans();
+                        const plan = allPlans.find(p => p.카테고리.includes('5G')) || allPlans[0];
+                        
+                        // 지원금 로드 (기기변경 기준)
+                        const subsidy = await api.getSubsidy(deviceOptionId, plan.요금제ID, '기기변경');
+                        
+                        if (!plan || !subsidy) {
+                            console.warn(`필수 데이터 없음: ${modelName}`);
                             continue;
                         }
                         
-                        // 브랜드 결정
-                        const brand = getBrandFromModel(cardData.device.brand);
-                        
                         // 가격 계산
                         const priceResult = calculator.calculate(
-                            cardData.device,
-                            cardData.plan,
-                            cardData.subsidy,
+                            device,
+                            plan,
+                            subsidy,
                             {
                                 discountType: 'subsidy',
                                 installmentMonths: 24,
@@ -187,23 +199,21 @@
                             }
                         );
                         
-                        // 썸네일 URL
-                        const defaultColor = imageData.card.default.color;
-                        const thumbnailPath = imageData.thumbnails[defaultColor].path;
-                        const thumbnailUrl = getThumbnailUrl(thumbnailPath, 'medium');
+                        // ✅ placeholder 썸네일
+                        const thumbnailUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="%23666" text-anchor="middle" dy=".3em"%3E📱 ' + encodeURIComponent(modelName) + '%3C/text%3E%3C/svg%3E';
                         
                         // 데이터 저장
                         allDevices.push({
                             modelName: modelName,
                             brand: brand,
-                            title: imageData.card.title,
-                            subtitle: imageData.card.subtitle,
+                            title: modelName, // ✅ 모델명 그대로 사용
+                            subtitle: `${device.용량}GB · ${device.색상명}`, // ✅ 기기 정보로 subtitle 생성
                             thumbnailUrl: thumbnailUrl,
                             monthlyTotal: priceResult.monthlyTotal,
                             subsidyTotal: priceResult.subsidy.total,
                             releasePrice: priceResult.releasePrice,
-                            badge: imageData.badge,
-                            sortOrder: imageData.sort_order || 999
+                            badge: null, // ✅ 배지 없음
+                            sortOrder: 999 // ✅ 기본 정렬순서
                         });
                         
                     } catch (error) {
@@ -213,7 +223,7 @@
                 
                 console.log(`✅ 총 ${allDevices.length}개 기기 로드 완료`);
                 
-                // 5. 렌더링
+                // 렌더링
                 renderDevices();
                 
             } catch (error) {
@@ -221,6 +231,7 @@
                 throw error;
             }
         }
+        
 
         /**
          * ───────────────────────────────────────────────

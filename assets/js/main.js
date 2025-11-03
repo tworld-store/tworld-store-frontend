@@ -214,7 +214,7 @@ function createDeviceCard(device) {
     return `
         <article class="device-card" data-device-id="${deviceId}" role="button" tabindex="0">
             <div class="device-image">
-                <img src="${imageUrl}" alt="${model}" loading="lazy" onerror="this.src='./assets/images/placeholder/device.svg'">
+                <img src="${imageUrl}" alt="${model}" loading="lazy" onerror="this.onerror=null; this.src='./assets/images/placeholder/device.svg';">
             </div>
             <div class="device-info">
                 <div class="device-brand">${brand}</div>

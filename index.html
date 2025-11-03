@@ -20,7 +20,7 @@
   <meta property="og:url" content="https://tworld-store.com">
   
   <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="./assets/images/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="./assets/images/favicon.svg">
   
   <!-- ============================================
        CSS 파일
@@ -36,6 +36,13 @@
   
   <!-- 4. Swiper.js 스타일 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+  <!-- 임시: 배너 이미지 없을 때 숨김 -->
+  <style>
+    .hero-section,
+    .promo-banner {
+      display: none !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -108,7 +115,7 @@
               <!-- PC 이미지 -->
               <picture>
                 <source media="(min-width: 768px)" srcset="./assets/images/banners/hero-1-pc.jpg">
-                <img src="./assets/images/banners/hero-1-mobile.jpg" alt="갤럭시 S24 출시 프로모션" loading="lazy">
+                <img src="./assets/images/banners/hero-1-mobile.jpg" onerror="this.onerror=null; this.parentElement.remove();" alt="갤럭시 S24 출시 프로모션" loading="lazy">
               </picture>
               <div class="hero-content">
                 <h2 class="hero-title">갤럭시 S24<br>특별 혜택</h2>
@@ -123,7 +130,7 @@
             <a href="/devices.html?brand=apple" class="hero-slide">
               <picture>
                 <source media="(min-width: 768px)" srcset="./assets/images/banners/hero-2-pc.jpg">
-                <img src="./assets/images/banners/hero-2-mobile.jpg" alt="아이폰 15 출시" loading="lazy">
+                <img src="./assets/images/banners/hero-2-mobile.jpg" onerror="this.onerror=null; this.parentElement.remove();" alt="아이폰 15 출시" loading="lazy">
               </picture>
               <div class="hero-content">
                 <h2 class="hero-title">iPhone 15<br>사전예약</h2>
@@ -138,7 +145,7 @@
             <a href="/devices.html" class="hero-slide">
               <picture>
                 <source media="(min-width: 768px)" srcset="./assets/images/banners/hero-3-pc.jpg">
-                <img src="./assets/images/banners/hero-3-mobile.jpg" alt="청년 요금제 혜택" loading="lazy">
+                <img src="./assets/images/banners/hero-3-mobile.jpg" onerror="this.onerror=null; this.parentElement.remove();" alt="청년 요금제 혜택" loading="lazy">
               </picture>
               <div class="hero-content">
                 <h2 class="hero-title">청년 요금제<br>특별 혜택</h2>
@@ -232,7 +239,7 @@
         <a href="/devices.html" class="promo-banner">
           <picture>
             <source media="(min-width: 768px)" srcset="./assets/images/banners/promo-pc.jpg">
-            <img src="./assets/images/banners/promo-mobile.jpg" alt="사은품 프로모션" loading="lazy">
+            <img src="./assets/images/banners/promo-mobile.jpg" alt="사은품 프로모션" onerror="this.onerror=null; this.closest(".promo-banner").style.display="none";" loading="lazy">
           </picture>
         </a>
       </div>

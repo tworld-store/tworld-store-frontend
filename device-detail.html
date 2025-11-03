@@ -361,10 +361,10 @@
                 console.log('📦 데이터 로딩 시작...');
                 
                 // 1. 모든 기기 데이터 로드
-                const allDevices = await api.getAllDeviceOptions();
+                const allDevices = await api.getDevices();
                 
                 // 2. 현재 모델의 모든 옵션 필터링
-                const deviceOptions = allDevices.filter(d => d.모델명 === currentModel);
+                const deviceOptions = allDevices.filter(d => d.model === currentModel);
                 
                 if (deviceOptions.length === 0) {
                     throw new Error(`${currentModel} 기기 정보를 찾을 수 없습니다`);
@@ -373,13 +373,13 @@
                 console.log(`✅ ${deviceOptions.length}개 옵션 로드`);
                 
                 // 3. 첫 번째 색상/용량 선택
-                currentColor = deviceOptions[0].색상명;
-                currentCapacity = deviceOptions[0].용량;
+                currentColor = deviceOptions[0].color.name;
+                currentCapacity = deviceOptions[0].storage;
                 
                 // 4. 용량별 그룹화
                 devicesByCapacity = {};
                 deviceOptions.forEach(device => {
-                    const capacity = device.용량;
+                    const capacity = device.storage;
                     if (!devicesByCapacity[capacity]) {
                         devicesByCapacity[capacity] = [];
                     }
@@ -429,7 +429,7 @@
             container.innerHTML = '';
             
             // 색상 목록 추출 (중복 제거)
-            const colors = [...new Set(devices.map(d => d.색상명))];
+            const colors = [...new Set(devices.map(d => d.color.name))];
             
             colors.forEach((color, index) => {
                 const btn = document.createElement('button');
@@ -632,13 +632,19 @@
                     return;
                 }
                 
-                // 2. 기기옵션ID 생성
-                const deviceOptionId = `${currentModel}_${currentCapacity}GB`;
+                // 2. 기기 데이터 조회 (모델명 + 용량으로 찾기)
+                const allDevices = await api.getDevices();
+                const device = allDevices.find(d => 
+                    d.model === currentModel && 
+                    d.storage === currentCapacity
+                );
                 
-                // 3. 데이터 로드
-                const device = await api.getDeviceOption(deviceOptionId);
+                // 3. 요금제 및 지원금 데이터 로드
                 const plan = await api.getPlan(planId);
-                const subsidy = await api.getSubsidy(deviceOptionId, planId, joinType);
+                
+                // 지원금 조회를 위한 deviceId (첫 번째 매칭 기기의 ID 사용)
+                const deviceId = device ? device.id : null;
+                const subsidy = deviceId ? await api.getSubsidy(deviceId, planId, joinType) : null;
                 
                 if (!device || !plan || !subsidy) {
                     console.error('필요한 데이터를 찾을 수 없습니다');

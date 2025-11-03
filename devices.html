@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <base href="/tworld-store-frontend/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>전체 기기 - SKT 공식 온라인샵</title>
+    <title>기기 선택 - SKT 공식 온라인샵</title>
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -28,39 +28,43 @@
     <!-- 메인 컨텐츠 -->
     <main class="devices-page">
         <div class="container">
-            <!-- 페이지 헤더 -->
+            <!-- 페이지 타이틀 -->
             <div class="page-header">
-                <h1 class="page-title" id="page-title">전체 기기</h1>
-                <p class="page-count" id="page-count">총 0개</p>
+                <h1 class="page-title">기기 선택</h1>
             </div>
 
-            <!-- 필터 및 정렬 -->
-            <div class="filter-bar">
-                <!-- 브랜드 필터 -->
-                <div class="brand-filters">
-                    <button class="filter-btn active" data-brand="all">전체</button>
-                    <button class="filter-btn" data-brand="samsung">삼성</button>
-                    <button class="filter-btn" data-brand="apple">애플</button>
-                    <button class="filter-btn" data-brand="other">기타</button>
-                </div>
-
-                <!-- 정렬 -->
-                <div class="sort-controls">
-                    <select id="sort-select" class="sort-select">
-                        <option value="order">추천순</option>
-                        <option value="price-low">가격 낮은순</option>
-                        <option value="price-high">가격 높은순</option>
-                        <option value="name">이름순</option>
-                    </select>
+            <!-- 브랜드 필터 섹션 (sticky) -->
+            <div class="filter-section">
+                <div class="filter-bar">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-brand="all" onclick="filterByBrand('all')">
+                            전체
+                        </button>
+                        <button class="filter-btn" data-brand="samsung" onclick="filterByBrand('samsung')">
+                            삼성
+                        </button>
+                        <button class="filter-btn" data-brand="apple" onclick="filterByBrand('apple')">
+                            애플
+                        </button>
+                        <button class="filter-btn" data-brand="lg" onclick="filterByBrand('lg')">
+                            LG
+                        </button>
+                    </div>
+                    <div class="filter-result">
+                        <span id="result-count">0</span>개 기기
+                    </div>
                 </div>
             </div>
 
-            <!-- 기기 그리드 -->
+            <!-- 기기 목록 그리드 -->
             <div class="devices-grid" id="devices-grid">
                 <!-- JS로 동적 생성 -->
-                <div class="loading-placeholder">
-                    <p>기기 정보를 불러오는 중...</p>
-                </div>
+                <div class="loading-message">기기를 불러오는 중...</div>
+            </div>
+
+            <!-- 결과 없음 메시지 (숨김) -->
+            <div class="no-results" id="no-results" style="display: none;">
+                <p>선택하신 브랜드의 기기가 없습니다.</p>
             </div>
         </div>
     </main>
@@ -85,13 +89,13 @@
     <script src="js/api.js"></script>
     <script src="js/calculator.js"></script>
     <script src="js/common.js"></script>
-    
+
     <!-- 인라인 스크립트 -->
     <script>
         /**
-         * ═══════════════════════════════════════════════════
+         * ═══════════════════════════════════════════
          * devices.html 메인 스크립트
-         * ═══════════════════════════════════════════════════
+         * ═══════════════════════════════════════════
          */
 
         // Cloudinary 설정
@@ -100,136 +104,77 @@
         // 전역 변수
         let allDevices = [];
         let currentBrand = 'all';
-        let currentSort = 'order';
 
         /**
-         * ═══════════════════════════════════════════════════
-         * DOMContentLoaded 이벤트
-         * ═══════════════════════════════════════════════════
+         * ───────────────────────────────────────────
+         * 페이지 초기화
+         * ───────────────────────────────────────────
          */
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                console.log('=== devices.html 초기화 시작 ===');
+                console.log('🚀 devices.html 로드 시작');
                 
-                // 1. URL 파라미터 확인
-                const urlParams = new URLSearchParams(window.location.search);
-                const brandParam = urlParams.get('brand');
-                if (brandParam) {
-                    currentBrand = brandParam;
-                }
-                
-                // 2. Calculator 초기화
+                // Calculator 초기화
                 await calculator.init();
                 console.log('✅ Calculator 초기화 완료');
                 
-                // 3. 기기 데이터 로드
-                await loadDevices();
-                
-                // 4. 필터 버튼 이벤트
-                setupFilterButtons();
-                
-                // 5. 정렬 셀렉트 이벤트
-                setupSortSelect();
-                
-                // 6. 초기 필터 적용
-                if (brandParam) {
-                    filterByBrand(brandParam);
+                // URL 파라미터에서 브랜드 가져오기
+                const params = new URLSearchParams(window.location.search);
+                const urlBrand = params.get('brand');
+                if (urlBrand) {
+                    currentBrand = urlBrand;
                 }
                 
-                console.log('=== devices.html 초기화 완료 ===');
+                // 기기 데이터 로드
+                await loadDevices();
+                
+                // URL 브랜드로 필터링
+                if (urlBrand) {
+                    filterByBrand(urlBrand);
+                } else {
+                    renderDevices();
+                }
+                
+                console.log('✅ devices.html 로드 완료');
+                
             } catch (error) {
-                console.error('❌ 초기화 실패:', error);
-                document.getElementById('devices-grid').innerHTML = 
-                    '<div class="error-message"><p>데이터를 불러오는데 실패했습니다.</p></div>';
+                console.error('❌ 페이지 로드 실패:', error);
             }
         });
 
         /**
-         * ═══════════════════════════════════════════════════
+         * ───────────────────────────────────────────
          * 기기 데이터 로드
-         * ═══════════════════════════════════════════════════
+         * ───────────────────────────────────────────
          */
         async function loadDevices() {
             try {
-                // ✅ products.json만 로드 (영문 필드명)
-                const allDevicesData = await api.getDevices();
-                console.log(`✅ 전체 기기옵션 ${allDevicesData.length}개 로드 완료`);
+                console.log('📦 기기 데이터 로딩...');
                 
-                // 모델별로 그룹화
-                const modelGroups = {};
-                allDevicesData.forEach(device => {
-                    const modelName = device.model;
-                    if (!modelGroups[modelName]) {
-                        modelGroups[modelName] = [];
+                // 실제 데이터 로드
+                const devices = await api.getDevices();
+                
+                // 모델별로 그룹화 (같은 모델의 여러 색상/용량 → 대표 1개만)
+                const modelMap = new Map();
+                
+                devices.forEach(device => {
+                    if (!modelMap.has(device.model)) {
+                        // 각 모델의 첫 번째 기기만 저장
+                        modelMap.set(device.model, {
+                            model: device.model,
+                            brand: device.brand,
+                            price: Math.round(device.price / 24), // 24개월 할부 가정
+                            subtitle: `${device.storage}GB · ${device.color.name}`,
+                            storage: device.storage,
+                            colorName: device.color.name
+                        });
                     }
-                    modelGroups[modelName].push(device);
                 });
                 
-                const modelNames = Object.keys(modelGroups);
-                console.log(`✅ 총 ${modelNames.length}개 모델 발견`);
+                // Map을 배열로 변환
+                allDevices = Array.from(modelMap.values());
                 
-                // 각 모델별 카드 데이터 생성
-                allDevices = [];
-                
-                for (const modelName of modelNames) {
-                    try {
-                        // 첫 번째 기기옵션을 대표로 사용
-                        const device = modelGroups[modelName][0];
-                        const deviceId = device.id;
-                        
-                        // 브랜드 결정 (영문 필드)
-                        const brand = getBrandFromModel(device.brand);
-                        
-                        // 기본 요금제 로드 (첫 번째 5G 요금제)
-                        const allPlans = await api.getPlans();
-                        const plan = allPlans.find(p => p.category && p.category.name && p.category.name.includes('5G')) || allPlans[0];
-                        
-                        // 지원금 로드 (기기변경 기준)
-                        const subsidy = await api.getSubsidy(deviceId, plan.id, 'change');
-                        
-                        if (!plan || !subsidy) {
-                            console.warn(`필수 데이터 없음: ${modelName}`);
-                            continue;
-                        }
-                        
-                        // 가격 계산
-                        const priceResult = calculator.calculate(
-                            device,
-                            plan,
-                            subsidy,
-                            {
-                                discountType: 'subsidy',
-                                installmentMonths: 24,
-                                internetTv: 'none'
-                            }
-                        );
-                        
-                        // ✅ placeholder 썸네일
-                        const thumbnailUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="%23666" text-anchor="middle" dy=".3em"%3E📱 ' + encodeURIComponent(modelName) + '%3C/text%3E%3C/svg%3E';
-                        
-                        // 데이터 저장
-                        allDevices.push({
-                            modelName: modelName,
-                            brand: brand,
-                            title: modelName, // ✅ 모델명 그대로
-                            subtitle: `${device.storage}GB · ${device.color.name}`, // ✅ 영문 필드
-                            thumbnailUrl: thumbnailUrl,
-                            monthlyTotal: priceResult.monthlyTotal,
-                            subsidyTotal: priceResult.subsidy.total,
-                            releasePrice: priceResult.releasePrice,
-                            badge: null,
-                            sortOrder: 999
-                        });
-                        
-                    } catch (error) {
-                        console.error(`기기 데이터 생성 실패: ${modelName}`, error);
-                    }
-                }
-                
-                console.log(`✅ 총 ${allDevices.length}개 기기 로드 완료`);
-                
-                // 렌더링
-                renderDevices();
+                console.log(`✅ ${allDevices.length}개 기기 로드 완료`);
                 
             } catch (error) {
                 console.error('❌ 기기 로드 실패:', error);
@@ -238,173 +183,104 @@
         }
 
         /**
-         * ═══════════════════════════════════════════════════
+         * ───────────────────────────────────────────
          * 기기 렌더링
-         * ═══════════════════════════════════════════════════
+         * ───────────────────────────────────────────
          */
         function renderDevices() {
             const container = document.getElementById('devices-grid');
+            const noResults = document.getElementById('no-results');
             
-            // 필터링된 기기
+            // 영문 → 한글 브랜드명 매핑
+            const brandMap = {
+                'samsung': '삼성',
+                'apple': '애플',
+                'lg': 'LG'
+            };
+            
+            // 현재 브랜드 필터링
             let filteredDevices = allDevices;
-            
-            // 브랜드 필터
             if (currentBrand !== 'all') {
-                filteredDevices = filteredDevices.filter(d => d.brand === currentBrand);
+                const koreanBrand = brandMap[currentBrand];
+                filteredDevices = allDevices.filter(d => d.brand === koreanBrand);
             }
             
-            // 정렬
-            filteredDevices = sortDevices(filteredDevices, currentSort);
+            // 결과 카운트 업데이트
+            document.getElementById('result-count').textContent = filteredDevices.length;
             
-            // 개수 업데이트
-            document.getElementById('page-count').textContent = `총 ${filteredDevices.length}개`;
-            
-            // 결과 없음
+            // 결과 없음 처리
             if (filteredDevices.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <p>검색 결과가 없습니다.</p>
-                    </div>
-                `;
+                container.style.display = 'none';
+                noResults.style.display = 'block';
                 return;
             }
             
-            // 카드 렌더링
-            container.innerHTML = filteredDevices.map(device => `
-                <div class="device-card" onclick="location.href='device-detail.html?device=${encodeURIComponent(device.modelName)}'">
-                    ${device.badge ? `<span class="device-badge">${device.badge}</span>` : ''}
+            container.style.display = 'grid';
+            noResults.style.display = 'none';
+            
+            // 카드 생성
+            container.innerHTML = '';
+            filteredDevices.forEach(device => {
+                const card = document.createElement('div');
+                card.className = 'device-card';
+                card.onclick = () => location.href = `device-detail.html?device=${encodeURIComponent(device.model)}`;
+                
+                // Placeholder 이미지
+                const imageUrl = `https://via.placeholder.com/400x400/cccccc/333333?text=${encodeURIComponent(device.model)}`;
+                
+                card.innerHTML = `
                     <div class="device-image">
-                        <img src="${device.thumbnailUrl}" alt="${device.title}">
+                        <img src="${imageUrl}" 
+                             alt="${device.model}"
+                             loading="lazy">
                     </div>
                     <div class="device-info">
-                        <h3 class="device-title">${device.title}</h3>
+                        <h3 class="device-title">${device.model}</h3>
                         <p class="device-subtitle">${device.subtitle}</p>
-                        <div class="device-pricing">
-                            <div class="price-row">
-                                <span class="price-label">출고가</span>
-                                <span class="price-value">${formatPrice(device.releasePrice)}원</span>
-                            </div>
-                            <div class="price-row">
-                                <span class="price-label">지원금</span>
-                                <span class="price-value discount">${formatPrice(device.subsidyTotal)}원</span>
-                            </div>
-                            <div class="price-row highlight">
-                                <span class="price-label">월 납부금</span>
-                                <span class="price-value">${formatPrice(device.monthlyTotal)}원</span>
-                            </div>
-                        </div>
+                        <p class="device-price">월 ${formatPrice(device.price)}</p>
                     </div>
-                </div>
-            `).join('');
-        }
-
-        /**
-         * ═══════════════════════════════════════════════════
-         * 필터 버튼 설정
-         * ═══════════════════════════════════════════════════
-         */
-        function setupFilterButtons() {
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const brand = btn.getAttribute('data-brand');
-                    filterByBrand(brand);
-                });
+                `;
+                
+                container.appendChild(card);
             });
+            
+            console.log(`✅ ${filteredDevices.length}개 기기 렌더링 완료`);
         }
 
         /**
-         * ═══════════════════════════════════════════════════
+         * ───────────────────────────────────────────
          * 브랜드 필터링
-         * ═══════════════════════════════════════════════════
+         * ───────────────────────────────────────────
          */
         function filterByBrand(brand) {
+            console.log(`🔍 브랜드 필터: ${brand}`);
+            
+            // 영문 → 한글 브랜드명 매핑
+            const brandMap = {
+                'samsung': '삼성',
+                'apple': '애플',
+                'lg': 'LG',
+                'all': 'all'
+            };
+            
+            // 현재 브랜드 저장 (영문)
             currentBrand = brand;
             
-            // 버튼 활성화 상태 변경
+            // 필터 버튼 활성화 상태 변경
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.getAttribute('data-brand') === brand) {
+                if (btn.dataset.brand === brand) {
                     btn.classList.add('active');
                 } else {
                     btn.classList.remove('active');
                 }
             });
             
-            // 페이지 타이틀 변경
-            const titleMap = {
-                'all': '전체 기기',
-                'samsung': '삼성 기기',
-                'apple': '애플 기기',
-                'other': '기타 기기'
-            };
-            document.getElementById('page-title').textContent = titleMap[brand] || '전체 기기';
+            // URL 업데이트 (히스토리에 추가하지 않음)
+            const newUrl = brand === 'all' ? 'devices.html' : `devices.html?brand=${brand}`;
+            window.history.replaceState({}, '', newUrl);
             
-            // 재렌더링
+            // 기기 재렌더링
             renderDevices();
-        }
-
-        /**
-         * ═══════════════════════════════════════════════════
-         * 정렬 셀렉트 설정
-         * ═══════════════════════════════════════════════════
-         */
-        function setupSortSelect() {
-            const sortSelect = document.getElementById('sort-select');
-            sortSelect.addEventListener('change', (e) => {
-                currentSort = e.target.value;
-                renderDevices();
-            });
-        }
-
-        /**
-         * ═══════════════════════════════════════════════════
-         * 기기 정렬
-         * ═══════════════════════════════════════════════════
-         */
-        function sortDevices(devices, sortType) {
-            const sorted = [...devices];
-            
-            switch (sortType) {
-                case 'order':
-                    sorted.sort((a, b) => a.sortOrder - b.sortOrder);
-                    break;
-                case 'price-low':
-                    sorted.sort((a, b) => a.monthlyTotal - b.monthlyTotal);
-                    break;
-                case 'price-high':
-                    sorted.sort((a, b) => b.monthlyTotal - a.monthlyTotal);
-                    break;
-                case 'name':
-                    sorted.sort((a, b) => a.title.localeCompare(b.title, 'ko'));
-                    break;
-            }
-            
-            return sorted;
-        }
-
-        /**
-         * ═══════════════════════════════════════════════════
-         * 브랜드 결정 헬퍼
-         * ═══════════════════════════════════════════════════
-         */
-        function getBrandFromModel(brandName) {
-            const brandLower = brandName.toLowerCase();
-            if (brandLower.includes('samsung') || brandLower.includes('삼성')) {
-                return 'samsung';
-            } else if (brandLower.includes('apple') || brandLower.includes('애플')) {
-                return 'apple';
-            } else {
-                return 'other';
-            }
-        }
-
-        /**
-         * ═══════════════════════════════════════════════════
-         * 가격 포맷팅 헬퍼
-         * ═══════════════════════════════════════════════════
-         */
-        function formatPrice(price) {
-            return new Intl.NumberFormat('ko-KR').format(price);
         }
     </script>
 </body>

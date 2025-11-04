@@ -46,9 +46,18 @@ function getEnvironment() {
  */
 function getProductsAPIURL() {
   const env = getEnvironment();
-  return env === 'development' 
+  const baseUrl = env === 'development' 
     ? API_CONFIG.PRODUCTS_JSON_LOCAL 
     : API_CONFIG.PRODUCTS_JSON;
+  
+  // 캐시 무효화를 위한 타임스탬프 파라미터 추가
+  // 매 요청마다 새로운 URL을 생성하여 브라우저 캐시 우회
+  const cacheBuster = `v=${Date.now()}`;
+  
+  // URL에 이미 쿼리 파라미터가 있는지 확인
+  const separator = baseUrl.includes('?') ? '&' : '?';
+  
+  return `${baseUrl}${separator}${cacheBuster}`;
 }
 
 // ============================================

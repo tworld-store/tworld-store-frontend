@@ -1,12 +1,9 @@
 /**
- * Device Detail JavaScript - 개선 버전 (최종)
+ * Device Detail JavaScript - 최종 수정 버전
  * 
- * 주요 개선사항:
- * 1. 요금 상세 내역 카드 추가 (약정별 표시/숨김)
- * 2. Glassmorphism 디자인 적용
- * 3. 가격 계산 로직 수정 (영문→한글 매핑)
- * 4. 하단 고정바 tnshop 스타일
- * 5. URL 파라미터: 구버전 방식 (?id=...) 유지
+ * URL 구조: device-detail.html?model=갤럭시S24
+ * - 모델명만 파라미터로 전달
+ * - 용량/색상은 페이지 내에서 선택
  */
 
 // ============================================
@@ -14,15 +11,15 @@
 // ============================================
 let productsData = null;
 let currentDevice = null;
-let allDeviceOptions = [];
+let allModelDevices = []; // 같은 모델의 모든 용량 옵션
 
 const currentSelections = {
+  deviceId: null, // 현재 선택된 device ID (용량 포함)
   colorId: null,
-  storage: null,
-  subscriptionType: 'change', // 기본값: 기기변경
+  subscriptionType: 'change',
   planId: null,
-  discountType: 'subsidy', // 기본값: 공통지원금 약정
-  installmentMonths: 36 // 기본값: 36개월
+  discountType: 'subsidy',
+  installmentMonths: 36
 };
 
 // ============================================
@@ -32,42 +29,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('📱 Device Detail 페이지 초기화 시작');
   
   try {
-    // 1. URL 파라미터에서 기기 ID 추출
+    // 1. URL에서 모델명 추출
     const urlParams = new URLSearchParams(window.location.search);
-    const deviceId = urlParams.get('id');
+    const modelName = urlParams.get('model');
     
-    if (!deviceId) {
+    if (!modelName) {
       alert('기기 정보를 찾을 수 없습니다.');
       window.location.href = './devices.html';
       return;
     }
     
-    console.log('📱 기기 ID:', deviceId);
+    console.log('📱 모델명:', modelName);
     
     // 2. API 데이터 로드
     const api = new DataAPI();
     productsData = await api.load();
-    
     console.log('✅ Products 데이터 로드 완료');
     
-    // 3. 현재 기기 찾기
-    currentDevice = productsData.devices.find(d => d.id === deviceId);
+    // 3. 해당 모델의 모든 용량 옵션 찾기
+    allModelDevices = productsData.devices.filter(d => d.model === modelName);
     
-    if (!currentDevice) {
-      console.error('❌ 기기를 찾을 수 없음. deviceId:', deviceId);
-      console.log('사용 가능한 기기 ID 목록:');
-      productsData.devices.forEach(d => console.log('  -', d.id));
-      
+    if (allModelDevices.length === 0) {
+      console.error('❌ 모델을 찾을 수 없음:', modelName);
       alert('기기를 찾을 수 없습니다.');
       window.location.href = './devices.html';
       return;
     }
     
-    console.log('✅ 기기 찾음:', currentDevice.model);
+    console.log(`✅ "${modelName}" 모델 찾음, 용량 옵션: ${allModelDevices.length}개`);
     
-    // 4. 같은 모델의 모든 용량 옵션 로드
-    allDeviceOptions = productsData.devices.filter(d => d.model === currentDevice.model);
-    console.log(`📦 "${currentDevice.model}" 모델의 용량 옵션: ${allDeviceOptions.length}개`);
+    // 4. 기본값: 첫 번째 용량 선택
+    currentDevice = allModelDevices[0];
+    currentSelections.deviceId = currentDevice.id;
+    console.log(`✅ 기본 용량 선택: ${currentDevice.storage}GB`);
     
     // 5. UI 렌더링
     renderProductInfo();
@@ -81,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       updateSelectedPlan();
     }
     
-    // 7. 색상 기본값 설정 (첫 번째 색상 자동 선택)
+    // 7. 색상 기본값 설정
     if (currentDevice.colors && currentDevice.colors.length > 0) {
       currentSelections.colorId = currentDevice.colors[0].id;
     }
@@ -101,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ============================================
-// UI 렌더링 함수들
+// UI 렌더링
 // ============================================
 
 /**
@@ -121,6 +115,13 @@ function renderProductInfo() {
   }
   
   // 출고가
+  updatePrice();
+}
+
+/**
+ * 출고가 업데이트
+ */
+function updatePrice() {
   const priceElement = document.getElementById('product-price');
   if (priceElement) {
     priceElement.textContent = currentDevice.price.toLocaleString() + '원';
@@ -136,17 +137,16 @@ function renderStorageOptions() {
   
   container.innerHTML = '';
   
-  allDeviceOptions.forEach(device => {
+  allModelDevices.forEach(device => {
     const button = document.createElement('button');
     button.className = 'storage-option';
     button.textContent = `${device.storage}GB`;
     button.dataset.deviceId = device.id;
     button.dataset.storage = device.storage;
     
-    // 현재 기기면 활성화
-    if (device.id === currentDevice.id) {
+    // 현재 선택된 용량이면 활성화
+    if (device.id === currentSelections.deviceId) {
       button.classList.add('active');
-      currentSelections.storage = device.storage;
     }
     
     button.addEventListener('click', handleStorageChange);
@@ -183,42 +183,28 @@ function renderColorOptions() {
   });
   
   // 색상명 표시
-  const colorNameElement = document.getElementById('selected-color-name');
-  if (colorNameElement && currentSelections.colorId) {
-    const selectedColor = currentDevice.colors.find(c => c.id === currentSelections.colorId);
-    if (selectedColor) {
-      colorNameElement.textContent = selectedColor.name;
-    }
-  }
+  updateColorName();
 }
 
 /**
- * 색상 UI 업데이트
+ * 색상명 업데이트
  */
-function updateColorUI() {
-  document.querySelectorAll('.color-chip').forEach(chip => {
-    if (chip.dataset.colorId === currentSelections.colorId) {
-      chip.classList.add('active');
-    } else {
-      chip.classList.remove('active');
-    }
-  });
-  
+function updateColorName() {
   const colorNameElement = document.getElementById('selected-color-name');
-  if (colorNameElement && currentSelections.colorId) {
-    const selectedColor = currentDevice.colors.find(c => c.id === currentSelections.colorId);
-    if (selectedColor) {
-      colorNameElement.textContent = selectedColor.name;
-    }
+  if (!colorNameElement || !currentSelections.colorId) return;
+  
+  const selectedColor = currentDevice.colors.find(c => c.id === currentSelections.colorId);
+  if (selectedColor) {
+    colorNameElement.textContent = selectedColor.name;
   }
 }
 
 /**
- * 이미지 슬라이더 렌더링 (임시)
+ * 이미지 슬라이더 렌더링
  */
 function renderImageSlider() {
   // TODO: Swiper.js 구현
-  console.log('📷 이미지 슬라이더 렌더링 (추후 구현)');
+  console.log('📷 이미지 슬라이더 렌더링');
 }
 
 /**
@@ -247,35 +233,35 @@ function updateSelectedPlan() {
  * 이벤트 리스너 등록
  */
 function attachEventListeners() {
-  // 가입유형 라디오 버튼
+  // 가입유형
   document.querySelectorAll('input[name="subscription-type"]').forEach(radio => {
     radio.addEventListener('change', handleSubscriptionTypeChange);
   });
   
-  // 할인유형 라디오 버튼
+  // 할인유형
   document.querySelectorAll('input[name="discount-type"]').forEach(radio => {
     radio.addEventListener('change', handleDiscountTypeChange);
   });
   
-  // 할부개월 셀렉트
+  // 할부개월
   const installmentSelect = document.getElementById('installment-months');
   if (installmentSelect) {
     installmentSelect.addEventListener('change', handleInstallmentChange);
   }
   
-  // 요금제 선택 버튼
+  // 요금제 선택
   const planButton = document.getElementById('open-plan-selector');
   if (planButton) {
     planButton.addEventListener('click', openPlanSelector);
   }
   
-  // 상담신청 버튼
+  // 상담신청
   const consultButton = document.getElementById('consult-button');
   if (consultButton) {
     consultButton.addEventListener('click', handleConsultClick);
   }
   
-  // 주문하기 버튼
+  // 주문하기
   const orderButton = document.getElementById('order-button');
   if (orderButton) {
     orderButton.addEventListener('click', handleOrderClick);
@@ -283,94 +269,137 @@ function attachEventListeners() {
 }
 
 /**
- * 용량 변경 처리
+ * 용량 변경 처리 (URL 변경 없이 클라이언트에서 처리)
  */
 async function handleStorageChange(e) {
   const newDeviceId = e.currentTarget.dataset.deviceId;
   
-  if (newDeviceId === currentDevice.id) return;
+  if (newDeviceId === currentSelections.deviceId) return;
   
-  // URL 업데이트 및 페이지 이동 (구버전 방식)
-  window.location.href = `device-detail.html?id=${newDeviceId}`;
+  console.log('📦 용량 변경:', newDeviceId);
+  
+  // 1. 새 device 찾기
+  const newDevice = allModelDevices.find(d => d.id === newDeviceId);
+  if (!newDevice) {
+    console.error('❌ device를 찾을 수 없음:', newDeviceId);
+    return;
+  }
+  
+  // 2. currentDevice 업데이트
+  currentDevice = newDevice;
+  currentSelections.deviceId = newDevice.id;
+  
+  // 3. 색상 기본값 재설정
+  if (currentDevice.colors && currentDevice.colors.length > 0) {
+    currentSelections.colorId = currentDevice.colors[0].id;
+  }
+  
+  // 4. UI 업데이트
+  updatePrice();
+  updateStorageButtons();
+  renderColorOptions(); // 색상 옵션 다시 렌더링
+  
+  // 5. 가격 재계산
+  await calculateAndUpdatePrice();
 }
 
 /**
- * 색상 변경 처리
+ * 용량 버튼 활성화 상태 업데이트
+ */
+function updateStorageButtons() {
+  document.querySelectorAll('.storage-option').forEach(btn => {
+    if (btn.dataset.deviceId === currentSelections.deviceId) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
+
+/**
+ * 색상 변경 처리 (URL 변경 없이 클라이언트에서 처리)
  */
 async function handleColorChange(e) {
   const colorId = e.currentTarget.dataset.colorId;
   
   if (colorId === currentSelections.colorId) return;
   
+  console.log('🎨 색상 변경:', colorId);
+  
   currentSelections.colorId = colorId;
   
   // UI 업데이트
-  updateColorUI();
+  updateColorButtons();
+  updateColorName();
   
   // 이미지 변경 (TODO)
-  console.log('색상 변경:', colorId);
   
-  // 가격 재계산
-  await calculateAndUpdatePrice();
+  // 가격은 색상에 영향 없음 (재계산 불필요)
 }
 
 /**
- * 가입유형 변경 처리
+ * 색상 버튼 활성화 상태 업데이트
+ */
+function updateColorButtons() {
+  document.querySelectorAll('.color-chip').forEach(btn => {
+    if (btn.dataset.colorId === currentSelections.colorId) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
+
+/**
+ * 가입유형 변경
  */
 async function handleSubscriptionTypeChange(e) {
   currentSelections.subscriptionType = e.target.value;
-  console.log('가입유형 변경:', currentSelections.subscriptionType);
-  
+  console.log('📱 가입유형 변경:', currentSelections.subscriptionType);
   await calculateAndUpdatePrice();
 }
 
 /**
- * 할인유형 변경 처리
+ * 할인유형 변경
  */
 async function handleDiscountTypeChange(e) {
   currentSelections.discountType = e.target.value;
-  console.log('할인유형 변경:', currentSelections.discountType);
-  
+  console.log('💰 할인유형 변경:', currentSelections.discountType);
   await calculateAndUpdatePrice();
 }
 
 /**
- * 할부개월 변경 처리
+ * 할부개월 변경
  */
 async function handleInstallmentChange(e) {
   currentSelections.installmentMonths = parseInt(e.target.value, 10);
-  console.log('할부개월 변경:', currentSelections.installmentMonths);
-  
+  console.log('📅 할부개월 변경:', currentSelections.installmentMonths);
   await calculateAndUpdatePrice();
 }
 
 /**
- * 요금제 선택 팝업 열기
+ * 요금제 선택 팝업
  */
 function openPlanSelector() {
-  // TODO: 요금제 선택 팝업 구현 (Phase 4)
-  console.log('요금제 선택 팝업 열기');
+  console.log('📋 요금제 선택 팝업');
   alert('요금제 선택 기능은 Phase 4에서 구현 예정입니다.');
 }
 
 /**
- * 상담신청 버튼 클릭
+ * 상담신청
  */
 function handleConsultClick() {
   const phoneNumber = productsData?.settings?.['상담전화'] || '1588-0011';
-  const confirmMsg = `상담 전화 ${phoneNumber}로 연결하시겠습니까?`;
-  
-  if (confirm(confirmMsg)) {
+  if (confirm(`상담 전화 ${phoneNumber}로 연결하시겠습니까?`)) {
     window.location.href = `tel:${phoneNumber}`;
   }
 }
 
 /**
- * 주문하기 버튼 클릭
+ * 주문하기
  */
 function handleOrderClick() {
-  // TODO: 주문 페이지 이동 또는 상담 신청 로직
-  console.log('주문하기 클릭');
+  console.log('🛒 주문하기');
   alert('주문 기능은 추후 구현 예정입니다.\n상담신청을 이용해주세요.');
 }
 
@@ -388,12 +417,10 @@ async function calculateAndUpdatePrice() {
       return;
     }
     
-    // Calculator 사용
     const calculator = new PriceCalculator(productsData);
     
-    // 계산 파라미터
     const params = {
-      deviceId: currentDevice.id,
+      deviceId: currentSelections.deviceId,
       planId: currentSelections.planId,
       subscriptionType: currentSelections.subscriptionType,
       discountType: currentSelections.discountType,
@@ -406,7 +433,6 @@ async function calculateAndUpdatePrice() {
     
     console.log('✅ 계산 완료:', result);
     
-    // UI 업데이트
     updatePriceUI(result);
     
   } catch (error) {
@@ -436,7 +462,7 @@ function updatePriceUI(result) {
     el.textContent = result.totalMonthly.toLocaleString() + '원';
   });
   
-  // 요금 상세 내역 업데이트
+  // 요금 상세 내역
   updatePriceDetailCard(result);
 }
 
@@ -450,7 +476,7 @@ function updatePriceDetailCard(result) {
     devicePriceElement.textContent = result.devicePrice.toLocaleString() + '원';
   }
   
-  // 공통지원금 (지원금 약정만 표시)
+  // 공통지원금 (지원금 약정만)
   const commonRow = document.getElementById('common-subsidy-row');
   const commonValueElement = document.getElementById('detail-common-subsidy');
   if (currentSelections.discountType === 'subsidy') {
@@ -462,7 +488,7 @@ function updatePriceDetailCard(result) {
     if (commonRow) commonRow.style.display = 'none';
   }
   
-  // 추가지원금 (지원금 약정만 표시)
+  // 추가지원금 (지원금 약정만)
   const additionalRow = document.getElementById('additional-subsidy-row');
   const additionalValueElement = document.getElementById('detail-additional-subsidy');
   if (currentSelections.discountType === 'subsidy') {
@@ -474,7 +500,7 @@ function updatePriceDetailCard(result) {
     if (additionalRow) additionalRow.style.display = 'none';
   }
   
-  // 선약지원금 (선택약정만 표시)
+  // 선약지원금 (선택약정만)
   const selectRow = document.getElementById('select-subsidy-row');
   const selectValueElement = document.getElementById('detail-select-subsidy');
   if (currentSelections.discountType === 'selective') {
@@ -498,7 +524,7 @@ function updatePriceDetailCard(result) {
     planPriceElement.textContent = result.planPrice.toLocaleString() + '원';
   }
   
-  // 요금할인 25% (선택약정만 표시)
+  // 요금할인 25% (선택약정만)
   const planDiscountRow = document.getElementById('plan-discount-row');
   const planDiscountElement = document.getElementById('detail-plan-discount');
   if (currentSelections.discountType === 'selective') {

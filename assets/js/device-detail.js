@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // 2. API 데이터 로드
     const api = new DataAPI();
-    productsData = await api.load();
+    productsData = await FetchProducts();
     console.log('✅ Products 데이터 로드 완료');
     
     // 3. 해당 모델의 모든 용량 옵션 찾기

@@ -82,14 +82,38 @@ async function initDeviceDetailPage() {
       const allModels = productsData.devices.map(d => d.model);
       console.log('📋 사용 가능한 모델들:', allModels.slice(0, 5));
       
-      // 정확히 일치하는 모델 찾기
-      currentDevice = productsData.devices.find(d => d.model === model);
+      // 검색어 전처리: 앞뒤 공백 제거
+      const trimmedModel = model.trim();
+      
+      // 1단계: 정확 일치 검색 (trim 적용)
+      currentDevice = productsData.devices.find(d => 
+        d.model && d.model.trim() === trimmedModel
+      );
       
       if (!currentDevice) {
-        // 대소문자 무시하고 찾기
-        currentDevice = productsData.devices.find(d => 
-          d.model && d.model.toLowerCase() === model.toLowerCase()
-        );
+        // 2단계: 대소문자 무시 + 공백 정규화 (연속된 공백을 하나로)
+        const normalizedModel = trimmedModel.toLowerCase().replace(/\s+/g, ' ');
+        
+        currentDevice = productsData.devices.find(d => {
+          if (!d.model) return false;
+          const normalizedDeviceModel = d.model.trim().toLowerCase().replace(/\s+/g, ' ');
+          return normalizedDeviceModel === normalizedModel;
+        });
+        
+        console.log(`2단계 검색 (대소문자 무시 + 공백 정규화): ${currentDevice ? '성공' : '실패'}`);
+      }
+      
+      if (!currentDevice) {
+        // 3단계: 모든 공백 제거 후 비교 (최종 방어선)
+        const noSpaceModel = trimmedModel.toLowerCase().replace(/\s/g, '');
+        
+        currentDevice = productsData.devices.find(d => {
+          if (!d.model) return false;
+          const noSpaceDeviceModel = d.model.trim().toLowerCase().replace(/\s/g, '');
+          return noSpaceDeviceModel === noSpaceModel;
+        });
+        
+        console.log(`3단계 검색 (공백 제거): ${currentDevice ? '성공' : '실패'}`);
       }
       
       console.log(`모델 "${model}"로 검색 결과:`, currentDevice ? currentDevice.id : 'null');

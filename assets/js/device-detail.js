@@ -1,9 +1,13 @@
 /**
- * Device Detail JavaScript - 최종 수정 버전
+ * Device Detail JavaScript - v2.0 (Calculator 호환)
  * 
  * URL 구조: device-detail.html?model=갤럭시S24
  * - 모델명만 파라미터로 전달
  * - 용량/색상은 페이지 내에서 선택
+ * 
+ * v2.0 변경사항:
+ * - PriceCalculator v2.0 호환 (ID 기반 인터페이스)
+ * - updatePriceUI() 함수 필드명 수정
  */
 
 // ============================================
@@ -43,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // 2. API 데이터 로드
     const api = new DataAPI();
-    productsData = await api.fetchProducts();
+    productsData = await api.load();
     console.log('✅ Products 데이터 로드 완료');
     
     // 3. 해당 모델의 모든 용량 옵션 찾기
@@ -437,102 +441,157 @@ async function calculateAndUpdatePrice() {
     
   } catch (error) {
     console.error('❌ 가격 계산 오류:', error);
+    alert('가격 계산 중 오류가 발생했습니다.\n' + error.message);
   }
 }
 
 /**
  * 가격 UI 업데이트
+ * 
+ * ★★★ v2.0 수정 사항 ★★★
+ * PriceCalculator v2.0의 반환 필드명에 맞게 수정:
+ * - result.monthlyInstallment (월 할부금)
+ * - result.monthlyPlanFee (월 통신요금)
+ * - result.totalMonthly (월 총액)
  */
 function updatePriceUI(result) {
+  // ============================================
+  // 1. 하단 고정 바
+  // ============================================
+  
   // 월 휴대폰 요금
-  const phoneMonthlyElement = document.getElementById('phone-monthly');
-  if (phoneMonthlyElement) {
-    phoneMonthlyElement.textContent = result.phoneMonthly.toLocaleString() + '원';
+  const barMonthlyDevice = document.getElementById('barMonthlyDevice');
+  if (barMonthlyDevice) {
+    barMonthlyDevice.textContent = result.monthlyInstallment.toLocaleString() + '원';
   }
   
   // 월 통신요금
-  const planMonthlyElement = document.getElementById('plan-monthly');
-  if (planMonthlyElement) {
-    planMonthlyElement.textContent = result.planMonthly.toLocaleString() + '원';
+  const barMonthlyPlan = document.getElementById('barMonthlyPlan');
+  if (barMonthlyPlan) {
+    barMonthlyPlan.textContent = result.monthlyPlanFee.toLocaleString() + '원';
   }
   
-  // 월 예상 납부 금액
-  const totalMonthlyElements = document.querySelectorAll('.total-monthly');
-  totalMonthlyElements.forEach(el => {
-    el.textContent = result.totalMonthly.toLocaleString() + '원';
-  });
-  
-  // 요금 상세 내역
-  updatePriceDetailCard(result);
-}
-
-/**
- * 요금 상세 내역 카드 업데이트
- */
-function updatePriceDetailCard(result) {
-  // 출고가
-  const devicePriceElement = document.getElementById('detail-device-price');
-  if (devicePriceElement) {
-    devicePriceElement.textContent = result.devicePrice.toLocaleString() + '원';
+  // 월 총액
+  const barTotalPrice = document.getElementById('barTotalPrice');
+  if (barTotalPrice) {
+    barTotalPrice.textContent = result.totalMonthly.toLocaleString() + '원';
   }
   
-  // 공통지원금 (지원금 약정만)
-  const commonRow = document.getElementById('common-subsidy-row');
-  const commonValueElement = document.getElementById('detail-common-subsidy');
-  if (currentSelections.discountType === 'subsidy') {
-    if (commonRow) commonRow.style.display = 'flex';
-    if (commonValueElement) {
-      commonValueElement.textContent = '-' + result.commonSubsidy.toLocaleString() + '원';
+  // ============================================
+  // 2. 가격 상세 섹션 - 월 휴대폰 요금
+  // ============================================
+  
+  const detailMonthlyDevice = document.getElementById('detailMonthlyDevice');
+  if (detailMonthlyDevice) {
+    detailMonthlyDevice.textContent = result.monthlyInstallment.toLocaleString() + '원';
+  }
+  
+  // ============================================
+  // 3. 가격 상세 섹션 - 출고가
+  // ============================================
+  
+  const detailDevicePrice = document.getElementById('detailDevicePrice');
+  if (detailDevicePrice) {
+    detailDevicePrice.textContent = result.devicePrice.toLocaleString() + '원';
+  }
+  
+  // ============================================
+  // 4. 가격 상세 섹션 - 공통지원금
+  // ============================================
+  
+  const detailCommonSubsidy = document.getElementById('detailCommonSubsidy');
+  if (detailCommonSubsidy) {
+    detailCommonSubsidy.textContent = '-' + result.commonSubsidy.toLocaleString() + '원';
+  }
+  
+  // ============================================
+  // 5. 가격 상세 섹션 - 추가지원금
+  // ============================================
+  
+  const detailAdditionalSubsidy = document.getElementById('detailAdditionalSubsidy');
+  if (detailAdditionalSubsidy) {
+    detailAdditionalSubsidy.textContent = '-' + result.additionalSubsidy.toLocaleString() + '원';
+  }
+  
+  // ============================================
+  // 6. 가격 상세 섹션 - 선택약정지원금 (선택약정일 때만 표시)
+  // ============================================
+  
+  const detailSelectSubsidy = document.getElementById('detailSelectSubsidy');
+  const detailSelectSubsidyRow = detailSelectSubsidy?.closest('.detail-row');
+  
+  if (result.discountType === 'selective') {
+    // 선택약정일 때 표시
+    if (detailSelectSubsidy) {
+      detailSelectSubsidy.textContent = '-' + result.selectSubsidy.toLocaleString() + '원';
+    }
+    if (detailSelectSubsidyRow) {
+      detailSelectSubsidyRow.style.display = 'flex';
     }
   } else {
-    if (commonRow) commonRow.style.display = 'none';
+    // 지원금 약정일 때 숨김
+    if (detailSelectSubsidyRow) {
+      detailSelectSubsidyRow.style.display = 'none';
+    }
   }
   
-  // 추가지원금 (지원금 약정만)
-  const additionalRow = document.getElementById('additional-subsidy-row');
-  const additionalValueElement = document.getElementById('detail-additional-subsidy');
-  if (currentSelections.discountType === 'subsidy') {
-    if (additionalRow) additionalRow.style.display = 'flex';
-    if (additionalValueElement) {
-      additionalValueElement.textContent = '-' + result.additionalSubsidy.toLocaleString() + '원';
+  // ============================================
+  // 7. 가격 상세 섹션 - 할부원금
+  // ============================================
+  
+  const detailPrincipal = document.getElementById('detailPrincipal');
+  if (detailPrincipal) {
+    detailPrincipal.textContent = result.principal.toLocaleString() + '원';
+  }
+  
+  // ============================================
+  // 8. 가격 상세 섹션 - 월 통신요금
+  // ============================================
+  
+  const detailMonthlyPlan = document.getElementById('detailMonthlyPlan');
+  if (detailMonthlyPlan) {
+    detailMonthlyPlan.textContent = result.monthlyPlanFee.toLocaleString() + '원';
+  }
+  
+  // ============================================
+  // 9. 가격 상세 섹션 - 요금제 원래 가격
+  // ============================================
+  
+  const detailPlanPrice = document.getElementById('detailPlanPrice');
+  if (detailPlanPrice) {
+    detailPlanPrice.textContent = result.planPrice.toLocaleString() + '원';
+  }
+  
+  // ============================================
+  // 10. 가격 상세 섹션 - 요금할인 (선택약정일 때만 표시)
+  // ============================================
+  
+  const detailPlanDiscount = document.getElementById('detailPlanDiscount');
+  const detailPlanDiscountRow = document.getElementById('detailPlanDiscountRow');
+  
+  if (result.discountType === 'selective') {
+    // 선택약정일 때 표시
+    if (detailPlanDiscount) {
+      detailPlanDiscount.textContent = '-' + result.planDiscount.toLocaleString() + '원';
+    }
+    if (detailPlanDiscountRow) {
+      detailPlanDiscountRow.style.display = 'flex';
     }
   } else {
-    if (additionalRow) additionalRow.style.display = 'none';
-  }
-  
-  // 선약지원금 (선택약정만)
-  const selectRow = document.getElementById('select-subsidy-row');
-  const selectValueElement = document.getElementById('detail-select-subsidy');
-  if (currentSelections.discountType === 'selective') {
-    if (selectRow) selectRow.style.display = 'flex';
-    if (selectValueElement) {
-      selectValueElement.textContent = '-' + result.selectSubsidy.toLocaleString() + '원';
+    // 지원금 약정일 때 숨김
+    if (detailPlanDiscountRow) {
+      detailPlanDiscountRow.style.display = 'none';
     }
-  } else {
-    if (selectRow) selectRow.style.display = 'none';
   }
   
-  // 할부원금
-  const installmentElement = document.getElementById('detail-installment-principal');
-  if (installmentElement) {
-    installmentElement.textContent = result.installmentPrincipal.toLocaleString() + '원';
+  // ============================================
+  // 11. 가격 상세 섹션 - 최종 월 총액
+  // ============================================
+  
+  const detailTotalPrice = document.getElementById('detailTotalPrice');
+  if (detailTotalPrice) {
+    detailTotalPrice.textContent = result.totalMonthly.toLocaleString() + '원';
   }
   
-  // 요금제 월 기준금액
-  const planPriceElement = document.getElementById('detail-plan-price');
-  if (planPriceElement) {
-    planPriceElement.textContent = result.planPrice.toLocaleString() + '원';
-  }
-  
-  // 요금할인 25% (선택약정만)
-  const planDiscountRow = document.getElementById('plan-discount-row');
-  const planDiscountElement = document.getElementById('detail-plan-discount');
-  if (currentSelections.discountType === 'selective') {
-    if (planDiscountRow) planDiscountRow.style.display = 'flex';
-    if (planDiscountElement) {
-      planDiscountElement.textContent = '-' + result.planDiscount.toLocaleString() + '원';
-    }
-  } else {
-    if (planDiscountRow) planDiscountRow.style.display = 'none';
-  }
+  debugLog('가격 UI 업데이트 완료', result);
 }

@@ -1,18 +1,15 @@
 /**
- * DataAPI 클래스 - api.js
+ * ═══════════════════════════════════════════════════
+ * DataAPI 클래스 - api.js (개선 버전)
+ * ═══════════════════════════════════════════════════
  * 
  * products.json 데이터를 로드하고 캐싱하는 API 클래스
+ * 
+ * 주요 개선사항:
+ * - getSubsidy 메서드: 영문→한글 매핑 추가
+ * - 디버깅 로그 강화
  */
 
-/**
- * DataAPI 클래스
- * 
- * 주요 기능:
- * 1. products.json 로드
- * 2. 로컬 스토리지 캐싱
- * 3. 네트워크 에러 처리
- * 4. 데이터 검증
- */
 class DataAPI {
   /**
    * 생성자
@@ -150,8 +147,9 @@ class DataAPI {
   }
   
   /**
-   * 지원금 조회
-   * @param {string} subscriptionType - 가입유형 (change/port/new)
+   * ★ 지원금 조회 (개선 버전)
+   * 
+   * @param {string} subscriptionType - 가입유형 (영문: change/port/new)
    * @param {string} deviceId - 기기 ID
    * @param {string} planId - 요금제 ID
    * @returns {Promise<Object|null>} 지원금 객체 또는 null
@@ -166,16 +164,34 @@ class DataAPI {
         return null;
       }
       
-      // 조합ID로 검색
-      const combinationId = `${deviceId}_${planId}_${subscriptionType}`;
+      // ★ products.json의 id는 한글로 끝나므로 매핑 필요
+      // 영문 → 한글 변환
+      const typeMapping = {
+        'change': '기변',
+        'port': '번이',
+        'new': '신규'
+      };
+      
+      const koreanType = typeMapping[subscriptionType];
+      
+      if (!koreanType) {
+        errorLog(`알 수 없는 가입유형: ${subscriptionType}`);
+        return null;
+      }
+      
+      // 조합ID로 검색 (한글 사용)
+      const combinationId = `${deviceId}_${planId}_${koreanType}`;
       const subsidy = subsidies.find(s => s.id === combinationId);
       
       if (!subsidy) {
         warnLog(`지원금을 찾을 수 없습니다: ${combinationId}`);
+        debugLog('사용 가능한 지원금 ID:', subsidies.map(s => s.id));
         return null;
       }
       
+      debugLog('지원금 조회 성공:', subsidy);
       return subsidy;
+      
     } catch (error) {
       errorLog('지원금 조회 실패:', error);
       return null;
@@ -219,23 +235,23 @@ class DataAPI {
   // ============================================
   
   /**
-   * 네트워크에서 데이터 로드
+   * 네트워크에서 데이터 가져오기
    * @private
    * @returns {Promise<Object>} products.json 데이터
-   * @throws {Error} 로드 실패 시
+   * @throws {Error} 네트워크 오류 또는 타임아웃
    */
   async _fetchFromNetwork() {
+    debugLog('네트워크에서 데이터 로드 중...', { url: this.apiUrl });
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    
     try {
-      debugLog('네트워크에서 데이터 로드 중...', this.apiUrl);
-      
-      // Timeout 설정
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-      
       const response = await fetch(this.apiUrl, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
         },
         signal: controller.signal
       });
@@ -247,18 +263,21 @@ class DataAPI {
       }
       
       const data = await response.json();
+      
+      debugLog('네트워크 로드 완료', {
+        size: JSON.stringify(data).length + ' bytes'
+      });
+      
       return data;
       
     } catch (error) {
+      clearTimeout(timeoutId);
+      
       if (error.name === 'AbortError') {
-        throw new Error(ERROR_MESSAGES.TIMEOUT);
+        throw new Error('요청 시간 초과 (타임아웃)');
       }
       
-      if (error instanceof TypeError) {
-        throw new Error(ERROR_MESSAGES.NETWORK_ERROR);
-      }
-      
-      throw new Error(`${ERROR_MESSAGES.API_ERROR} (${error.message})`);
+      throw error;
     }
   }
   
@@ -269,21 +288,22 @@ class DataAPI {
    */
   _getCachedData() {
     try {
-      // 캐시 만료 시간 확인
-      const expiryTime = loadFromStorage(STORAGE_KEYS.CACHE_EXPIRY);
-      if (!expiryTime || Date.now() > expiryTime) {
+      const cachedData = getFromStorage(STORAGE_KEYS.CACHED_PRODUCTS);
+      const expiryTime = getFromStorage(STORAGE_KEYS.CACHE_EXPIRY);
+      
+      if (!cachedData || !expiryTime) {
+        debugLog('캐시 없음');
+        return null;
+      }
+      
+      // 캐시 만료 확인
+      if (Date.now() > expiryTime) {
         debugLog('캐시 만료됨');
         this.clearCache();
         return null;
       }
       
-      // 캐시 데이터 로드
-      const cachedData = loadFromStorage(STORAGE_KEYS.CACHED_PRODUCTS);
-      if (!cachedData) {
-        return null;
-      }
-      
-      debugLog('캐시 히트!', {
+      debugLog('캐시 유효', {
         expiresIn: Math.round((expiryTime - Date.now()) / 1000 / 60) + '분'
       });
       
@@ -393,4 +413,4 @@ if (typeof module !== 'undefined' && module.exports) {
 // 초기화 로그
 // ============================================
 
-debugLog('API 모듈 로드 완료');
+debugLog('API 모듈 로드 완료 (개선 버전)');

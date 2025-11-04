@@ -1,12 +1,12 @@
 /* ============================================
-   상품 상세 페이지 - device-detail.css
+   ìƒí’ˆ ìƒì„¸ íŽ˜ì´ì§€ - device-detail.css
    ============================================ */
 
 /* ============================================
-   변수 정의
+   ë³€ìˆ˜ ì •ì˜
    ============================================ */
 :root {
-  /* 색상 */
+  /* ìƒ‰ìƒ */
   --color-primary: #3617CE;
   --color-secondary: #FF6B00;
   --color-text: #1a1a1a;
@@ -14,20 +14,20 @@
   --color-border: #e0e0e0;
   --color-bg-light: #f9f9f9;
   
-  /* 간격 */
+  /* ê°„ê²© */
   --spacing-xs: 8px;
   --spacing-sm: 12px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
   
-  /* 반응형 브레이크포인트 */
+  /* ë°˜ì‘í˜• ë¸Œë ˆì´í¬í¬ì¸íŠ¸ */
   --breakpoint-mobile: 767px;
   --breakpoint-tablet: 1023px;
 }
 
 /* ============================================
-   메인 컨테이너
+   ë©”ì¸ ì»¨í…Œì´ë„ˆ
    ============================================ */
 .main-content {
   padding: 40px 0 200px;
@@ -41,7 +41,7 @@
 }
 
 /* ============================================
-   상품 상세 컨테이너 (2단 레이아웃)
+   ìƒí’ˆ ìƒì„¸ ì»¨í…Œì´ë„ˆ (2ë‹¨ ë ˆì´ì•„ì›ƒ)
    ============================================ */
 .product-detail-container {
   display: grid;
@@ -51,10 +51,13 @@
 }
 
 /* ============================================
-   좌측: 이미지 슬라이더 영역
+   ì¢Œì¸¡: ì´ë¯¸ì§€ ìŠ¬ë¼ì´ë” ì˜ì—­
    ============================================ */
 .product-image-section {
-  position: relative;
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+  max-height: calc(100vh - 100px);
 }
 
 .product-swiper {
@@ -78,7 +81,7 @@
   max-height: 600px;
 }
 
-/* Swiper 페이지네이션 */
+/* Swiper íŽ˜ì´ì§€ë„¤ì´ì…˜ */
 .product-swiper .swiper-pagination {
   bottom: 20px;
 }
@@ -95,7 +98,7 @@
   background: var(--color-primary);
 }
 
-/* Swiper 좌우 버튼 */
+/* Swiper ì¢Œìš° ë²„íŠ¼ */
 .product-swiper .swiper-button-prev,
 .product-swiper .swiper-button-next {
   color: var(--color-primary);
@@ -112,7 +115,7 @@
 }
 
 /* ============================================
-   우측: 옵션/가격 섹션
+   ìš°ì¸¡: ì˜µì…˜/ê°€ê²© ì„¹ì…˜
    ============================================ */
 .product-option-section {
   position: sticky;
@@ -120,7 +123,7 @@
   align-self: flex-start;
 }
 
-/* 제품 기본 정보 */
+/* ì œí’ˆ ê¸°ë³¸ ì •ë³´ */
 .product-info {
   padding-bottom: var(--spacing-lg);
   border-bottom: 2px solid var(--color-text);
@@ -152,7 +155,7 @@
   color: var(--color-text);
 }
 
-/* 옵션 항목 */
+/* ì˜µì…˜ í•­ëª© */
 .option-item {
   padding: var(--spacing-lg) 0;
   border-bottom: 1px solid var(--color-border);
@@ -166,7 +169,7 @@
   margin-bottom: var(--spacing-sm);
 }
 
-/* 색상 선택기 */
+/* ìƒ‰ìƒ ì„ íƒê¸° */
 .color-selector {
   display: flex;
   gap: var(--spacing-sm);
@@ -186,15 +189,15 @@
 
 .color-item label {
   display: block;
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: 2px solid var(--color-border);
   cursor: pointer;
   transition: all 0.2s;
 }
 
-/* 흰색 테두리 처리 */
+/* í°ìƒ‰ í…Œë‘ë¦¬ ì²˜ë¦¬ */
 .color-item label[style*="#fff"],
 .color-item label[style*="#FFF"],
 .color-item label[style*="#ffffff"],
@@ -202,7 +205,7 @@
   border-color: #d0d0d0;
 }
 
-/* 선택 상태 */
+/* ì„ íƒ ìƒíƒœ */
 .color-item input[type="radio"]:checked + label {
   border-color: var(--color-primary);
   border-width: 3px;
@@ -213,14 +216,14 @@
   border-color: var(--color-primary);
 }
 
-/* 선택된 색상명 */
+/* ì„ íƒëœ ìƒ‰ìƒëª… */
 .selected-color-name {
   font-size: 14px;
   font-weight: 500;
   color: var(--color-text);
 }
 
-/* 용량 표시 (변경 불가) */
+/* ìš©ëŸ‰ í‘œì‹œ (ë³€ê²½ ë¶ˆê°€) */
 .storage-display {
   display: inline-block;
   padding: var(--spacing-sm) var(--spacing-lg);
@@ -231,7 +234,7 @@
   color: var(--color-text);
 }
 
-/* 버튼 그룹 (가입유형, 할인유형) */
+/* ë²„íŠ¼ ê·¸ë£¹ (ê°€ìž…ìœ í˜•, í• ì¸ìœ í˜•) */
 .button-group {
   display: flex;
   gap: var(--spacing-xs);
@@ -261,7 +264,7 @@
   color: #fff;
 }
 
-/* 요금제 선택 버튼 */
+/* ìš”ê¸ˆì œ ì„ íƒ ë²„íŠ¼ */
 .plan-select-btn {
   width: 100%;
   display: flex;
@@ -294,7 +297,7 @@
   transform: rotate(180deg);
 }
 
-/* 요금제 펼침 목록 */
+/* ìš”ê¸ˆì œ íŽ¼ì¹¨ ëª©ë¡ */
 .plan-list {
   margin-top: var(--spacing-sm);
   max-height: 300px;
@@ -343,7 +346,7 @@
   color: var(--color-text-light);
 }
 
-/* 할부개월 선택 */
+/* í• ë¶€ê°œì›” ì„ íƒ */
 .installment-select {
   width: 100%;
   padding: var(--spacing-sm) var(--spacing-md);
@@ -362,7 +365,7 @@
   box-shadow: 0 0 0 3px rgba(54, 23, 206, 0.1);
 }
 
-/* 실시간 가격 표시 */
+/* ì‹¤ì‹œê°„ ê°€ê²© í‘œì‹œ */
 .price-summary {
   margin-top: var(--spacing-lg);
   padding: var(--spacing-lg);
@@ -381,9 +384,21 @@
   margin-bottom: 0;
 }
 
+.price-summary .price-item .price-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .price-summary .price-item .label {
   font-size: 14px;
   color: var(--color-text-light);
+}
+
+.price-summary .price-item .detail {
+  font-size: 12px;
+  color: #999;
+  font-weight: 400;
 }
 
 .price-summary .price-item .value {
@@ -411,13 +426,13 @@
 }
 
 /* ============================================
-   하단: 탭 섹션
+   í•˜ë‹¨: íƒ­ ì„¹ì…˜
    ============================================ */
 .product-detail-tabs {
   margin-top: 60px;
 }
 
-/* 탭 헤더 */
+/* íƒ­ í—¤ë” */
 .tab-header {
   display: flex;
   border-bottom: 2px solid var(--color-border);
@@ -455,7 +470,7 @@
   background: var(--color-primary);
 }
 
-/* 탭 컨텐츠 */
+/* íƒ­ ì»¨í…ì¸  */
 .tab-content {
   padding: var(--spacing-xl) 0;
 }
@@ -468,7 +483,7 @@
   display: block;
 }
 
-/* 상품내용 탭 */
+/* ìƒí’ˆë‚´ìš© íƒ­ */
 .product-description {
   line-height: 1.8;
 }
@@ -485,7 +500,7 @@
   color: var(--color-text);
 }
 
-/* FAQ 탭 */
+/* FAQ íƒ­ */
 .faq-list {
   display: flex;
   flex-direction: column;
@@ -538,7 +553,7 @@
 }
 
 /* ============================================
-   하단 고정 CTA Bar
+   í•˜ë‹¨ ê³ ì • CTA Bar
    ============================================ */
 .fixed-cta-bar {
   position: fixed;
@@ -555,20 +570,19 @@
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
-/* 가격 계산식 영역 */
+/* ê°€ê²© ê³„ì‚°ì‹ ì˜ì—­ */
 .price-formula {
   display: flex;
   align-items: center;
-  gap: 20px;
-  flex: 1;
+  gap: 16px;
 }
 
-/* 가격 항목 */
+/* ê°€ê²© í•­ëª© */
 .price-formula .price-item {
   display: flex;
   flex-direction: column;
@@ -592,7 +606,7 @@
   font-weight: 400;
 }
 
-/* 총액 (강조) */
+/* ì´ì•¡ (ê°•ì¡°) */
 .price-formula .price-item.total .label {
   font-size: 13px;
   color: #FFFFFF;
@@ -612,7 +626,7 @@
   margin-top: -2px;
 }
 
-/* 연산자 (+, =) */
+/* ì—°ì‚°ìž (+, =) */
 .operator {
   font-size: 18px;
   color: #FFFFFF;
@@ -620,13 +634,13 @@
   margin: 0 4px;
 }
 
-/* 신청하기 버튼 */
+/* ì‹ ì²­í•˜ê¸° ë²„íŠ¼ */
 .apply-btn {
   background: #FF6B00;
   color: #FFFFFF;
-  padding: 18px 60px;
+  padding: 14px 40px;
   border-radius: 8px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   border: none;
   cursor: pointer;
@@ -645,17 +659,17 @@
 }
 
 /* ============================================
-   Footer 여백 조정 (CTA Bar와 겹치지 않도록)
+   Footer ì—¬ë°± ì¡°ì • (CTA Barì™€ ê²¹ì¹˜ì§€ ì•Šë„ë¡)
    ============================================ */
 .footer {
   padding-bottom: 120px;
 }
 
 /* ============================================
-   반응형 디자인
+   ë°˜ì‘í˜• ë””ìžì¸
    ============================================ */
 
-/* Tablet (1023px 이하) */
+/* Tablet (1023px ì´í•˜) */
 @media (max-width: 1023px) {
   .product-detail-container {
     grid-template-columns: 55% 45%;
@@ -688,7 +702,7 @@
   }
 }
 
-/* Mobile (767px 이하) */
+/* Mobile (767px ì´í•˜) */
 @media (max-width: 767px) {
   .main-content {
     padding: 20px 0 180px;
@@ -791,21 +805,21 @@
   }
 }
 
-/* 매우 작은 모바일 (480px 이하) */
+/* ë§¤ìš° ìž‘ì€ ëª¨ë°”ì¼ (480px ì´í•˜) */
 @media (max-width: 480px) {
   .price-formula {
     flex-wrap: wrap;
     gap: 8px;
   }
   
-  /* 첫 줄: 월 휴대폰요금 + 월 통신요금 */
+  /* ì²« ì¤„: ì›” íœ´ëŒ€í°ìš”ê¸ˆ + ì›” í†µì‹ ìš”ê¸ˆ */
   .price-formula .price-item:nth-child(1),
   .operator:nth-child(2),
   .price-formula .price-item:nth-child(3) {
     flex: 0 0 auto;
   }
   
-  /* 두 번째 줄: = 월 예상 납부금액 */
+  /* ë‘ ë²ˆì§¸ ì¤„: = ì›” ì˜ˆìƒ ë‚©ë¶€ê¸ˆì•¡ */
   .operator:nth-child(4),
   .price-formula .price-item.total {
     flex: 0 0 100%;
@@ -820,7 +834,7 @@
 }
 
 /* ============================================
-   스크린 리더 전용
+   ìŠ¤í¬ë¦° ë¦¬ë” ì „ìš©
    ============================================ */
 .sr-only {
   position: absolute;

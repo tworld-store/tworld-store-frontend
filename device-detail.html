@@ -132,10 +132,16 @@
             <div class="selected-color-name" id="selectedColorName">색상을 선택하세요</div>
           </div>
           
-          <!-- 3. 용량 표시 (변경 불가) -->
+          <!-- 3. 용량 선택 -->
           <div class="option-item">
             <label class="option-label">용량</label>
-            <div class="storage-display" id="storageDisplay">-</div>
+            <div class="button-group" id="storageGroup">
+              <!-- JavaScript로 동적 생성 -->
+              <!-- 예시:
+              <button type="button" class="option-btn active" data-storage="128">128GB</button>
+              <button type="button" class="option-btn" data-storage="256">256GB</button>
+              -->
+            </div>
           </div>
           
           <!-- 4. 가입유형 선택 -->
@@ -181,21 +187,27 @@
           <!-- 7. 할부개월 선택 -->
           <div class="option-item">
             <label class="option-label">할부개월</label>
-            <select class="installment-select" id="installmentSelect">
-              <option value="24">24개월</option>
-              <option value="30">30개월</option>
-              <option value="36">36개월</option>
-            </select>
+            <div class="button-group" id="installmentGroup">
+              <button type="button" class="option-btn" data-months="24">24개월</button>
+              <button type="button" class="option-btn" data-months="30">30개월</button>
+              <button type="button" class="option-btn" data-months="36">36개월</button>
+            </div>
           </div>
           
           <!-- 8. 실시간 가격 표시 -->
           <div class="price-summary">
             <div class="price-item">
-              <span class="label">월 할부금</span>
+              <div class="price-label">
+                <span class="label">월 할부금</span>
+                <span class="detail" id="installmentDetail">-</span>
+              </div>
               <span class="value" id="monthlyInstallment">0원</span>
             </div>
             <div class="price-item">
-              <span class="label">월 통신요금</span>
+              <div class="price-label">
+                <span class="label">월 통신요금</span>
+                <span class="detail" id="planDetail">-</span>
+              </div>
               <span class="value" id="monthlyPlan">0원</span>
             </div>
             <div class="price-item total">

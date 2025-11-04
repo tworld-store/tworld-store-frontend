@@ -403,12 +403,23 @@ function findSubsidy() {
     return null;
   }
   
-  // 조합ID로 검색
-  const combinationId = `${currentDevice.id}_${currentSelections.planId}_${subsidyType}`;
+  // ★ products.json의 id는 한글로 끝나므로 매핑 필요
+  // 영문 → 한글 변환
+  const typeMapping = {
+    'change': '기변',
+    'port': '번이',
+    'new': '신규'
+  };
+  
+  const koreanType = typeMapping[subsidyType];
+  
+  // 조합ID로 검색 (한글 사용)
+  const combinationId = `${currentDevice.id}_${currentSelections.planId}_${koreanType}`;
   const subsidy = subsidies.find(s => s.id === combinationId);
   
   if (!subsidy) {
     console.warn(`지원금을 찾을 수 없습니다: ${combinationId}`);
+    console.log('사용 가능한 지원금 ID:', subsidies.map(s => s.id));
   }
   
   return subsidy;

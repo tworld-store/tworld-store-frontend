@@ -1,4 +1,77 @@
 /* ============================================
+   Device Detail Page Styles
+   ============================================ */
+
+/* ============================================
+   CSS Variables
+   ============================================ */
+:root {
+  --primary-color: #3617CE;
+  --primary-dark: #2410A3;
+  --primary-light: #5437E8;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666;
+  --text-tertiary: #999;
+  --text-muted: #aaa;
+  --discount-color: #e74c3c;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-light: rgba(0, 0, 0, 0.04);
+  --bg-white: #ffffff;
+  --bg-gray-50: #fafafa;
+  --bg-gray-100: #f5f5f5;
+  --bg-gray-200: #eeeeee;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-base: 16px;
+  --font-lg: 18px;
+  --font-xl: 20px;
+  --font-2xl: 24px;
+  --font-3xl: 28px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Reset
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", 
+               "Noto Sans KR", sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-white);
+  line-height: 1.6;
+  padding-bottom: 100px;  /* 하단바 높이 확보 (축소됨) */
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+/* ============================================
    Header
    ============================================ */
 .header {
@@ -205,74 +278,87 @@
   gap: 24px;
 }
 
-.color-chip {
-  width: 30px;
-  height: 30px;
+.color-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.color-item input[type="radio"] {
+  display: none;
+}
+
+.color-item label {
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  border: 2px solid var(--border-light);
+  border: 2px solid var(--border-color);
   cursor: pointer;
   transition: all 0.2s;
+  position: relative;
+}
+
+.color-item label:hover {
+  transform: scale(1.15);
   box-shadow: var(--shadow-sm);
 }
 
-.color-chip:hover {
-  transform: scale(1.15);
-  box-shadow: var(--shadow-md);
-}
-
-.color-chip.active {
+.color-item input[type="radio"]:checked + label {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px var(--bg-white), 0 0 0 4px var(--primary-color);
-  transform: scale(1.1);
 }
 
-.btn-group {
+.color-name {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+/* Storage Options */
+.storage-options {
   display: flex;
   gap: var(--spacing-sm);
 }
 
-.btn-group__item {
+.storage-option {
   flex: 1;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 12px 20px;
   background: var(--bg-white);
-  border: 1.5px solid var(--border-color);
+  border: 2px solid var(--border-color);
   border-radius: var(--radius-sm);
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
-  text-align: center;
+  font-size: var(--font-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
   transition: all 0.2s;
-  font-weight: 500;
+  text-align: center;
 }
 
-.btn-group__item:hover {
-  border-color: var(--primary-light);
-  color: var(--primary-color);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(54, 23, 206, 0.15);
+.storage-option:hover {
+  border-color: var(--primary-color);
+  background: var(--bg-gray-50);
 }
 
-.btn-group__item.active {
-  background: var(--bg-white);
-  border: 2.5px solid var(--primary-color);
-  color: var(--primary-color);
-  font-weight: 700;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 12px rgba(54, 23, 206, 0.25);
+.storage-option.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--bg-white);
 }
 
+/* Radio Buttons (가입유형, 할인유형) */
 .radio-group {
   display: flex;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
 }
 
 .radio-item {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  cursor: pointer;
 }
 
-.radio-item input {
+.radio-item input[type="radio"] {
   width: 20px;
   height: 20px;
   accent-color: var(--primary-color);
@@ -280,121 +366,181 @@
 }
 
 .radio-item label {
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
+  font-size: var(--font-base);
+  color: var(--text-primary);
   cursor: pointer;
 }
 
-.plan-select {
-  width: 100%;
+/* Installment Options */
+.installment-options {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.installment-btn {
+  flex: 1;
+  padding: 12px 20px;
+  background: var(--bg-white);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.installment-btn:hover {
+  border-color: var(--primary-color);
+  background: var(--bg-gray-50);
+}
+
+.installment-btn.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--bg-white);
+}
+
+/* Plan Selector */
+.plan-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: var(--spacing-md);
   background: var(--bg-gray-50);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: var(--shadow-sm);
 }
 
-.plan-select:hover {
+.plan-selector:hover {
+  background: var(--bg-gray-100);
   border-color: var(--primary-color);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
 }
 
-.plan-select__name {
-  font-size: var(--font-sm);
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-.plan-select__change {
-  font-size: var(--font-sm);
-  color: var(--primary-color);
-  text-decoration: underline;
-  font-weight: 600;
-}
-
-/* 가격 상세 카드 */
-.price-detail {
-  background: var(--bg-white);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-md);
-}
-
-.price-detail__title {
-  font-size: var(--font-lg);
-  font-weight: 700;
-  margin-bottom: var(--spacing-md);
-  color: var(--text-primary);
-}
-
-.price-section {
-  padding: var(--spacing-md) 0;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.price-section:last-child {
-  border-bottom: none;
-}
-
-.price-section__header {
+.plan-selector__left {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-sm);
+  gap: var(--spacing-sm);
 }
 
-.price-section__label {
+.plan-selector__icon {
+  font-size: var(--font-xl);
+}
+
+.plan-selector__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.plan-selector__label {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+.plan-selector__value {
   font-size: var(--font-base);
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.price-section__value {
+.plan-selector__arrow {
+  font-size: var(--font-lg);
+  color: var(--text-tertiary);
+}
+
+/* Price Section */
+.price-section {
+  background: var(--bg-gray-50);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.price-section__title {
   font-size: var(--font-lg);
   font-weight: 700;
+  margin-bottom: var(--spacing-lg);
   color: var(--text-primary);
 }
 
-.price-section__details {
+.price-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.price-card:last-child {
+  margin-bottom: 0;
+}
+
+.price-card__title {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.price-card__main {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--spacing-sm);
+}
+
+.price-card__label {
+  font-size: var(--font-base);
+  color: var(--text-primary);
+}
+
+.price-card__value {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.price-card__formula {
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+  margin-left: var(--spacing-lg);
+}
+
+.price-section__details {
+  margin-top: var(--spacing-md);
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding-left: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+  font-size: var(--font-sm);
 }
 
 .detail-row__label {
-  font-size: var(--font-sm);
   color: var(--text-secondary);
 }
 
 .detail-row__value {
-  font-size: var(--font-sm);
+  font-weight: 600;
   color: var(--text-primary);
-  font-weight: 500;
 }
 
 .detail-row__value.discount {
   color: var(--discount-color);
-  font-weight: 600;
 }
 
+/* Price Total */
 .price-total {
-  padding-top: var(--spacing-md);
-  margin-top: var(--spacing-sm);
-  border-top: 2px solid var(--border-color);
+  background: var(--primary-color);
+  color: var(--bg-white);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-md);
 }
 
 .price-total__header {
@@ -404,60 +550,61 @@
 }
 
 .price-total__label {
-  font-size: var(--font-lg);
-  font-weight: 700;
-  color: var(--primary-color);
+  font-size: var(--font-base);
+  font-weight: 600;
 }
 
 .price-total__value {
   font-size: var(--font-3xl);
   font-weight: 700;
-  color: var(--primary-color);
 }
 
 .price-total__tax {
   font-size: var(--font-xs);
-  color: var(--text-muted);
-  text-align: right;
   margin-top: var(--spacing-xs);
+  opacity: 0.9;
 }
 
 /* ============================================
-   상품 상세 탭
+   Product Detail (하단 상세 정보)
    ============================================ */
 .product-detail {
   margin-top: var(--spacing-2xl);
+  padding-top: var(--spacing-2xl);
+  border-top: 2px solid var(--border-color);
 }
 
+/* Tabs */
 .tabs {
   display: flex;
+  gap: var(--spacing-sm);
   border-bottom: 2px solid var(--border-color);
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .tab {
-  flex: 1;
   padding: var(--spacing-md) var(--spacing-lg);
   font-size: var(--font-base);
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
   border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
   cursor: pointer;
   transition: all 0.2s;
+  margin-bottom: -2px;
 }
 
 .tab:hover {
   color: var(--primary-color);
-  background: var(--bg-gray-50);
 }
 
 .tab.active {
   color: var(--primary-color);
   border-bottom-color: var(--primary-color);
-  background: var(--bg-white);
 }
 
+/* Tab Content */
 .tab-content {
   display: none;
 }
@@ -466,26 +613,25 @@
   display: block;
 }
 
-/* 상품정보 */
+/* Spec Section */
 .spec-section {
-  margin-bottom: var(--spacing-xl);
-  background: var(--bg-white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.spec-section:last-child {
+  margin-bottom: 0;
 }
 
 .spec-section__title {
-  font-size: var(--font-lg);
+  font-size: var(--font-xl);
   font-weight: 700;
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 2px solid var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
 }
 
 .spec-table {
   width: 100%;
+  border-collapse: collapse;
 }
 
 .spec-table tr {
@@ -496,19 +642,21 @@
   border-bottom: none;
 }
 
-.spec-table th {
+.spec-table th,
+.spec-table td {
+  padding: var(--spacing-md);
   text-align: left;
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
+}
+
+.spec-table th {
+  width: 30%;
   font-weight: 600;
   color: var(--text-secondary);
   background: var(--bg-gray-50);
-  width: 30%;
 }
 
 .spec-table td {
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: var(--font-sm);
   color: var(--text-primary);
 }
 
@@ -516,270 +664,258 @@
 .faq-list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
 .faq-item {
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .faq-item:hover {
-  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
 }
 
 .faq-item__q {
   width: 100%;
   padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--bg-gray-50);
   text-align: left;
   font-size: var(--font-base);
   font-weight: 600;
-  display: flex;
-  justify-content: space-between;
+  color: var(--text-primary);
+  background: var(--bg-white);
   cursor: pointer;
   transition: background 0.2s;
+  position: relative;
+  padding-right: 50px;
 }
 
 .faq-item__q:hover {
-  background: var(--bg-gray-100);
+  background: var(--bg-gray-50);
 }
 
 .faq-item__q::after {
-  content: "▼";
+  content: '▼';
+  position: absolute;
+  right: var(--spacing-lg);
+  top: 50%;
+  transform: translateY(-50%);
   font-size: var(--font-sm);
   color: var(--text-tertiary);
   transition: transform 0.2s;
 }
 
-.faq-item.open .faq-item__q {
-  background: var(--primary-color);
-  color: white;
-}
-
 .faq-item.open .faq-item__q::after {
-  transform: rotate(180deg);
-  color: white;
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .faq-item__a {
-  padding: var(--spacing-lg);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 var(--spacing-lg);
+  background: var(--bg-gray-50);
   font-size: var(--font-sm);
   color: var(--text-secondary);
-  line-height: 1.7;
-  background: var(--bg-white);
-  display: none;
+  line-height: 1.8;
 }
 
 .faq-item.open .faq-item__a {
-  display: block;
+  max-height: 500px;
+  padding: var(--spacing-md) var(--spacing-lg);
 }
 
 /* ============================================
-   하단 고정바 - 세로 정렬 구조
+   Bottom Bar (하단 고정바)
    ============================================ */
 .bottom-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.85);  /* 반투명 검은색 */
-  border-top: none;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  background: var(--bg-white);
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   z-index: 100;
-  backdrop-filter: blur(10px);  /* 블러 효과 */
-  padding: 12px 0;  /* 세로 크기 축소 */
+  padding: var(--spacing-md) var(--spacing-lg);
 }
 
 .bottom-bar__inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 32px;  /* 가격 영역과 버튼 간격 */
+  justify-content: space-between;
+  gap: var(--spacing-lg);
 }
 
-/* 가격 영역 - 왼쪽 정렬, 적당한 간격 */
+/* 가격 영역 - 세로 정렬 */
 .bottom-bar__price {
   display: flex;
   align-items: center;
-  gap: 20px;  /* 적당한 간격 */
+  gap: 12px;
+  flex: 1;
 }
 
-/* 각 가격 항목 - 세로 블록 (왼쪽 정렬) */
 .price-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;  /* 왼쪽 정렬 */
+  gap: 2px;
 }
 
-/* 헤더 (레이블) */
 .price-item__label {
-  font-size: 12px;
-  color: #999;
+  font-size: 11px;
+  color: var(--text-muted);
   font-weight: 500;
-  white-space: nowrap;
-  line-height: 1.2;
 }
 
-/* 값 */
 .price-item__value {
-  font-size: 20px;
+  font-size: var(--font-base);
   font-weight: 700;
-  color: #fff;
-  white-space: nowrap;
-  line-height: 1.2;
+  color: var(--text-primary);
 }
 
-/* 연산자 - 값 행에만 표시 */
 .price-operator {
-  font-size: 20px;
-  color: #fff;
+  font-size: var(--font-lg);
+  color: var(--text-muted);
   font-weight: 300;
-  align-self: center;
-  margin-bottom: 0;
-  padding: 0 8px;
+  margin: 0 4px;
 }
 
-/* 총액 항목 - 주황색 */
-.price-item--total .price-item__value {
-  font-size: 26px;
-  font-weight: 800;
-  color: #FF6B00;  /* 주황색 */
+.price-item--total {
+  margin-left: 8px;
 }
 
-/* 부가세 문구 - 총액 옆에 표시 */
 .price-total-wrapper {
   display: flex;
   align-items: baseline;
-  gap: 4px;
+  gap: var(--spacing-xs);
+}
+
+.price-item--total .price-item__value {
+  font-size: var(--font-2xl);
+  color: var(--primary-color);
 }
 
 .price-tax {
-  font-size: 11px;
-  color: #999;
-  white-space: nowrap;
+  font-size: 10px;
+  color: var(--text-muted);
 }
 
-/* 버튼 - SKT Blue 배경 + 흰색 폰트 */
+/* 버튼 */
 .bottom-bar__btn {
-  padding: 14px 48px;
-  background: #3617CE;  /* SKT Blue */
-  color: #fff;
-  font-size: 17px;
+  padding: 14px 40px;
+  background: var(--primary-color);
+  color: var(--bg-white);
+  font-size: var(--font-base);
   font-weight: 700;
-  border-radius: 8px;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(54, 23, 206, 0.3);
-  white-space: nowrap;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  flex-shrink: 0;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .bottom-bar__btn:hover {
-  background: #2410A3;  /* SKT Blue Dark */
-  box-shadow: 0 6px 16px rgba(54, 23, 206, 0.4);
+  background: var(--primary-dark);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.bottom-bar__btn:active {
+  transform: translateY(0);
 }
 
 /* ============================================
    Responsive
    ============================================ */
-@media (max-width: 1024px) {
+
+/* Tablet (768px ~ 1023px) */
+@media (max-width: 1023px) {
   .product-wrapper {
     grid-template-columns: 1fr;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-lg);
   }
   
   .product-images {
-    position: static;
+    position: relative;
+    top: 0;
+  }
+  
+  .bottom-bar__price {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .price-operator {
+    display: none;
   }
 }
 
-@media (max-width: 768px) {
-  .header {
-    height: 56px;
-    padding: 0 var(--spacing-md);
-  }
-  
-  .main {
-    margin-top: 56px;
-    padding: var(--spacing-lg) 0;
-  }
-  
-  .container {
-    padding: 0 var(--spacing-md);
+/* Mobile (~767px) */
+@media (max-width: 767px) {
+  .header__title {
+    font-size: var(--font-base);
   }
   
   .product-info__name {
     font-size: var(--font-2xl);
   }
   
-  .btn-group__item {
-    font-size: var(--font-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
+  .storage-options,
+  .installment-options {
+    flex-direction: column;
   }
   
-  /* 모바일: 버튼을 아래로 */
+  .storage-option,
+  .installment-btn {
+    width: 100%;
+  }
+  
+  .radio-group {
+    flex-direction: column;
+  }
+  
+  .price-card__value {
+    font-size: var(--font-xl);
+  }
+  
+  .price-total__value {
+    font-size: var(--font-2xl);
+  }
+  
   .bottom-bar__inner {
     flex-direction: column;
-    gap: 12px;
+    gap: var(--spacing-sm);
   }
   
   .bottom-bar__price {
     width: 100%;
-    justify-content: center;
-    gap: 12px;
-  }
-  
-  .price-item {
-    align-items: flex-start;  /* 왼쪽 정렬 */
-  }
-  
-  .price-item__label {
-    font-size: 10px;
-  }
-  
-  .price-item__value {
-    font-size: 16px;
-  }
-  
-  .price-operator {
-    font-size: 16px;
-    align-self: center;
-    margin-bottom: 0;
-    padding: 0 6px;
-  }
-  
-  .price-item--total .price-item__value {
-    font-size: 20px;
-    color: #FF6B00;
-  }
-  
-  .price-tax {
-    font-size: 9px;
   }
   
   .bottom-bar__btn {
     width: 100%;
-    font-size: 15px;
-    padding: 12px 0;
-    background: #3617CE;  /* SKT Blue */
-    color: #fff;
+    padding: 16px;
   }
   
-  .bottom-bar__btn:hover {
-    background: #2410A3;  /* SKT Blue Dark */
+  .tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
   }
   
-  body {
-    padding-bottom: 120px;
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .spec-table th {
+    width: 40%;
+  }
+  
+  .spec-table th,
+  .spec-table td {
+    padding: var(--spacing-sm);
+    font-size: var(--font-sm);
   }
 }
-  </style>

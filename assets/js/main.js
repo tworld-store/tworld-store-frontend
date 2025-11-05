@@ -277,7 +277,7 @@ function handleCardClick(e) {
         const device = allDevices.find(d => d.id === deviceId);
         if (device && device.model) {
             // 모델명으로 상세 페이지 이동
-            wwindow.location.href = `./device-detail.html?id=${deviceId}`;
+            window.location.href = `./device-detail.html?model=${encodeURIComponent(device.model)}`;
         }
     }
 }

@@ -1,13 +1,14 @@
 /**
- * Device Detail JavaScript - v2.0 (Calculator 호환)
+ * Device Detail JavaScript - v2.1 (PlanModal 연동 완료)
  * 
  * URL 구조: device-detail.html?model=갤럭시S24
  * - 모델명만 파라미터로 전달
  * - 용량/색상은 페이지 내에서 선택
  * 
- * v2.0 변경사항:
- * - PriceCalculator v2.0 호환 (ID 기반 인터페이스)
- * - updatePriceUI() 함수 필드명 수정
+ * v2.1 변경사항 (Phase 1-1 완료):
+ * - PlanModal 초기화 및 연동
+ * - 요금제 선택 시 가격 자동 재계산
+ * - UI 업데이트 연동
  */
 
 // ============================================
@@ -16,6 +17,7 @@
 let productsData = null;
 let currentDevice = null;
 let allModelDevices = []; // 같은 모델의 모든 용량 옵션
+let planModal = null; // ✅ Plan Modal 인스턴스
 
 const currentSelections = {
   deviceId: null, // 현재 선택된 device ID (용량 포함)
@@ -89,6 +91,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // 9. 초기 가격 계산
     await calculateAndUpdatePrice();
+    
+    // 10. Plan Modal 초기화 ✅
+    initPlanModal();
     
     console.log('✅ 초기화 완료');
     
@@ -253,8 +258,8 @@ function attachEventListeners() {
     installmentSelect.addEventListener('change', handleInstallmentChange);
   }
   
-  // 요금제 선택
-  const planButton = document.getElementById('open-plan-selector');
+  // 요금제 선택 ✅ 클래스 선택자로 변경
+  const planButton = document.querySelector('.plan-selector');
   if (planButton) {
     planButton.addEventListener('click', openPlanSelector);
   }
@@ -382,11 +387,17 @@ async function handleInstallmentChange(e) {
 }
 
 /**
- * 요금제 선택 팝업
+ * 요금제 선택 모달 열기 ✅ 구현 완료
  */
 function openPlanSelector() {
-  console.log('📋 요금제 선택 팝업');
-  alert('요금제 선택 기능은 Phase 4에서 구현 예정입니다.');
+  if (!planModal) {
+    console.error('❌ PlanModal이 초기화되지 않았습니다.');
+    alert('요금제 모달을 초기화하는 중 오류가 발생했습니다.');
+    return;
+  }
+  
+  console.log('📋 요금제 선택 모달 열기');
+  planModal.open();
 }
 
 /**
@@ -592,6 +603,53 @@ function updatePriceUI(result) {
   if (detailTotalPrice) {
     detailTotalPrice.textContent = result.totalMonthly.toLocaleString() + '원';
   }
+}
+
+// ============================================
+// Plan Modal 초기화 및 연동 ✅
+// ============================================
+
+/**
+ * Plan Modal 초기화
+ */
+function initPlanModal() {
+  if (!productsData || !productsData.plans) {
+    console.error('❌ productsData.plans를 찾을 수 없습니다.');
+    return;
+  }
   
-  debugLog('가격 UI 업데이트 완료', result);
+  console.log('🎯 PlanModal 초기화 시작...');
+  
+  // PlanModal 인스턴스 생성
+  planModal = new PlanModal(productsData.plans);
+  
+  // 선택 콜백 등록
+  planModal.onSelect((selectedPlan) => {
+    console.log('✅ 요금제 선택됨:', selectedPlan);
+    
+    // 1. currentSelections에 저장
+    currentSelections.planId = selectedPlan.id;
+    
+    // 2. UI 업데이트 (요금제 선택 버튼)
+    updateSelectedPlanUI(selectedPlan);
+    
+    // 3. 가격 재계산
+    calculateAndUpdatePrice();
+  });
+  
+  console.log('✅ PlanModal 초기화 완료');
+}
+
+/**
+ * 선택된 요금제 UI 업데이트
+ */
+function updateSelectedPlanUI(plan) {
+  const planSelector = document.querySelector('.plan-selector');
+  if (!planSelector) return;
+  
+  // 버튼 텍스트 변경
+  const planName = planSelector.querySelector('.plan-selector__name');
+  if (planName) {
+    planName.textContent = `${plan.name} (${plan.price.toLocaleString()}원/월)`;
+  }
 }

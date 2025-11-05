@@ -1,0 +1,45 @@
+<!-- ============================================
+     요금제 선택 모달 (Plan Modal)
+     device-detail.html의 </body> 태그 바로 위에 삽입
+     ============================================ -->
+
+<!-- 요금제 선택 모달 -->
+<div class="plan-modal" id="plan-modal">
+  <!-- 오버레이 -->
+  <div class="plan-modal__overlay"></div>
+  
+  <!-- 모달 컨테이너 -->
+  <div class="plan-modal__container">
+    
+    <!-- 헤더 -->
+    <div class="plan-modal__header">
+      <h2 class="plan-modal__title">요금제 선택하기</h2>
+      <button class="plan-modal__close" aria-label="닫기">×</button>
+    </div>
+    
+    <!-- 카테고리 탭 -->
+    <div class="plan-modal__tabs">
+      <!-- JavaScript로 동적 생성 -->
+    </div>
+    
+    <!-- 콘텐츠 영역 -->
+    <div class="plan-modal__content">
+      <div class="plan-list">
+        <!-- JavaScript로 동적 생성 -->
+      </div>
+    </div>
+    
+    <!-- 하단 선택 버튼 -->
+    <div class="plan-modal__footer">
+      <!-- 선택된 요금제 정보 -->
+      <div class="plan-modal__selected-info">
+        <span class="plan-modal__selected-name">-</span>
+        <span class="plan-modal__selected-price">-</span>
+      </div>
+      
+      <!-- 선택 버튼 -->
+      <button class="plan-modal__select-btn" disabled>선택</button>
+    </div>
+    
+  </div>
+</div>

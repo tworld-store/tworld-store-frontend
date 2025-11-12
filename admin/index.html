@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="티월드스토어 Admin - 페이지 빌더 및 관리 시스템" />
+    <meta name="robots" content="noindex, nofollow" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- Title -->
+    <title>티월드스토어 Admin</title>
+    
+    <!-- Preconnect to Firebase -->
+    <link rel="preconnect" href="https://firestore.googleapis.com" />
+    <link rel="preconnect" href="https://firebase.googleapis.com" />
+    
+    <!-- Font Preload (선택적) -->
+    <!-- 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    -->
+  </head>
+  <body>
+    <!-- React 앱이 마운트될 루트 요소 -->
+    <div id="root"></div>
+    
+    <!-- Vite가 이 스크립트를 번들로 교체합니다 -->
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Noscript 안내 -->
+    <noscript>
+      <div style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #374151;
+        text-align: center;
+        padding: 2rem;
+      ">
+        <div>
+          <h1 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">
+            JavaScript가 필요합니다
+          </h1>
+          <p style="color: #6B7280;">
+            이 애플리케이션을 사용하려면 브라우저에서 JavaScript를 활성화해야 합니다.
+          </p>
+        </div>
+      </div>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "name": "tworld-store-builder",
+  "version": "0.0.1",
+  "description": "티월드스토어 자체 웹빌더 - products.json 기반 프로젝트",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "admin",
+    "frontend",
+    "functions"
+  ],
+  "scripts": {
+    "dev:admin": "npm run dev --workspace=admin",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build:admin": "npm run build --workspace=admin",
+    "build:frontend": "npm run build --workspace=frontend",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:all": "npm run build:admin && npm run build:frontend && npm run deploy:functions",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.50.0",
+    "eslint-plugin-react": "^7.33.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tworld-store-frontend/tworld-store-builder.git"
+  },
+  "keywords": [
+    "webbuilder",
+    "ecommerce",
+    "tworld",
+    "react",
+    "firebase",
+    "products-json"
+  ],
+  "author": "티월드스토어",
+  "license": "UNLICENSED"
+}

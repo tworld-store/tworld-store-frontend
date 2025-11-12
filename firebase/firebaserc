@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "tworld-store",
+    "production": "tworld-store",
+    "staging": "tworld-store-staging"
+  },
+  "targets": {
+    "tworld-store": {
+      "hosting": {
+        "admin": [
+          "tworld-store-admin"
+        ]
+      }
+    }
+  },
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

@@ -1,0 +1,168 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==========================================
+    // 헬퍼 함수
+    // ==========================================
+    
+    /**
+     * 사용자 인증 여부 확인
+     */
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    /**
+     * 관리자 권한 확인
+     */
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.admin == true;
+    }
+    
+    /**
+     * 소유자 확인
+     */
+    function isOwner(userId) {
+      return isAuthenticated() && 
+             request.auth.uid == userId;
+    }
+    
+    // ==========================================
+    // Pages (페이지 데이터)
+    // ==========================================
+    
+    match /pages/{pageId} {
+      // 공개된 페이지는 모두가 읽기 가능
+      allow read: if resource.data.status == 'published';
+      
+      // 관리자만 생성, 수정, 삭제 가능
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // Products (상품 데이터)
+    // ==========================================
+    
+    match /products/{productId} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // Firebase Functions만 쓰기 가능 (일반 사용자 불가)
+      allow write: if false;
+    }
+    
+    // ==========================================
+    // Consultations (상담 신청)
+    // ==========================================
+    
+    match /consultations/{consultationId} {
+      // 누구나 상담 신청 생성 가능
+      allow create: if true;
+      
+      // 관리자만 읽기, 수정, 삭제 가능
+      allow read, update, delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // Boards (게시판 설정)
+    // ==========================================
+    
+    match /boards/{boardId} {
+      // visible이 true인 게시판만 읽기 가능
+      allow read: if resource.data.visible == true;
+      
+      // 관리자만 게시판 생성, 수정, 삭제 가능
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // Board Posts (게시글)
+    // ==========================================
+    
+    match /board_posts/{postId} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // 관리자만 생성, 수정, 삭제 가능
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // Images (이미지 메타데이터)
+    // ==========================================
+    
+    match /images/{imageId} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // 관리자만 이미지 메타데이터 생성, 수정, 삭제 가능
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // Users (사용자 프로필)
+    // ==========================================
+    
+    match /users/{userId} {
+      // 본인만 읽기 가능
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // 본인만 수정 가능 (admin 필드는 수정 불가)
+      allow update: if isOwner(userId) && 
+                      !request.resource.data.diff(resource.data).affectedKeys()
+                        .hasAny(['admin', 'role']);
+      
+      // 관리자만 생성, 삭제 가능
+      allow create, delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // Sections (섹션 템플릿)
+    // ==========================================
+    
+    match /sections/{sectionId} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // 관리자만 생성, 수정, 삭제 가능
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // Settings (전역 설정)
+    // ==========================================
+    
+    match /settings/{settingId} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // 관리자만 수정 가능
+      allow update: if isAdmin();
+      
+      // 생성 및 삭제는 불가 (초기 설정만)
+      allow create, delete: if false;
+    }
+    
+    // ==========================================
+    // Analytics (접속 통계)
+    // ==========================================
+    
+    match /analytics/{analyticsId} {
+      // 관리자만 읽기 가능
+      allow read: if isAdmin();
+      
+      // Firebase Functions만 쓰기 가능
+      allow write: if false;
+    }
+    
+    // ==========================================
+    // 기본 규칙: 모든 다른 경로는 접근 불가
+    // ==========================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

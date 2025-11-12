@@ -1,0 +1,197 @@
+/**
+ * Layout Styles
+ * 페이지 레이아웃 관련 스타일
+ */
+
+/* ============================================
+   Container - 컨테이너
+   ============================================ */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.container--narrow {
+  max-width: 800px;
+}
+
+.container--wide {
+  max-width: 1400px;
+}
+
+/* ============================================
+   Main - 메인 영역
+   ============================================ */
+
+.main {
+  margin-top: 64px;  /* 헤더 높이만큼 */
+  padding: var(--spacing-xl) 0;
+}
+
+/* ============================================
+   Grid Layouts - 그리드 레이아웃
+   ============================================ */
+
+/* Product Grid - 상품 그리드 (목록) */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-lg);
+}
+
+@media (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+}
+
+/* Product Wrapper - 상품 상세 (좌우 분할) */
+.product-wrapper {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  gap: var(--spacing-2xl);
+}
+
+@media (max-width: 1024px) {
+  .product-wrapper {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+}
+
+/* ============================================
+   Sticky Elements - Sticky 요소
+   ============================================ */
+
+.product-images {
+  position: sticky;
+  top: 88px;  /* 헤더(64px) + 여백(24px) */
+  align-self: flex-start;
+}
+
+@media (max-width: 1024px) {
+  .product-images {
+    position: static;
+  }
+}
+
+/* ============================================
+   Sections - 섹션
+   ============================================ */
+
+.section {
+  padding: var(--spacing-2xl) 0;
+}
+
+.section--gray {
+  background: var(--bg-gray-50);
+}
+
+.section__title {
+  font-size: var(--font-3xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.section__subtitle {
+  font-size: var(--font-lg);
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* ============================================
+   Flexbox Layouts - 플렉스박스 레이아웃
+   ============================================ */
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-gap-xs {
+  gap: var(--spacing-xs);
+}
+
+.flex-gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.flex-gap-md {
+  gap: var(--spacing-md);
+}
+
+.flex-gap-lg {
+  gap: var(--spacing-lg);
+}
+
+/* ============================================
+   Two Column Layout - 2단 레이아웃
+   ============================================ */
+
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-2xl);
+}
+
+@media (max-width: 768px) {
+  .two-column {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+}
+
+/* ============================================
+   Responsive Utilities - 반응형 유틸리티
+   ============================================ */
+
+.hide-mobile {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .hide-mobile {
+    display: none;
+  }
+}
+
+.show-mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .show-mobile {
+    display: block;
+  }
+}

@@ -1,0 +1,167 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ==========================================
+    // 헬퍼 함수
+    // ==========================================
+    
+    /**
+     * 사용자 인증 여부 확인
+     */
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    /**
+     * 관리자 권한 확인
+     */
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.admin == true;
+    }
+    
+    /**
+     * 파일 크기 확인 (바이트)
+     */
+    function isValidSize(maxSize) {
+      return request.resource.size <= maxSize;
+    }
+    
+    /**
+     * 이미지 파일 형식 확인
+     */
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    /**
+     * 허용된 이미지 형식 확인
+     */
+    function isValidImageType() {
+      return request.resource.contentType in [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+        'image/gif'
+      ];
+    }
+    
+    // ==========================================
+    // Images (상품 이미지, 배너 등)
+    // ==========================================
+    
+    match /images/{allPaths=**} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // 관리자만 업로드 가능
+      // - 이미지 파일만 허용
+      // - 최대 5MB
+      allow write: if isAdmin() && 
+                     isValidImageType() && 
+                     isValidSize(5 * 1024 * 1024);
+    }
+    
+    // ==========================================
+    // Temp (임시 파일)
+    // ==========================================
+    
+    match /temp/{userId}/{fileName} {
+      // 본인만 읽기 가능
+      allow read: if isAuthenticated() && 
+                    request.auth.uid == userId;
+      
+      // 본인만 업로드 가능
+      // - 최대 5MB
+      allow write: if isAuthenticated() && 
+                     request.auth.uid == userId && 
+                     isValidSize(5 * 1024 * 1024);
+    }
+    
+    // ==========================================
+    // Uploads (관리자 업로드 대기)
+    // ==========================================
+    
+    match /uploads/{fileName} {
+      // 관리자만 읽기 가능
+      allow read: if isAdmin();
+      
+      // 관리자만 업로드 가능
+      // - 이미지 파일만 허용
+      // - 최대 10MB (원본 이미지)
+      allow write: if isAdmin() && 
+                     isValidImageType() && 
+                     isValidSize(10 * 1024 * 1024);
+    }
+    
+    // ==========================================
+    // Public (공개 파일)
+    // ==========================================
+    
+    match /public/{allPaths=**} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // 관리자만 업로드 가능
+      // - 최대 10MB
+      allow write: if isAdmin() && 
+                     isValidSize(10 * 1024 * 1024);
+    }
+    
+    // ==========================================
+    // Products (상품 이미지)
+    // ==========================================
+    
+    match /products/{productId}/{fileName} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // 관리자만 업로드 가능
+      // - 이미지 파일만 허용
+      // - 최대 5MB
+      allow write: if isAdmin() && 
+                     isValidImageType() && 
+                     isValidSize(5 * 1024 * 1024);
+    }
+    
+    // ==========================================
+    // Banners (배너 이미지)
+    // ==========================================
+    
+    match /banners/{fileName} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // 관리자만 업로드 가능
+      // - 이미지 파일만 허용
+      // - 최대 5MB
+      allow write: if isAdmin() && 
+                     isValidImageType() && 
+                     isValidSize(5 * 1024 * 1024);
+    }
+    
+    // ==========================================
+    // Board Attachments (게시판 첨부파일)
+    // ==========================================
+    
+    match /board_attachments/{boardId}/{postId}/{fileName} {
+      // 모든 사용자 읽기 가능
+      allow read: if true;
+      
+      // 관리자만 업로드 가능
+      // - 최대 10MB
+      allow write: if isAdmin() && 
+                     isValidSize(10 * 1024 * 1024);
+    }
+    
+    // ==========================================
+    // 기본 규칙: 모든 다른 경로는 접근 불가
+    // ==========================================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
